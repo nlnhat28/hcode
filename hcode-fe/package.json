@@ -1,0 +1,27 @@
+{
+  "name": "hcode",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.5.0",
+    "lodash": "^4.17.21",
+    "pinia": "^2.1.6",
+    "primeicons": "^6.0.1",
+    "primevue": "^3.34.1",
+    "simple-code-editor": "^2.0.8",
+    "tiny-emitter": "^2.1.0",
+    "vue": "^3.3.4",
+    "vue-i18n": "^9.5.0",
+    "vue-router": "^4.2.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "vite": "^4.4.5"
+  }
+}

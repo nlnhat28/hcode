@@ -1,0 +1,27 @@
+.icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dark .icon {    
+    color: var(--grey-700)
+}
+.light .icon {
+    color: #fff
+}
+.success .icon {
+  color: var(--green-500);
+}
+.primary .icon { 
+  color: var(--color-primary);
+}
+.error .icon {
+  color: var(--red-500);
+}
+.info .icon {
+  color: var(--blue-500)
+}
+.warn .icon {
+  color: var(--orange-400)
+}

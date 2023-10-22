@@ -1,0 +1,19 @@
+/* flex */
+.d--flex {
+    display: flex;
+}
+.d--flex-column {
+    display: flex;
+    flex-direction: column;
+}
+.d--flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* text */
+.title--big {
+    font-size: 60px;
+    font-weight: bolder;
+}

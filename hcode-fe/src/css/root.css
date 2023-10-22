@@ -1,0 +1,151 @@
+:root {
+    --font-primary: titillium;
+
+    --color-text: #212121;
+    --color-label: #1f1f1f;
+    --color-placeholder: #9e9e9e;
+    --color-disabled: #666666;
+
+    --border-color: #c0c0c0;
+    --head-color: #bcd4b9;
+
+    --color-primary: #6500FF;
+
+    --violet-900: #140033;
+    --violet-800: #280066;
+    --violet-700: #3D0099;
+    --violet-600: #5100CC;
+    --violet-500: #6500FF;
+    --violet-400: #8433FF;
+    --violet-300: #A366FF;
+    --violet-200: #C199FF;
+    --violet-100: #E0CCFF;
+    --violet-50: #F0E6FF;
+
+    --green-900: #021e0d;
+    --green-800: #033c1a;
+    --green-700: #055b27;
+    --green-600: #067933;
+    --green-500: #089740;
+    --green-400: #39ac66;
+    --green-300: #6bc18d;
+    --green-200: #9cd5b3;
+    --green-100: #ceead9;
+    --green-50: #e7f5ec;
+    --green-25: #edf7f1;
+
+    --grey-900: #1f1f1f;
+    --grey-800: #424242;
+    --grey-700: #616161;
+    --grey-600: #757575;
+    --grey-500: #9e9e9e;
+    --grey-400: #bdbdbd;
+    --grey-300: #e0e0e0;
+    --grey-200: #eeeeee;
+    --grey-100: #f5f5f5;
+    --grey-50: #fafafa;
+
+    --red-600: #d40000;
+    --red-500: #e60000;
+    --red-400: #eb3333;
+    --red-300: #f06666;
+    --red-200: #f59999;
+    --red-100: #facccc;
+    --red-50: #fce6e6;
+
+    --orange-600: #cc7a00;
+    --orange-500: #ff9800;
+    --orange-400: #ffad33;
+    --orange-300: #ffc166;
+    --orange-200: #ffd699;
+    --orange-100: #ffeacc;
+    --orange-50: #fff5e6;
+    --orange: #eb7728;
+
+    --blue-800: #003166;
+    --blue-700: #004999;
+    --blue-600: #0062cc;
+    --blue-500: #007aff;
+    --blue-400: #3395ff;
+    --blue-300: #66afff;
+    --blue-200: #99caff;
+    --blue-100: #cce4ff;
+    --blue-50: #e6f2ff;    
+    
+    --blue-800: #003166;
+    --blue-700: #004999;
+    --blue-600: #0062cc;
+    --blue-500: #007aff;
+    --blue-400: #3395ff;
+    --blue-300: #66afff;
+    --blue-200: #99caff;
+    --blue-100: #cce4ff;
+    --blue-50: #e6f2ff;
+
+
+    --2609: #86ac00 #000000;
+    --2709: #ffffff #ffffff;
+    --2809: #ff89ce #ffffff;
+    --0210: #000000 #ffffff;
+    --0310: #ffffff #ffffff;
+    --0410: #000000 #000000;
+    --0510: #ffffff #000000;
+    --0610: #000000 #000000;
+
+    --0910: #86ac00 #000000;
+    --1010: #ff89ce #ffffff;
+    --1110: #ffffff #ffffff;
+    --1210: #ffffff #000000;
+    --1310: #000000 #ffffff;
+    --1610: #000000 #000000;
+    --1710: #ffffff #ffc118;
+    --1810: #86ac00 #000000;
+    --1910: #ffffff #000000;
+    --2010: #000000 #000000;
+}
+/* font face */
+@font-face {
+    font-family: "notosans";
+    src: url("@/assets/fonts/notosans-bold.woff2");
+    font-weight: bold;
+}
+@font-face {
+    font-family: "notosans";
+    src: url("@/assets/fonts/notosans-semibold.woff2");
+    font-weight: 700;
+}
+@font-face {
+    font-family: "notosans";
+    src: url("@/assets/fonts/notosans-regular.woff2");
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: "notosans";
+    src: url("@/assets/fonts/notosans-italic.woff2");
+    font-weight: 500;
+    font-style: italic;
+}
+@font-face {
+    font-family: "sari";
+    src: url("@/assets/fonts/svn-sari.otf");
+}
+@font-face {
+    font-family: "aller";
+    src: url("@/assets/fonts/svn-aller.otf");
+}
+@font-face {
+    font-family: "titillium";
+    src: url("@/assets/fonts/titillium-bold.ttf");
+    font-weight: 700;
+}
+@font-face {
+    font-family: "titillium";
+    src: url("@/assets/fonts/titillium-medium.ttf");
+    font-weight: 500;
+}
+@font-face {
+    font-family: "titillium";
+    src: url("@/assets/fonts/titillium-ligth.ttf");
+    font-weight: 300;
+}

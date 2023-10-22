@@ -1,0 +1,12 @@
+.v-toast.p-toast .p-toast-message-content {
+    display: flex;
+    align-items: center;
+    min-height: 72px;
+}
+.v-toast.p-toast .p-toast-summary,
+.v-toast.p-toast .p-toast-detail {
+    font-size: 18px;
+}
+.v-toast.p-toast .p-toast-message .p-toast-message-content .p-toast-detail {
+    margin: 0.2rem 0 0 0;
+}
