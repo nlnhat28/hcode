@@ -5,7 +5,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
 import "@/css/main.css";
-import "@/helper/prototype.js"
+import "@/helper/prototype.js";
 /**
  * Create
  */
@@ -26,7 +26,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 /**
  * Custom
-*/
+ */
 import VButtonContainer from "@/components/elements/button/VButtonContainer.vue";
 import VIcon from "@/components/elements/icon/VIcon.vue";
 import VInputText from "@/components/elements/input/VInputText.vue";
@@ -62,13 +62,14 @@ app.component("v-tooltip", VTooltip);
  */
 import path from "@/router/path.js";
 import emitter from "tiny-emitter/instance";
-import commonFuction from "@/helper/common-function";
-import convert from "@/helper/convert";
-import format from "@/helper/format";
-import reformat from "@/helper/reformat";
-import enums from "@/enums/enums";
-import toast from "@/components/overlay/toast/toast.js"; 
-import dialog from "@/components/overlay/dialog/dialog.js"; 
+import commonFuction from "@/helper/common-function.js";
+import convert from "@/helper/convert.js";
+import format from "@/helper/format.js";
+import reformat from "@/helper/reformat.js";
+import enums from "@/enums/enums.js";
+import toast from "@/components/overlay/toast/toast.js";
+import dialog from "@/components/overlay/dialog/dialog.js";
+import validate from "@/helper/validate.js";
 
 app.config.globalProperties.$emitter = emitter;
 app.config.globalProperties.$enums = enums;
@@ -79,6 +80,7 @@ app.config.globalProperties.$fm = format;
 app.config.globalProperties.$rfm = reformat;
 app.config.globalProperties.$ts = toast;
 app.config.globalProperties.$dl = dialog;
+app.config.globalProperties.$vld = validate;
 /**
  * Directives
  */

@@ -30,6 +30,7 @@
                     ref="refPassword"
                     icon="fa fa-key"
                     isRequired
+                    :maxLength="255"
                     :label="$t('auth.password')"
                     :tooltip="$t('auth.username')"
                 />
@@ -40,6 +41,7 @@
                     icon="fa fa-lock"
                     isConfirm
                     isRequired
+                    :maxLength="255"
                     :label="$t('auth.confirmPassword')"
                     :password="instance.password"
                 />
@@ -48,6 +50,7 @@
                     ref="refEmail"
                     icon="fa fa-envelope"
                     isRequired
+                    :maxLength="100"
                     :label="'Email'"
                 />
             </div>
