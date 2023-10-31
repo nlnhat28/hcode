@@ -5,7 +5,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
 import "@/css/main.css";
-
+import "@/helper/prototype.js"
 /**
  * Create
  */
@@ -27,10 +27,13 @@ import Dialog from "primevue/dialog";
 /**
  * Custom
 */
+import VButtonContainer from "@/components/elements/button/VButtonContainer.vue";
 import VIcon from "@/components/elements/icon/VIcon.vue";
 import VInputText from "@/components/elements/input/VInputText.vue";
 import VInputGroup from "@/components/elements/input/VInputGroup.vue";
 import VLogoHCode from "@/components/elements/logo/VLogoHcode.vue";
+import VNav from "@/components/elements/nav/VNav.vue";
+import VNavItem from "@/components/elements/nav/VNavItem.vue";
 import VPassword from "@/components/elements/input/VPassword.vue";
 import VSpinner from "@/components/elements/spinner/VSpinner.vue";
 import VTooltip from "@/components/elements/tooltip/VTooltip.vue";
@@ -41,12 +44,15 @@ import CodeEditor from "simple-code-editor";
 import "simple-code-editor/themes/themes.css";
 
 app.component("v-button", Button);
+app.component("v-btn-container", VButtonContainer);
 app.component("v-code-editor", CodeEditor);
 app.component("v-dialog", Dialog);
 app.component("v-icon", VIcon);
 app.component("v-input-group", VInputGroup);
 app.component("v-input-text", VInputText);
 app.component("v-logo-hcode", VLogoHCode);
+app.component("v-nav", VNav);
+app.component("v-nav-item", VNavItem);
 app.component("v-password", VPassword);
 app.component("v-spinner", VSpinner);
 app.component("v-tooltip", VTooltip);

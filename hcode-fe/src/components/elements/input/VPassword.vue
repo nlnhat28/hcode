@@ -30,7 +30,7 @@
                 :readonly="isReadOnly"
                 :style="`text-align: ${textAlign};`"
             />
-            <div class="input-icon-right">
+            <div class="input-icon-right always-show">
                 <v-icon
                     v-if="isConfirm && correctComputed"
                     icon="fa fa-check"

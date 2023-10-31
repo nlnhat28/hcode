@@ -5,8 +5,12 @@ const auth = {
     createAccount: "Tạo tài khoản",
     signup: "Đăng ký",
     username: "Tên tài khoản",
+    usernameOrEmail: "Tên tài khoản hoặc email",
     password: "Mật khẩu",
     confirmPassword: "Xác nhận mật khẩu",
+    noAccountYet: "Chưa có tài khoản?",
+    alreadyHaveAccount: "Đã có tài khoản?",
+    forgotPassword: "Quên mật khẩu?"
 };
 
 export default auth;

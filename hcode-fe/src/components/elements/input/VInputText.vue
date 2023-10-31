@@ -30,7 +30,10 @@
             />
             <div
                 v-if="innerAction"
-                class="input-icon-right"
+                :class="[
+                    'input-icon-right',
+                    { '.always-show': isShowActionIcon }
+                ]"
             >
                 <v-icon
                     v-if="!isLoading && !isSuccess & !isError"

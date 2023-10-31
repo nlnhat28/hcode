@@ -2,9 +2,17 @@
     <div class="auth-container">
         <v-logo-hcode />
         <div class="auth__title">
-            {{ titleComputed }}
+            {{ $t('auth.createAccount') }}
         </div>
-        <div class="auth_body">
+        <div class="auth__body">
+            <div class="auth__redirect">
+                {{ $t('auth.alreadyHaveAccount') }}
+                <v-button
+                    link
+                    :label="$t('auth.login')"
+                    @click="$router.push($path.login);"
+                />
+            </div>
             <div class="auth__form">
                 <!-- Tên người dùng -->
                 <v-input-text
@@ -13,6 +21,7 @@
                     hasClear
                     isRequired
                     isFocused
+                    :maxLength="50"
                     :label="$t('auth.username')"
                 />
                 <!-- Mật khẩu -->
@@ -41,48 +50,28 @@
                     isRequired
                     :label="'Email'"
                 />
-                <v-button
-                    :label="$t('auth.signup')"
-                    @click="onClickSave()"
-                ></v-button>
             </div>
+            <v-button
+                :label="$t('auth.signup')"
+                @click="onClickSave()"
+            />
         </div>
     </div>
 </template>
 <script>
-import authEnum from "@/enums/auth-enum.js";
 import BaseForm from "@/components/base/BaseForm.vue";
 
 export default {
     name: "Auth",
     extends: BaseForm,
-    props: {
-        /**
-         * Kiểu form
-         */
-        formType: {
-            type: Number,
-            default: authEnum.formType.createAccount,
-            validator: (value) => {
-                return [
-                    authEnum.formType.login,
-                    authEnum.formType.createAccount,
-                ].includes(value);
-            },
+    data() {
+        return {
+
         }
     },
     computed: {
-        /**
-         * Tiêu đề 
-         */
-        titleComputed() {
-            switch (this.formType) {
-                case authEnum.formType.login:
-                    return this.$t('auth.login.')
-                case authEnum.formType.createAccount:
-                    return this.$t('auth.createAccount')
-            }
-        }
+    },
+    created() {
     },
     mounted() {
         this.refs = [
@@ -96,39 +85,5 @@ export default {
 }
 </script>
 <style scoped>
-.auth-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    row-gap: 24px;
-    width: 100%;
-    height: 100vh;
-    padding: 40px 120px;
-    overflow: hidden;
-    background: url(@/assets/img/bg-auth.jpg) no-repeat;
-    background-size: 100% 100%;
-}
-
-.auth__title {
-    font-size: 48px;
-    font-weight: bolder;
-    font-family: "Consolas";
-    color: #fff;
-    margin-bottom: 24px;
-}
-
-.auth_body {
-    display: flex;
-    flex-direction: column;
-    row-gap: 24px;
-}
-
-.auth__form {
-    width: 320px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    row-gap: 16px;
-}
+@import './auth.css';
 </style>

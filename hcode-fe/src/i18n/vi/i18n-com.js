@@ -20,6 +20,9 @@ const com = {
     no: "Không",
     ok: "Đồng ý",
     confirm: "Xác nhận",
+    problems: "Bài toán",
+    contests: "Bài thi",
+    about: "Giới thiệu",
 };
 
 export default com;

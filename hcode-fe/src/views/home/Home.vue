@@ -1,6 +1,6 @@
 <template>
     <div class="home-container">
-        <v-logo-hcode full/>
+        <v-logo-hcode isFull />
         <div class="home__content">
             <div class="home__content--left">
                 <div class="home__title">
@@ -10,10 +10,16 @@
                     <div class="home__small-title">
                         {{ $t('home.smallTitle') }}
                     </div>
-                    <v-button
-                        :label="$t('home.signup')"
-                        @click="clickCreateAccount"
-                    ></v-button>
+                    <v-btn-container>
+                        <v-button
+                            :label="$t('home.practice')"
+                            @click="$router.push($path.problems);"
+                        ></v-button>
+                        <v-button
+                            :label="$t('home.createAccount')"
+                            @click="$router.push($path.signup);"
+                        ></v-button>
+                    </v-btn-container>
                 </div>
             </div>
             <div class="home__content--right">
@@ -33,9 +39,6 @@ export default {
         /**
          * Click tạo tài khoản
          */
-        clickCreateAccount() {
-            this.$router.push(this.$path.signup);
-        }
     }
 }
 </script>

@@ -7,7 +7,7 @@
 }
 .p-inputtext {
     font-family: var(--font-primary) !important;
-    font-size: 16px !important;
+    font-size: 18px !important;
     color: #000;
     caret-color: auto;
     width: 100%;
@@ -48,6 +48,7 @@
     color: var(--grey-700);
 }
 
+.input-icon-right.always-show, 
 .input-wrapper:focus-within > .input-icon-right,
 .input-wrapper:hover > .input-icon-right {
     display: flex;

@@ -1,5 +1,6 @@
 .v-dialog.p-dialog {
-    width: 400px;
+    min-width: 400px;
+    max-width: 480px;
 }
 .v-dialog.p-dialog .p-dialog-header .p-dialog-title {
     font-size: 28px;
@@ -13,6 +14,21 @@
 .v-dialog__icon .icon {
     font-size: 32px;
 }
+.v-dialog.p-dialog .p-dialog-footer button {
+    margin: 0;
+}
 .v-dialog .p-button.p-button-sm {
     padding: 0.3rem 0.7rem;
+}
+
+.v-dialog.p-dialog .p-dialog-header,
+.v-dialog.p-dialog .p-dialog-footer {
+    padding: 1rem 1.2rem;
+}
+.v-dialog.p-dialog .p-dialog-footer {
+    background-color: var(--grey-200);
+}
+.v-dialog.p-dialog .p-dialog-content {
+    padding: 1.2rem;
+    padding-top: 0;
 }

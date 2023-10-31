@@ -1,8 +1,9 @@
 const path = {
+    index: "/",
     login: "/login",
     signup: "/signup",
     home: "/home",
-    index: "/",
+    problems: "/problems",
 };
 
 export default path;

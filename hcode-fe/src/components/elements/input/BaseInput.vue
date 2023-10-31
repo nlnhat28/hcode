@@ -127,6 +127,13 @@ export default {
         tooltip: {
             type: [String, Number],
             default: null,
+        },
+        /**
+         * Show icon mà k cần hover
+         */
+        isShowActionIcon: {
+            type: Boolean,
+            default: false,
         }
     },
     data() {
@@ -200,7 +207,7 @@ export default {
 
                 // Validate length
                 if (this.maxLength && this.innerValue?.length > this.maxLength)
-                    return `${this.label} ${this.$t('msg.mustLessEqual').format(this.maxLength)}`;
+                    return `${this.label} ${this.$t('msg.mustLessEqual', { length: this.maxLength })}`;
 
                 // Custom validate
                 if (this.validate) {

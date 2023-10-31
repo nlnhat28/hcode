@@ -45,7 +45,9 @@
     --grey-100: #f5f5f5;
     --grey-50: #fafafa;
 
-    --red-600: #d40000;
+    --red-800: #7a0000;
+    --red-700: #9c0000;
+    --red-600: #b80000;
     --red-500: #e60000;
     --red-400: #eb3333;
     --red-300: #f06666;
@@ -60,7 +62,17 @@
     --orange-200: #ffd699;
     --orange-100: #ffeacc;
     --orange-50: #fff5e6;
-    --orange: #eb7728;
+    --orange: #eb7728;    
+
+    --yellow-800: #989b00;
+    --yellow-700: #a79b00;
+    --yellow-600: #ccc900;
+    --yellow-500: #ffee00;
+    --yellow-400: #fffc35;
+    --yellow-300: #fff56f;
+    --yellow-200: #fffda2;
+    --yellow-100: #fffed1;
+    --yellow-50: #fdfdf2;
 
     --blue-800: #003166;
     --blue-700: #004999;
@@ -81,27 +93,6 @@
     --blue-200: #99caff;
     --blue-100: #cce4ff;
     --blue-50: #e6f2ff;
-
-
-    --2609: #86ac00 #000000;
-    --2709: #ffffff #ffffff;
-    --2809: #ff89ce #ffffff;
-    --0210: #000000 #ffffff;
-    --0310: #ffffff #ffffff;
-    --0410: #000000 #000000;
-    --0510: #ffffff #000000;
-    --0610: #000000 #000000;
-
-    --0910: #86ac00 #000000;
-    --1010: #ff89ce #ffffff;
-    --1110: #ffffff #ffffff;
-    --1210: #ffffff #000000;
-    --1310: #000000 #ffffff;
-    --1610: #000000 #000000;
-    --1710: #ffffff #ffc118;
-    --1810: #86ac00 #000000;
-    --1910: #ffffff #000000;
-    --2010: #000000 #000000;
 }
 /* font face */
 @font-face {
