@@ -50,6 +50,7 @@
                     ref="refEmail"
                     icon="fa fa-envelope"
                     isRequired
+                    :validate="$vld.validateEmail"
                     :maxLength="100"
                     :label="'Email'"
                 />
@@ -83,6 +84,17 @@ export default {
             this.$refs['refPassword'],
             this.$refs['refUsername'],
         ]
+    },
+    methods: {
+        /**
+         * Xử lý thêm validate
+         */
+        customValidate() {
+            if (this.instance.password != this.instance.confirmPassword) {
+                this.messageValidate = this.$t("auth.invalidConfirmPassword");
+                this.refError = this.$refs["refConfirmPassword"];
+            }
+        }
     }
 
 }

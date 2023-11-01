@@ -62,7 +62,7 @@ app.component("v-tooltip", VTooltip);
  */
 import path from "@/router/path.js";
 import emitter from "tiny-emitter/instance";
-import commonFuction from "@/helper/common-function.js";
+import commonFunction from "@/helper/common-function.js";
 import convert from "@/helper/convert.js";
 import format from "@/helper/format.js";
 import reformat from "@/helper/reformat.js";
@@ -74,7 +74,7 @@ import validate from "@/helper/validate.js";
 app.config.globalProperties.$emitter = emitter;
 app.config.globalProperties.$enums = enums;
 app.config.globalProperties.$path = path;
-app.config.globalProperties.$cf = commonFuction;
+app.config.globalProperties.$cf = commonFunction;
 app.config.globalProperties.$cv = convert;
 app.config.globalProperties.$fm = format;
 app.config.globalProperties.$rfm = reformat;

@@ -80,7 +80,6 @@ export default {
             isLoading: false,
             /**
              * Message hiện lên on toast
-             *
              */
             messageOnToast: null,
         };
@@ -122,17 +121,20 @@ export default {
          */
         isValidForm() {
             try {
-                let isValid = true;
                 this.messageValidate = null;
                 this.refs.forEach((ref) => {
                     const message = ref.checkValidate();
                     if (message) {
                         this.messageValidate = message;
-                        isValid = false;
                         this.refError = ref;
                     }
                 });
-                return isValid;
+                this.customValidate();
+
+                if (this.refError && this.messageValidate) {
+                    this.refError.setErrorMessage(this.messageValidate)
+                }
+                return this.messageValidate == null;
             } catch (error) {
                 console.error(error);
                 return false;
@@ -496,6 +498,14 @@ export default {
         onClickHelp() {
             
         },
+        /**
+         * Xử lý thêm validate tại đây
+         * 
+         * Author: nlnhat1 (01/11/2023)
+         */
+        customValidate() {
+
+        }
     },
 };
 </script>

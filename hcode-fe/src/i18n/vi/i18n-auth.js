@@ -10,7 +10,8 @@ const auth = {
     confirmPassword: "Xác nhận mật khẩu",
     noAccountYet: "Chưa có tài khoản?",
     alreadyHaveAccount: "Đã có tài khoản?",
-    forgotPassword: "Quên mật khẩu?"
+    forgotPassword: "Quên mật khẩu?",
+    invalidConfirmPassword: "Xác nhận mật khẩu không khớp",
 };
 
 export default auth;

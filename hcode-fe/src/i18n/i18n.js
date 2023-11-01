@@ -16,5 +16,6 @@ const i18n = createI18n({
     fallbackLocale: locales[0],
     messages,
 });
+export const t = i18n.global.t;
 
 export default i18n;
