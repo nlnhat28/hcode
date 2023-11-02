@@ -1,16 +1,12 @@
 <script>
 import enums from "@/enums/enums";
 import _ from 'lodash';
+import loading from "@/mixins/loading-effect.js"
 
 export default {
     name: "BaseForm",
+    mixins: [loading],
     props: {
-        /**
-         * Service
-         */
-        instanceService: {
-            type: Object,
-        },
         /**
          * Id của instance
          */
@@ -42,6 +38,10 @@ export default {
     },
     data() {
         return {
+            /**
+             * Service
+             */
+            instanceService: null,
             /**
              * Mode of form
              */
@@ -92,7 +92,7 @@ export default {
             this.setErrorMessage(ref, errorMessage);
         });
 
-        await this.makeLoadingEffect(async () => {
+        await this.loadingEffect(async () => {
             await this.handleInstanceOnCreate();
         });
     },
@@ -131,9 +131,6 @@ export default {
                 });
                 this.customValidate();
 
-                if (this.refError && this.messageValidate) {
-                    this.refError.setErrorMessage(this.messageValidate)
-                }
                 return this.messageValidate == null;
             } catch (error) {
                 console.error(error);
@@ -169,22 +166,6 @@ export default {
     },
     methods: {
         /**
-         * Make loading effect
-         *
-         * Author: nlnhat (05/07/2023)
-         * @param {function} func Function executes in loading process
-         */
-        async makeLoadingEffect(func) {
-            try {
-                this.isLoading = true;
-                await func();
-            } catch (error) {
-                console.error(error);
-            } finally {
-                this.isLoading = false;
-            }
-        },
-        /**
          * Handle instance on created()
          *
          * Author: nlnhat (05/07/2023)
@@ -216,15 +197,13 @@ export default {
          * Author: nlnhat (02/07/2023)
          */
         async getInstance(id) {
-            try {
+            if (this.instanceService) {
                 const response = await instanceService.get(id);
                 if (response?.status == this.$enums.httpstatus.ok) {
                     this.instance = _.cloneDeep(response.data.Data);
                     this.processResponseGetData();
                     this.storeOriginalInstance();
                 }
-            } catch (error) {
-                console.error(error);
             }
         },
         /**
@@ -296,7 +275,7 @@ export default {
          * Author: nlnhat (02/07/2023)
          */
         async onSave() {
-            await this.makeLoadingEffect(async () => {
+            await this.loadingEffect(async () => {
                 switch (this.mode) {
                     case this.$enums.formMode.create:
                         await this.createInstance();
@@ -329,7 +308,7 @@ export default {
                         this.hideForm();
                     }
                 } else {
-                    this.$dl.error(this.messageValidate, this.focusRefError) ;
+                    this.$dl.error(this.messageValidate, this.focusRefError);
                 }
             } catch (error) {
                 console.error(error);
@@ -496,7 +475,7 @@ export default {
          * Author: nlnhat (26/08/2023)
          */
         onClickHelp() {
-            
+
         },
         /**
          * Xử lý thêm validate tại đây

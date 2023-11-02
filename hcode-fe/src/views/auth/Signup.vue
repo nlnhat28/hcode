@@ -30,6 +30,7 @@
                     ref="refPassword"
                     icon="fa fa-key"
                     isRequired
+                    :validate="$vld.password"
                     :maxLength="255"
                     :label="$t('auth.password')"
                     :tooltip="$t('auth.username')"
@@ -50,20 +51,21 @@
                     ref="refEmail"
                     icon="fa fa-envelope"
                     isRequired
-                    :validate="$vld.validateEmail"
+                    :validate="$vld.email"
                     :maxLength="100"
                     :label="'Email'"
                 />
             </div>
             <v-button
                 :label="$t('auth.signup')"
-                @click="onClickSave()"
+                @click="clickSignup()"
             />
         </div>
     </div>
 </template>
 <script>
 import BaseForm from "@/components/base/BaseForm.vue";
+import { authService } from "@/services/services.js"
 
 export default {
     name: "Auth",
@@ -76,6 +78,8 @@ export default {
     computed: {
     },
     created() {
+        this.mode = this.$enums.formMode.post;
+        this.instanceService = authService;
     },
     mounted() {
         this.refs = [
@@ -85,16 +89,51 @@ export default {
             this.$refs['refUsername'],
         ]
     },
+    computed: {
+        reformatInstance() {
+            let data = {};
+
+            return data;
+        },
+    },
     methods: {
         /**
          * Xử lý thêm validate
          */
         customValidate() {
-            if (this.instance.password != this.instance.confirmPassword) {
-                this.messageValidate = this.$t("auth.invalidConfirmPassword");
-                this.refError = this.$refs["refConfirmPassword"];
+            if (this.messageValidate == null) {
+                if (this.instance.password != this.instance.confirmPassword) {
+                    this.messageValidate = this.$t("auth.invalidConfirmPassword");
+                    this.refError = this.$refs["refConfirmPassword"];
+                    this.$refs["refConfirmPassword"].setErrorMessage(this.messageValidate);
+                }
             }
-        }
+        },
+        /**
+         * Click đăng ký
+         */
+        clickSignup() {
+
+        },
+        /**
+         * Create new instance
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        async signup() {
+            try {
+                const response = await instanceService.signup(this.reformatInstance);
+                if (response?.status == this.$enums.httpstatus.created) {
+                    this.instance.InstanceId = response.data.Data;
+                    this.isSuccessResponseFlag = true;
+                } else {
+                    this.isSuccessResponseFlag = false;
+                }
+            } catch (error) {
+                console.error(error);
+                this.isSuccessResponseFlag = false;
+            }
+        },
     }
 
 }

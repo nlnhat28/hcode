@@ -4,7 +4,9 @@ const enums = {
      */
     formMode: {
         create: 1,
+        post: 1,
         update: 2,
+        put: 2,
         duplicate: 3,
     },
     /**

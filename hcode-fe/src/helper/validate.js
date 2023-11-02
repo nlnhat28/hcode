@@ -5,11 +5,29 @@ import { t } from "@/i18n/i18n.js";
  * Các hàm validate thông dụng
  */
 const validate = {
-    validateEmail: (label, value) => {
+    /**
+     * Validate email
+     * @param {*} label 
+     * @param {*} value 
+     * @returns 
+     */
+    email(label, value) {
         if (cf.isNullString(value) || regex.regexEmail(value)) {
             return null;
-        };
+        }
         return t("msg.invalidEmail");
+    },
+    /**
+     * Validate mật khẩu
+     * @param {*} label 
+     * @param {*} value 
+     * @returns 
+     */
+    password(label, value) {
+        if (cf.isNullString(value) || regex.regexPassword(value)) {
+            return null;
+        }
+        return t("msg.weakPassword");
     },
 };
 export default validate;

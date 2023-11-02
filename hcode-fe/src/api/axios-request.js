@@ -1,7 +1,6 @@
 import axios from "axios";
 import emitter from "tiny-emitter/instance";
-import resources from "@/constants/resources.js";
-import enums from "@/constants/enums.js";
+import enums from "@/enums/enums.js";
 
 const axiosRequest = axios.create({
     baseURL: window.config.server.baseURL,
