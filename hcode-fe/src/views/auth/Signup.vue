@@ -14,8 +14,10 @@
                 />
             </div>
             <div class="auth__form">
+                <v-mask-loading v-if="isLoading" />
                 <!-- Tên người dùng -->
                 <v-input-text
+                    v-model="instance.username"
                     ref="refUsername"
                     icon="fa fa-user"
                     hasClear
@@ -30,7 +32,7 @@
                     ref="refPassword"
                     icon="fa fa-key"
                     isRequired
-                    :validate="$vld.password"
+                    :warn="$vld.password"
                     :maxLength="255"
                     :label="$t('auth.password')"
                     :tooltip="$t('auth.username')"
@@ -48,6 +50,7 @@
                 />
                 <!-- Email -->
                 <v-input-text
+                    v-model="instance.email"
                     ref="refEmail"
                     icon="fa fa-envelope"
                     isRequired
@@ -55,11 +58,12 @@
                     :maxLength="100"
                     :label="'Email'"
                 />
+                <v-button
+                    style="margin-top: 8px"
+                    :label="$t('auth.signup')"
+                    @click="onClickSave()"
+                />
             </div>
-            <v-button
-                :label="$t('auth.signup')"
-                @click="clickSignup()"
-            />
         </div>
     </div>
 </template>
@@ -89,14 +93,29 @@ export default {
             this.$refs['refUsername'],
         ]
     },
+    watch: {
+        "instance.password"() {
+            this.validConfirmPassword();
+        },
+        "instance.confirmPassword"() {
+            this.validConfirmPassword();
+        },
+    },
     computed: {
         reformatInstance() {
-            let data = {};
-
-            return data;
         },
     },
     methods: {
+        /**
+         * Override base
+         */
+        beforeValidate() {
+            let email = this.instance.email;
+
+            if (email) {
+                this.instance.email = email.includes("@") ? email : `${email}@gmail.com`;
+            };
+        },
         /**
          * Xử lý thêm validate
          */
@@ -106,23 +125,42 @@ export default {
                     this.messageValidate = this.$t("auth.invalidConfirmPassword");
                     this.refError = this.$refs["refConfirmPassword"];
                     this.$refs["refConfirmPassword"].setErrorMessage(this.messageValidate);
-                }
+                };
+            };
+        },
+        /**
+         * 
+         */
+        validConfirmPassword() {
+            if (this.instance.password == this.instance.confirmPassword) {
+                this.$refs["refConfirmPassword"].clearErrorMessage();
             }
         },
         /**
          * Click đăng ký
          */
-        clickSignup() {
+        async funcOnSave() {
+            const salt = this.$cf.genSalt();
+            const password = this.$cf.hash(this.instance.password, salt);
 
+            let data = {
+                username: this.instance.username,
+                email: this.instance.email,
+                password: password,
+                salt: salt,
+            };
+
+            await this.signup(data);
         },
         /**
          * Create new instance
          *
          * Author: nlnhat (02/07/2023)
          */
-        async signup() {
+        async signup(data) {
             try {
-                const response = await instanceService.signup(this.reformatInstance);
+                return this.$cf.sleep(10);
+                const response = await instanceService.signup(data);
                 if (response?.status == this.$enums.httpstatus.created) {
                     this.instance.InstanceId = response.data.Data;
                     this.isSuccessResponseFlag = true;

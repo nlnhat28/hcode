@@ -76,6 +76,12 @@ export default {
             type: Function,
         },
         /**
+         * Function warning
+         */
+        warn: {
+            type: Function,
+        },
+        /**
          * Icon trái
          */
         icon: {
@@ -146,6 +152,10 @@ export default {
              * Thông báo lỗi nếu có
              */
             errorMessage: null,
+            /**
+             * Cảnh báo nếu có
+             */
+            warnMessage: null,
             /**
              * Trạng thái thực hiện hành động
              */
@@ -234,6 +244,23 @@ export default {
             return this.innerValue;
         },
         /**
+         * Warn value
+         * 
+         * Author: nlnhat (01/07/2023)
+         * @return Warn message if invalid, null if valid
+         */
+        warnComputed() {
+            try {
+                // Custom warn
+                if (this.warn) {
+                    return this.warn(this.label, this.innerValue);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+            return null;
+        },
+        /**
          * Placeholder
          */
         placeholderComputed() {
@@ -245,6 +272,15 @@ export default {
             };
             return null;
         },
+        /**
+         * Tooltip
+         */
+        tooltipComputed() {
+            if (this.errorMessage) {
+                return this.errorMessage
+            }
+            return this.warnMessage;
+        }
     },
     methods: {
         /**
@@ -300,6 +336,7 @@ export default {
                 }
 
                 this.checkValidate();
+                this.checkWarn();
 
             } catch (error) {
                 console.error(error);
@@ -313,6 +350,19 @@ export default {
         checkValidate() {
             try {
                 return this.errorMessage = this.validateComputed;
+            } catch (error) {
+                console.error(error);
+            }
+            return null
+        },
+        /**
+         * Check validate value
+         * 
+         * Author: nlnhat (02/07/2023)
+         */
+        checkWarn() {
+            try {
+                return this.warnMessage = this.warnComputed;
             } catch (error) {
                 console.error(error);
             }

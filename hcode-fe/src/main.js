@@ -32,10 +32,12 @@ import VIcon from "@/components/elements/icon/VIcon.vue";
 import VInputText from "@/components/elements/input/VInputText.vue";
 import VInputGroup from "@/components/elements/input/VInputGroup.vue";
 import VLogoHCode from "@/components/elements/logo/VLogoHcode.vue";
+import VMaskLoading from "@/components/elements/mask/VMaskLoading.vue";
 import VNav from "@/components/elements/nav/VNav.vue";
 import VNavItem from "@/components/elements/nav/VNavItem.vue";
 import VPassword from "@/components/elements/input/VPassword.vue";
-import VSpinner from "@/components/elements/spinner/VSpinner.vue";
+import VSpinner from "@/components/elements/loader/VSpinner.vue";
+import VLoader from "@/components/elements/loader/VLoader.vue";
 import VTooltip from "@/components/elements/tooltip/VTooltip.vue";
 /**
  * Simple code editor
@@ -51,10 +53,12 @@ app.component("v-icon", VIcon);
 app.component("v-input-group", VInputGroup);
 app.component("v-input-text", VInputText);
 app.component("v-logo-hcode", VLogoHCode);
+app.component("v-mask-loading", VMaskLoading);
 app.component("v-nav", VNav);
 app.component("v-nav-item", VNavItem);
 app.component("v-password", VPassword);
 app.component("v-spinner", VSpinner);
+app.component("v-loader", VLoader);
 app.component("v-tooltip", VTooltip);
 
 /**
@@ -70,6 +74,7 @@ import enums from "@/enums/enums.js";
 import toast from "@/components/overlay/toast/toast.js";
 import dialog from "@/components/overlay/dialog/dialog.js";
 import validate from "@/helper/validate.js";
+import lodash from "lodash";
 
 app.config.globalProperties.$emitter = emitter;
 app.config.globalProperties.$enums = enums;
@@ -81,6 +86,7 @@ app.config.globalProperties.$rfm = reformat;
 app.config.globalProperties.$ts = toast;
 app.config.globalProperties.$dl = dialog;
 app.config.globalProperties.$vld = validate;
+app.config.globalProperties.$lodash = lodash;
 /**
  * Directives
  */

@@ -26,29 +26,31 @@ const commonFuction = {
      * @param {*} salt
      */
     hash(value, salt) {
-        if (this.isNullValue(value)) {
-            return null;
-        }
-        if (this.isNullValue(salt)) {
-            salt = "";
+        if (this.isNullValue(value) || this.isNullValue(salt)) {
+            return value;
         }
         var hashed = bcrypt.hashSync(value, salt);
         return hashed;
     },
     /**
-     * Compare value has
-     * @param {*} password
-     * @param {*} salt
+     * Gen salt
+     * @param {*} round 
+     * @returns 
      */
-    compareHash(value1, value2, salt) {
-        if (this.isNullValue(value1) || this.isNullValue(value2)) {
-            return false;
-        }
-        if (this.isNullValue(salt)) {
-            salt = "";
-        }
-        var hashed = bcrypt.hashSync(value, salt);
-        return hashed;
+    genSalt() {
+        const saltRounds = 10;
+        const salt = bcrypt.genSaltSync(saltRounds);
+        return salt
     },
+    /**
+     * Sleep
+     * @param {number} second 
+     */
+    async sleep(second) {
+        if (!second) {
+            second = 5;
+        };
+        return new Promise((resolve) => setTimeout(resolve, second * 1000));
+    }
 };
 export default commonFuction;

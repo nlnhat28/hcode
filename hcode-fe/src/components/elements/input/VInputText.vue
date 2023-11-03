@@ -5,9 +5,10 @@
                 'input-wrapper',
                 { 'p-input-icon-left': icon != null },
                 { 'p-input-icon-right': innerAction != null },
-                { 'tooltip--error': errorMessage != null }
+                { 'tooltip--error': errorMessage != null },
+                { 'tooltip--warn': warnMessage != null && errorMessage == null }
             ]"
-            v-tooltip:top="errorMessage"
+            v-tooltip:top="tooltipComputed"
         >
             <div class="input-icon-left">
                 <v-icon
@@ -20,7 +21,8 @@
                 v-model="innerValue"
                 :class="[
                     'p-inputtext p-component',
-                    { 'p-invalid': errorMessage != null }
+                    { 'p-invalid': errorMessage != null },
+                    { 'p-warn': warnMessage != null && errorMessage == null },
                 ]"
                 :placeholder="placeholderComputed"
                 :disabled="isDisabled"

@@ -1,6 +1,5 @@
 <script>
 import enums from "@/enums/enums";
-import _ from 'lodash';
 import loading from "@/mixins/loading-effect.js"
 
 export default {
@@ -114,30 +113,6 @@ export default {
     },
     computed: {
         /**
-         * Check form is valid or invalid
-         *
-         * Author: nlnhat (02/07/2023)
-         * @return {*} True if valid, false if invalid
-         */
-        isValidForm() {
-            try {
-                this.messageValidate = null;
-                this.refs.forEach((ref) => {
-                    const message = ref.checkValidate();
-                    if (message) {
-                        this.messageValidate = message;
-                        this.refError = ref;
-                    }
-                });
-                this.customValidate();
-
-                return this.messageValidate == null;
-            } catch (error) {
-                console.error(error);
-                return false;
-            }
-        },
-        /**
          * Reformat instance trước khi so sánh
          *
          * Author: nlnhat (02/07/2023)
@@ -189,7 +164,7 @@ export default {
          * Author: nlnhat (30/08/2023)
          */
         storeOriginalInstance() {
-            this.originalInstance = _.cloneDeep(this.instance);
+            this.originalInstance = this.$lodash.cloneDeep(this.instance);
         },
         /**
          * Lấy đối tượng theo id
@@ -200,7 +175,7 @@ export default {
             if (this.instanceService) {
                 const response = await instanceService.get(id);
                 if (response?.status == this.$enums.httpstatus.ok) {
-                    this.instance = _.cloneDeep(response.data.Data);
+                    this.instance = this.$lodash.cloneDeep(response.data.Data);
                     this.processResponseGetData();
                     this.storeOriginalInstance();
                 }
@@ -270,26 +245,66 @@ export default {
 
         },
         /**
-         * Save when create or update
+         * Save 
          *
          * Author: nlnhat (02/07/2023)
          */
         async onSave() {
-            await this.loadingEffect(async () => {
-                switch (this.mode) {
-                    case this.$enums.formMode.create:
-                        await this.createInstance();
-                        break;
-                    case this.$enums.formMode.update:
-                        await this.updateInstance();
-                        break;
-                    case this.$enums.formMode.duplicate:
-                        await this.createInstance();
-                        break;
-                    default:
-                        break;
-                };
-            });
+            await this.loadingEffect(this.funcOnSave);
+        },
+        async funcOnSave() {
+            switch (this.mode) {
+                case this.$enums.formMode.create:
+                    await this.createInstance();
+                    break;
+                case this.$enums.formMode.update:
+                    await this.updateInstance();
+                    break;
+                case this.$enums.formMode.duplicate:
+                    await this.createInstance();
+                    break;
+                default:
+                    break;
+            };
+        },
+        /**
+         * Trước khi Validate
+         */
+        beforeValidate() {
+
+        },
+        /**
+         * Xử lý thêm validate tại đây
+         * 
+         * Author: nlnhat1 (01/11/2023)
+         */
+        customValidate() {
+
+        },
+        /**
+         * Check form is valid or invalid
+         *
+         * Author: nlnhat (02/07/2023)
+         * @return {*} True if valid, false if invalid
+         */
+        async isValidForm() {
+            try {
+                await this.beforeValidate();
+                this.messageValidate = null;
+                this.refs.forEach((ref) => {
+                    const message = ref.checkValidate();
+                    if (message) {
+                        this.messageValidate = message;
+                        this.refError = ref;
+                    }
+                });
+                this.customValidate();
+
+                return this.messageValidate == null;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
         },
         /**
          * Khi click nút lưu hoặc gửi
@@ -298,14 +313,18 @@ export default {
          */
         async onClickSave() {
             try {
-                if (this.isValidForm) {
+                if (this.isValidForm()) {
                     await this.onSave();
                     if (this.isSuccessResponseFlag == true) {
                         this.$emit("emitUpdateFocusedId", this.instance.InstanceId);
                         this.$emit("emitUpdateFocusedIds", [this.instance.InstanceId]);
                         this.$emit("emitReloadData");
-                        this.$ts.success(this.messageOnToast);
-                        this.hideForm();
+
+                        if (this.messageOnToast) {
+                            this.$ts.success(this.messageOnToast);
+                        };
+                        
+                        this.closeThis();
                     }
                 } else {
                     this.$dl.error(this.messageValidate, this.focusRefError);
@@ -321,13 +340,17 @@ export default {
          */
         async onClickSaveAdd() {
             try {
-                if (this.isValidForm) {
+                if (this.isValidForm()) {
                     await this.onSave();
                     if (this.isSuccessResponseFlag == true) {
                         this.$emit("emitUpdateFocusedId", this.instance.InstanceId);
                         this.$emit("emitReloadData");
-                        this.$ts.success(this.messageOnToast);
-                        this.resetForm();
+                        if (this.messageOnToast) {
+
+                            this.$ts.success(this.messageOnToast);
+                        };
+                
+                        this.resetThis();
                     }
                 } else {
                     this.$dl.error(this.messageValidate, this.focusRefError);
@@ -341,7 +364,7 @@ export default {
          * 
          * Author: nlnhat (28/08/2023)
          */
-        resetForm() {
+        resetThis() {
             this.$emit("emitReRenderForm");
         },
         /**
@@ -373,7 +396,7 @@ export default {
             if (!this.sameObject(this.originalInstance, this.reformatInstance))
                 this.showSaveConfirmDialog(this.$resources["vn"].saveChangeConfirm);
             else
-                this.hideForm();
+                this.closeThis();
         },
         /**
          * Handle shortcut keys
@@ -478,13 +501,11 @@ export default {
 
         },
         /**
-         * Xử lý thêm validate tại đây
-         * 
-         * Author: nlnhat1 (01/11/2023)
+         * Ẩn form
          */
-        customValidate() {
+        closeThis() {
 
-        }
+        },
     },
 };
 </script>

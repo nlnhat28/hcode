@@ -67,3 +67,7 @@
     /* border: 2px solid var(--red-500); */
     box-shadow: 0 0 0 0.15rem var(--red-500);
 }
+.p-inputtext.p-warn.p-component {
+    /* border: 2px solid var(--red-500); */
+    box-shadow: 0 0 0 0.15rem var(--orange-500);
+}

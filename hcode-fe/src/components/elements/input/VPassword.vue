@@ -5,9 +5,10 @@
                 'input-wrapper',
                 'p-input-icon-right',
                 { 'p-input-icon-left': icon != null },
-                { 'tooltip--error': errorMessage != null }
+                { 'tooltip--error': errorMessage != null },
+                { 'tooltip--warn': warnMessage != null && errorMessage == null }
             ]"
-            v-tooltip:top="errorMessage"
+            v-tooltip:top="tooltipComputed"
         >
             <div class="input-icon-left">
                 <v-icon
@@ -21,11 +22,12 @@
                 :autofocus="isFocused"
                 :class="[
                     'p-inputtext p-component',
-                    { 'p-invalid': errorMessage != null }
+                    { 'p-invalid': errorMessage != null },
+                    { 'p-warn': warnMessage != null && errorMessage == null },
                 ]"
                 :placeholder="placeholderComputed"
                 :type="showPassword ? 'text' : 'password'"
-                :title="tooltipComputed"
+                :title="titleComputed"
                 :disabled="isDisabled"
                 :readonly="isReadOnly"
                 :style="`text-align: ${textAlign};`"
@@ -92,9 +94,9 @@ export default {
     },
     computed: {
         /**
-         * Tooltip cho password
+         * Title cho password
          */
-        tooltipComputed() {
+        titleComputed() {
             return this.isConfirm ? null : this.$t("com.passwordTooltip");
         },
         /**

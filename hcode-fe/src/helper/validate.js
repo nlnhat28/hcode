@@ -15,6 +15,9 @@ const validate = {
         if (cf.isNullString(value) || regex.regexEmail(value)) {
             return null;
         }
+        else if (!value.includes("@")) {
+            return null;
+        }
         return t("msg.invalidEmail");
     },
     /**

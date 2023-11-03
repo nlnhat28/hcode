@@ -54,6 +54,7 @@
     --red-200: #f59999;
     --red-100: #facccc;
     --red-50: #fce6e6;
+    --red: #f00;
 
     --orange-600: #cc7a00;
     --orange-500: #ff9800;
@@ -72,17 +73,8 @@
     --yellow-300: #fff56f;
     --yellow-200: #fffda2;
     --yellow-100: #fffed1;
-    --yellow-50: #fdfdf2;
-
-    --blue-800: #003166;
-    --blue-700: #004999;
-    --blue-600: #0062cc;
-    --blue-500: #007aff;
-    --blue-400: #3395ff;
-    --blue-300: #66afff;
-    --blue-200: #99caff;
-    --blue-100: #cce4ff;
-    --blue-50: #e6f2ff;    
+    --yellow-50: #fdfdf2; 
+    --yellow: #ff0; 
     
     --blue-800: #003166;
     --blue-700: #004999;
@@ -93,6 +85,7 @@
     --blue-200: #99caff;
     --blue-100: #cce4ff;
     --blue-50: #e6f2ff;
+    --blue: #00f;
 }
 /* font face */
 @font-face {
