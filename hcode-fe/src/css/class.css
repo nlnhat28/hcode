@@ -17,3 +17,28 @@
     font-size: 60px;
     font-weight: bolder;
 }
+
+/* color notify */
+.color--success {
+  color: var(--green-500);
+}
+.color--error {
+  color: var(--red-500);
+}
+.color--warning {
+  color: var(--orange-500);
+}
+.color--info {
+  color: var(--blue-500);
+}
+.color--placeholder {
+  color: var(--color-placeholder);
+}
+.yellow-400 {
+  color: var(--yellow-400)
+}
+
+/* cursor */
+.cursor--pointer {
+    cursor: pointer;
+}

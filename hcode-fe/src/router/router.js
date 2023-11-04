@@ -3,6 +3,7 @@ import path from "./path.js";
 import Home from "@/views/home/Home.vue";
 import Login from "@/views/auth/Login.vue";
 import Signup from "@/views/auth/Signup.vue";
+import Verify from "@/views/auth/Verify.vue";
 import ProblemsList from "@/views/problem/ProblemsList.vue";
 
 const routes = [
@@ -25,6 +26,13 @@ const routes = [
         name: "signup",
         components: {
             viewApp: Signup,
+        },
+    },
+    {
+        path: path.verify,
+        name: "verify",
+        components: {
+            viewApp: Verify,
         },
     },
     {

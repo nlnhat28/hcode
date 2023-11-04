@@ -12,6 +12,12 @@ const auth = {
     alreadyHaveAccount: "Đã có tài khoản?",
     forgotPassword: "Quên mật khẩu?",
     invalidConfirmPassword: "Xác nhận mật khẩu không khớp",
+    verifyEmail: "Xác thực email",
+    verifyCode: "Mã xác thực",
+    verify: "Xác thực",
+    verifySubtitle: "Hệ thống đã gửi mã xác thực đến địa chỉ",
+    typeVerifyCode: "Vui lòng nhập mã xác thực:",
+    sendVerifyCodeAgain: "Gửi lại mã",
 };
 
 export default auth;

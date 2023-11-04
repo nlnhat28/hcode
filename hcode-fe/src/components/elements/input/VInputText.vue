@@ -27,7 +27,7 @@
                 :placeholder="placeholderComputed"
                 :disabled="isDisabled"
                 :readonly="isReadOnly"
-                :title="tooltip"
+                :title="tooltip || innerValue"
                 :style="`text-align: ${textAlign};`"
             />
             <div

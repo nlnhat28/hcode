@@ -12,14 +12,27 @@ class AuthService extends BaseService {
      *
      * Author: nlnhat (17/08/2023)
      * @param {*} data Thông tin tạo mới
-     * @return 
+     * @return
      */
     async signup(data) {
-        const response = await this.baseRequest.post(this.baseUrl + "/Signup", {
-            data: {
-                data,
-            },
-        });
+        const response = await this.baseRequest.post(
+            this.baseUrl + "/Signup",
+            data
+        );
+        return response;
+    }
+    /**
+     * Gửi email xác thực
+     *
+     * Author: nlnhat (17/08/2023)
+     * @param {*} data Thông tin tạo mới
+     * @return
+     */
+    async sendVerifyCode(data) {
+        const response = await this.baseRequest.post(
+            this.baseUrl + "/SendVerifyCode",
+            data
+        );
         return response;
     }
 };

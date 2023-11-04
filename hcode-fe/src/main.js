@@ -40,14 +40,17 @@ import VSpinner from "@/components/elements/loader/VSpinner.vue";
 import VLoader from "@/components/elements/loader/VLoader.vue";
 import VTooltip from "@/components/elements/tooltip/VTooltip.vue";
 /**
- * Simple code editor
+ * Others
  */
 import CodeEditor from "simple-code-editor";
 import "simple-code-editor/themes/themes.css";
+import CountDown from 'keep-countdown'
+// import 'keep-countdown/index.css'
 
 app.component("v-button", Button);
 app.component("v-btn-container", VButtonContainer);
 app.component("v-code-editor", CodeEditor);
+app.component("v-countdown-simple", CountDown);
 app.component("v-dialog", Dialog);
 app.component("v-icon", VIcon);
 app.component("v-input-group", VInputGroup);

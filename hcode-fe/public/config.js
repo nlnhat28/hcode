@@ -3,7 +3,7 @@ window.config = {
         title: "HCode"
     },
     server: {
-        baseURL: "https://localhost:44308/api/v1",
+        baseURL: "https://localhost:44307/api/v1",
         timeout: 300000,
     },
     toast: {

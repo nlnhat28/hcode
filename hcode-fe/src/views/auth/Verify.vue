@@ -2,66 +2,49 @@
     <div class="auth-container">
         <v-logo-hcode />
         <div class="auth__title">
-            {{ $t('auth.createAccount') }}
+            {{ $t('auth.verifyEmail') }}
         </div>
         <div class="auth__body">
             <div class="auth__subtitle">
-                {{ $t('auth.alreadyHaveAccount') }}
-                <v-button
-                    link
-                    :label="$t('auth.login')"
-                    @click="$router.push($path.login);"
-                />
+                <p>
+                    {{ $t('auth.verifySubtitle') }}
+                    <span class="yellow-400">{{ authStore.auth.Email }}</span>.
+                    {{ $t('auth.typeVerifyCode') }}
+                </p>
             </div>
             <div class="auth__form">
                 <v-mask-loading v-if="isLoading" />
                 <!-- Tên người dùng -->
                 <v-input-text
-                    v-model="instance.Username"
-                    ref="refUsername"
-                    icon="fa fa-user"
+                    v-model="instance.VerifyCode"
+                    ref="refVerifyCode"
+                    icon="fa fa-badge-check"
                     hasClear
                     isRequired
                     isFocused
-                    :maxLength="50"
-                    :label="$t('auth.username')"
-                />
-                <!-- Mật khẩu -->
-                <v-password
-                    v-model="instance.Password"
-                    ref="refPassword"
-                    icon="fa fa-key"
-                    isRequired
-                    :warn="$vld.password"
-                    :maxLength="255"
-                    :label="$t('auth.password')"
-                    :tooltip="$t('auth.username')"
-                />
-                <!-- Xác nhận mật khẩu -->
-                <v-password
-                    v-model="instance.ConfirmPassword"
-                    ref="refConfirmPassword"
-                    icon="fa fa-lock"
-                    isConfirm
-                    isRequired
-                    :maxLength="255"
-                    :label="$t('auth.confirmPassword')"
-                    :password="instance.Password"
-                />
-                <!-- Email -->
-                <v-input-text
-                    v-model="instance.Email"
-                    ref="refEmail"
-                    icon="fa fa-envelope"
-                    isRequired
-                    :validate="$vld.email"
-                    :maxLength="100"
-                    :label="'Email'"
+                    :maxLength="6"
+                    :label="$t('auth.verifyCode')"
                 />
                 <v-button
                     style="margin-top: 8px"
-                    :label="$t('auth.signup')"
+                    :label="$t('auth.verify')"
                     @click="onClickSave()"
+                />
+            </div>
+            <div class="auth__footer auth__footer--verify">
+                <v-button
+                    style="color: #fff;"
+                    link
+                    icon="fa fa-angle-left"
+                    :label="$t('com.back')"
+                    @click="$router.push($path.signup)"
+                />
+                <v-button
+                    link
+                    :loading="disabledSendVerifyCode"
+                    :disabled="disabledSendVerifyCode"
+                    :label="$t('auth.sendVerifyCodeAgain')"
+                    @click="clickSendVerifyCode()"
                 />
             </div>
         </div>
@@ -74,33 +57,29 @@ import { useAuthStore } from "@/stores/stores.js";
 import { mapStores, mapState } from 'pinia';
 
 export default {
-    name: "Auth",
+    name: "Verify",
     extends: BaseForm,
     data() {
         return {
             instanceService: authService,
+            /**
+             * Disable nút gửi lại code
+             */
+            disabledSendVerifyCode: false,
         }
+    },
+    computed: {
     },
     created() {
         this.mode = this.$enums.formMode.post;
         this.instanceService = authService;
-        this.instance = this.authStore.auth;
     },
     mounted() {
         this.refs = [
-            this.$refs['refEmail'],
-            this.$refs['refConfirmPassword'],
-            this.$refs['refPassword'],
-            this.$refs['refUsername'],
+            this.$refs['refVerifyCode'],
         ]
     },
     watch: {
-        "instance.Password"() {
-            this.validConfirmPassword();
-        },
-        "instance.ConfirmPassword"() {
-            this.validConfirmPassword();
-        },
     },
     computed: {
         /**
@@ -109,6 +88,34 @@ export default {
         ...mapStores(useAuthStore),
     },
     methods: {
+        /**
+         * Gửi lại mã
+         */
+        async clickSendVerifyCode() {
+            this.disabledSendVerifyCode = true;
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+            this.disabledSendVerifyCode = false;
+        },
+        /**
+         * Create new instance
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        async sendVerifyCode(data) {
+            try {
+                // return this.$cf.sleep(10);
+                const response = await this.instanceService.sendVerifyCode(data);
+                if (response?.status == this.$enums.httpStatus.ok) {
+                    this.instance.InstanceId = response.data.Data;
+                    this.isSuccessResponseFlag = true;
+                } else {
+                    this.isSuccessResponseFlag = false;
+                }
+            } catch (error) {
+                console.error(error);
+                this.isSuccessResponseFlag = false;
+            }
+        },
         /**
          * Override base
          */
@@ -148,7 +155,7 @@ export default {
             try {
                 // return this.$cf.sleep(10);
                 const response = await this.instanceService.signup(data);
-                if (response?.status == this.$enums.httpStatus.ok ) {
+                if (response?.status == this.$enums.httpStatus.ok) {
                     this.instance.InstanceId = response.data.Data;
                     this.isSuccessResponseFlag = true;
                 } else {
@@ -170,7 +177,6 @@ export default {
          */
         afterSaveSuccess() {
             this.authStore.setAuth(this.instance);
-            this.$router.push(this.$path.verify);
         }
     }
 

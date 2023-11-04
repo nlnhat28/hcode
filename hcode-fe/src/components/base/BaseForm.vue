@@ -1,6 +1,7 @@
 <script>
 import enums from "@/enums/enums";
 import loading from "@/mixins/loading-effect.js"
+import { mapStores, mapState } from 'pinia';
 
 export default {
     name: "BaseForm",
@@ -11,12 +12,6 @@ export default {
          */
         instanceId: {
             type: [String, Number],
-        },
-        /**
-         * instanceStore
-         */
-        instanceStore: {
-            type: Object,
         },
         /**
          * (Props) Form mode {create | update}
@@ -156,6 +151,8 @@ export default {
                 case this.$enums.formMode.duplicate:
                     await this.getInstance(this.instanceId)
                     break;
+                default:
+                    break;
             }
         },
         /**
@@ -174,7 +171,7 @@ export default {
         async getInstance(id) {
             if (this.instanceService) {
                 const response = await instanceService.get(id);
-                if (response?.status == this.$enums.httpstatus.ok) {
+                if (response?.status == this.$enums.httpStatus.ok) {
                     this.instance = this.$lodash.cloneDeep(response.data.Data);
                     this.processResponseGetData();
                     this.storeOriginalInstance();
@@ -195,7 +192,7 @@ export default {
         async createInstance() {
             try {
                 const response = await instanceService.post(this.reformatInstance);
-                if (response?.status == this.$enums.httpstatus.created) {
+                if (response?.status == this.$enums.httpStatus.created) {
                     this.instance.InstanceId = response.data.Data;
                     this.isSuccessResponseFlag = true;
                 } else {
@@ -217,7 +214,7 @@ export default {
                     this.instance.InstanceId,
                     this.reformatInstance
                 );
-                if (response?.status == this.$enums.httpstatus.ok) {
+                if (response?.status == this.$enums.httpStatus.ok) {
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;
@@ -313,7 +310,8 @@ export default {
          */
         async onClickSave() {
             try {
-                if (this.isValidForm()) {
+                if (await this.isValidForm()) {
+                    this.isSuccessResponseFlag = false;
                     await this.onSave();
                     if (this.isSuccessResponseFlag == true) {
                         this.$emit("emitUpdateFocusedId", this.instance.InstanceId);
@@ -323,11 +321,15 @@ export default {
                         if (this.messageOnToast) {
                             this.$ts.success(this.messageOnToast);
                         };
-                        
+
+                        await this.afterSaveSuccess();
+
                         this.closeThis();
                     }
                 } else {
                     this.$dl.error(this.messageValidate, this.focusRefError);
+                    
+                    this.afterSaveError();
                 }
             } catch (error) {
                 console.error(error);
@@ -340,7 +342,8 @@ export default {
          */
         async onClickSaveAdd() {
             try {
-                if (this.isValidForm()) {
+                if (await this.isValidForm()) {
+                    this.isSuccessResponseFlag = false;
                     await this.onSave();
                     if (this.isSuccessResponseFlag == true) {
                         this.$emit("emitUpdateFocusedId", this.instance.InstanceId);
@@ -350,14 +353,30 @@ export default {
                             this.$ts.success(this.messageOnToast);
                         };
                 
+                        await this.afterSaveSuccess();
+
                         this.resetThis();
                     }
                 } else {
                     this.$dl.error(this.messageValidate, this.focusRefError);
+
+                    await this.afterSaveError();
                 }
             } catch (error) {
                 console.error(error);
             }
+        },
+        /**
+         * Xử lý sau khi lưu thành công
+         */
+        afterSaveSuccess() {
+
+        },
+        /**
+         * Xử lý sau khi lưu thất bại
+         */
+        afterSaveError() {
+
         },
         /**
          * Reset form 

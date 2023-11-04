@@ -5,7 +5,7 @@
             {{ $t('auth.login') }}
         </div>
         <div class="auth__body">
-            <div class="auth__redirect">
+            <div class="auth__subtitle">
                 {{ $t('auth.noAccountYet') }}
                 <v-button
                     link
@@ -14,14 +14,14 @@
                 />
             </div>
             <div class="auth__form">
-                <!-- Tên người dùng hoặc email -->
+                <!-- Tên người dùng -->
                 <v-input-text
-                    ref="refUsernameOrEmail"
+                    ref="refUsername"
                     icon="fa fa-user"
                     hasClear
                     isRequired
                     isFocused
-                    :label="$t('auth.usernameOrEmail')"
+                    :label="$t('auth.username')"
                 />
                 <!-- Mật khẩu -->
                 <v-password
@@ -37,7 +37,7 @@
                 :label="$t('auth.login')"
                 @click="onClickSave()"
             />
-            <div class="auth__forgot-password">
+            <div class="auth__footer">
                 <v-button
                     link
                     :label="$t('auth.forgotPassword')"

@@ -23,20 +23,20 @@
 
 .auth__body {
     display: flex;
+    align-items: center;
     flex-direction: column;
     row-gap: 24px;
-    width: 324px;
 }
 
 .auth__form {
+    width: 324px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     row-gap: 16px;
     position: relative;
     padding: 2px;
 }
-.auth__redirect {
+.auth__subtitle {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,8 +48,12 @@
     padding: 0;
     color: var(--yellow-400)
 }
-.auth__forgot-password {
+.auth__footer {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.auth__footer.auth__footer--verify {
+    width: 324px;
+    justify-content: space-between;
 }

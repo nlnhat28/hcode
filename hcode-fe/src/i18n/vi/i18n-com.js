@@ -23,6 +23,7 @@ const com = {
     problems: "Bài toán",
     contests: "Bài thi",
     about: "Giới thiệu",
+    back: "Quay lại",
 };
 
 export default com;

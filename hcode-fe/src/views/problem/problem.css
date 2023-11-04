@@ -31,7 +31,7 @@
     justify-content: center;
     row-gap: 16px;
 }
-.auth__redirect {
+.auth__subtitle {
     display: flex;
     align-items: center;
     justify-content: center;
