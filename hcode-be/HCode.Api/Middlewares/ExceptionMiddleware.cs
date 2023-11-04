@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Hcode.Api.Domain;
+using HCode.Domain;
+using HCode.Application;
 
-namespace Hcode.Api.Api
+namespace Hcode.Api
 {
     /// <summary>
     /// Middleware xử lý ngoại lệ
@@ -22,7 +23,6 @@ namespace Hcode.Api.Api
         /// <summary>
         /// Inject dịch vụ logger
         /// </summary>
-        /// <param name="logger">Đối tượng logger</param>
         public ExceptionMiddleware(IStringLocalizer<Resource> resource)
         {
             _resource = resource;
@@ -80,9 +80,10 @@ namespace Hcode.Api.Api
                     }
                 }
 
-                return new BadRequestObjectResult(new MISAException()
+                return new BadRequestObjectResult(new ServerResponse()
                 {
-                    ErrorCode = MISAErrorCode.InvalidData,
+                    Success = false,
+                    ErrorCode = ErrorCode.InvalidData,
                     DevMsg = errorMsg,
                     UserMsg = errorMsg,
                     TraceId = context.TraceIdentifier,
@@ -104,87 +105,19 @@ namespace Hcode.Api.Api
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
-            switch (exception)
-            {
-                // Ngoại lệ không tìm thấy
-                case NotFoundException:
-                    {
-                        context.Response.StatusCode = StatusCodes.Status404NotFound;
-                        await context.Response.WriteAsync(text: new MISAException()
-                        {
-                            ErrorCode = ((NotFoundException)exception).ErrorCode,
-                            DevMsg = ((NotFoundException)exception).Message ?? _resource["NotFound"],
-                            UserMsg = ((NotFoundException)exception).UserMsg ?? _resource["NotFound"],
-                            TraceId = context.TraceIdentifier,
-                            MoreInfo = exception.HelpLink,
-                            Data = ((NotFoundException)exception).Data
-                        }.ToString() ?? ""); ;
-                        break;
-                    };
-                // Ngoại lệ dữ liệu không hợp lệ
-                case ValidateException:
-                    {
-                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                        await context.Response.WriteAsync(text: new MISAException()
-                        {
-                            ErrorCode = ((ValidateException)exception).ErrorCode,
-                            DevMsg = ((ValidateException)exception).Message ?? _resource["InvalidData"],
-                            UserMsg = ((ValidateException)exception).UserMsg ?? _resource["InvalidData"],
-                            TraceId = context.TraceIdentifier,
-                            MoreInfo = exception.HelpLink,
-                            Data = ((ValidateException)exception).Data
-                        }.ToString() ?? "");
-                        break;
-                    }
-                // Ngoại lệ xung đột dữ liệu
-                case ConflictException:
-                    {
-                        context.Response.StatusCode = StatusCodes.Status409Conflict;
-                        await context.Response.WriteAsync(text: new MISAException()
-                        {
-                            ErrorCode = ((ConflictException)exception).ErrorCode,
-                            DevMsg = ((ConflictException)exception).Message ?? _resource["ConflictData"],
-                            UserMsg = ((ConflictException)exception).UserMsg ?? _resource["ConflictData"],
-                            TraceId = context.TraceIdentifier,
-                            MoreInfo = exception.HelpLink,
-                            Data = ((ConflictException)exception).Data
-                        }.ToString() ?? ""); ;
-                        break;
-                    };
-
-                // Ngoại lệ không hoàn thành tác vụ
-                case IncompleteException:
-                    {
-                        context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                        await context.Response.WriteAsync(text: new MISAException()
-                        {
-                            ErrorCode = ((IncompleteException)exception).ErrorCode,
-                            DevMsg = ((IncompleteException)exception).DevMsg ?? _resource["IncompleteTask"],
-                            UserMsg = ((IncompleteException)exception).UserMsg ?? _resource["IncompleteTask"],
-                            TraceId = context.TraceIdentifier,
-                            MoreInfo = exception.HelpLink,
-                            Data = ((IncompleteException)exception).Data
-                        }.ToString() ?? ""); ;
-                        break;
-                    };
-                // Mặc định
-                default:
-                    {
-                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                        await context.Response.WriteAsync(
-                            text: new MISAException()
-                            {
-                                ErrorCode = MISAErrorCode.ServerError,
-                                DevMsg = exception.Message,
-                                UserMsg = _resource["ServerError"],
-                                TraceId = context.TraceIdentifier,
-                                MoreInfo = exception.HelpLink,
-                                Data = { }
-                            }.ToString() ?? ""
-                        );
-                    };
-                    break;
-            }
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await context.Response.WriteAsync(
+                text: new ServerResponse()
+                {
+                    Success = false,
+                    ErrorCode = ErrorCode.ServerError,
+                    DevMsg = exception.Message,
+                    UserMsg = _resource["ServerError"],
+                    TraceId = context.TraceIdentifier,
+                    MoreInfo = exception.HelpLink,
+                    Data = {}
+                }.ToString() ?? ""
+            );
         }
         #endregion
     }

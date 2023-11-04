@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using HCode.Application;
+using HCode.Domain;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HCode.Api
 {
@@ -25,8 +26,8 @@ namespace HCode.Api
         /// </summary>
         /// <param name="service">Service cơ sở</param>
         /// Created by: nlnhat (17/08/2023)
-        public BaseController(IBaseService<TEntityDto, TEntity> service)
-             : base(service)
+        public BaseController(IBaseService<TEntityDto, TEntity> service, IWebHostEnvironment webHostEnvironment)
+             : base(service, webHostEnvironment)
         {
             _service = service;
         }
@@ -42,20 +43,26 @@ namespace HCode.Api
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] TEntityDto entityDto)
         {
-            var result = await _service.CreateAsync(entityDto);
+            var result = new ServerResponse();
+
+            result.Data = await _service.CreateAsync(entityDto);
+            
             return StatusCode(StatusCodes.Status201Created, result);
         }
         /// <summary>
         /// Sửa 1 đối tượng
         /// </summary>
         /// <param name="id">Id của đối tượng</param>
-        /// <param name="entityUpdateDto">Dto cập nhật đối tượng</param>
+        /// <param name="entityDto">Dto cập nhật đối tượng</param>
         /// <returns>Số bản ghi bị ảnh hưởng</returns>
         /// Created by: nlnhat (17/08/2023)
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAsync(Guid id, [FromBody] TEntityDto entityDto)
         {
-            var result = await _service.UpdateAsync(id, entityDto);
+            var result = new ServerResponse();
+
+            result.Data = await _service.UpdateAsync(id, entityDto);
+
             return StatusCode(StatusCodes.Status200OK, result);
         }
         /// <summary>
@@ -67,7 +74,10 @@ namespace HCode.Api
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var result = await _service.DeleteAsync(id);
+            var result = new ServerResponse();
+            
+            result.Data = await _service.DeleteAsync(id);
+
             return StatusCode(StatusCodes.Status200OK, result);
         }
         /// <summary>
@@ -79,7 +89,10 @@ namespace HCode.Api
         [HttpDelete]
         public async Task<IActionResult> DeleteManyAsync([FromBody] List<Guid> ids)
         {
-            var result = await _service.DeleteManyAsync(ids);
+            var result = new ServerResponse();
+
+            result.Data = await _service.DeleteManyAsync(ids);
+
             return StatusCode(StatusCodes.Status200OK, result);
         }
         #endregion

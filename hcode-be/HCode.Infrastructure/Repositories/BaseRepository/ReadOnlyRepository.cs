@@ -1,7 +1,7 @@
 ﻿using System.Data;
+using System.Text.Json;
 using Dapper;
 using HCode.Domain;
-using Newtonsoft.Json;
 
 namespace HCode.Infrastructure
 {
@@ -72,7 +72,7 @@ namespace HCode.Infrastructure
         {
             var proc = $"{Procedure}GetMany";
 
-            var idsJson = JsonConvert.SerializeObject(ids);
+            var idsJson = JsonSerializer.Serialize(ids);
 
             var param = new DynamicParameters();
             param.Add($"p_{TableId}s", idsJson);

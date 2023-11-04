@@ -117,4 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AuthContentVerifyEmail" xml:space="preserve">
+    <value>Bạn đang sử dụng địa chỉ email này để tạo tài khoản: {0}.&lt;br/&gt;
+Mã xác thực là: {1}. &lt;br/&gt;
+Thời gian hiệu lực: {2} phút.</value>
+  </data>
+  <data name="AuthSignupError" xml:space="preserve">
+    <value>Đăng ký tài khoản bị lỗi</value>
+  </data>
+  <data name="AuthSubjectVerifyEmail" xml:space="preserve">
+    <value>Xác thực email HCode</value>
+  </data>
+  <data name="AuthVerifyError" xml:space="preserve">
+    <value>Xác thực email bị lỗi</value>
+  </data>
+  <data name="ServerError" xml:space="preserve">
+    <value>Lỗi hệ thống</value>
+  </data>
 </root>

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Localization;
 using HCode.Domain;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace HCode.Application
 {
@@ -10,7 +11,7 @@ namespace HCode.Application
     /// <typeparam name="TEntityDto">Dto thực thể</typeparam>
     /// <typeparam name="TEntity">Thực thể</typeparam>
     /// Created by: nlnhat (18/07/2023
-    public abstract class ReadOnlyService<TEntityDto, TEntity> : IReadOnlyService<TEntityDto>
+    public abstract class ReadOnlyService<TEntityDto, TEntity> : CoreService, IReadOnlyService<TEntityDto>
     {
         #region Fields
         /// <summary>
@@ -18,16 +19,6 @@ namespace HCode.Application
         /// </summary>
         /// Created by: nlnhat (13/07/2023)ks
         protected readonly IReadOnlyRepository<TEntity> _repository;
-        /// <summary>
-        /// Resource lưu thông báo
-        /// </summary>
-        /// Created by: nlnhat (13/07/2023)ks
-        protected readonly IStringLocalizer<Resource> _resource;
-        /// <summary>
-        /// Mapper
-        /// </summary>
-        /// Created by: nlnhat (13/07/2023)
-        protected readonly IMapper _mapper;
         #endregion
 
         #region Properties
@@ -48,11 +39,9 @@ namespace HCode.Application
         public ReadOnlyService(
             IReadOnlyRepository<TEntity> repository,
             IStringLocalizer<Resource> resource,
-            IMapper mapper)
+            IMapper mapper) : base(resource, mapper)
         {
             _repository = repository;
-            _resource = resource;
-            _mapper = mapper;
         }
         #endregion
 
@@ -65,10 +54,10 @@ namespace HCode.Application
         /// Created by: nlnhat (13/07/2023)ks
         public virtual async Task<IEnumerable<TEntityDto>> GetAllAsync()
         {
-            var entities = await _repository.GetAllAsync() ?? 
-                throw new NotFoundException();
+            var entities = await _repository.GetAllAsync();
 
             var result = _mapper.Map<IEnumerable<TEntityDto>>(entities);
+
             return result;
         }
         /// <summary>
@@ -80,10 +69,10 @@ namespace HCode.Application
         /// Created by: nlnhat (18/07/2023)
         public virtual async Task<TEntityDto> GetAsync(Guid id)
         {
-            var entity = await _repository.GetAsync(id) ??
-                throw new NotFoundException(data: new ExceptionData($"{EntityName}Id", id.ToString()));
+            var entity = await _repository.GetAsync(id);
 
             var result = _mapper.Map<TEntityDto>(entity);
+
             return result;
         }
         /// <summary>
@@ -94,10 +83,10 @@ namespace HCode.Application
         /// Created by: nlnhat (18/07/2023)
         public async Task<IEnumerable<TEntityDto>> GetManyAsync(IEnumerable<Guid> ids)
         {
-            var entities = await _repository.GetManyAsync(ids) ??
-                throw new NotFoundException();
+            var entities = await _repository.GetManyAsync(ids);
 
             var result = _mapper.Map<IEnumerable<TEntityDto>>(entities);
+
             return result;
         }
         #endregion

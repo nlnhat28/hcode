@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HCode.Application;
+using HCode.Domain;
 
 namespace HCode.Api
 {
@@ -17,6 +18,11 @@ namespace HCode.Api
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
         private readonly IReadOnlyService<TEntityDto> _service;
+        /// <summary>
+        /// Web host environment
+        /// </summary>
+        /// Created by: nlnhat (11/09/2023)
+        private readonly IWebHostEnvironment _webHostEnvironment;
         #endregion
 
         #region Constructors
@@ -25,9 +31,10 @@ namespace HCode.Api
         /// </summary>
         /// <param name="service">Service chỉ đọc</param>
         /// Created by: nlnhat (17/08/2023)
-        public ReadOnlyController(IReadOnlyService<TEntityDto> service)
+        public ReadOnlyController(IReadOnlyService<TEntityDto> service, IWebHostEnvironment webHostEnvironment)
         {
             _service = service;
+            _webHostEnvironment = webHostEnvironment;
         }
         #endregion
 
@@ -40,8 +47,11 @@ namespace HCode.Api
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var entities = await _service.GetAllAsync();
-            return StatusCode(StatusCodes.Status200OK, entities);
+            var result = new ServerResponse();
+
+            result.Data = await _service.GetAllAsync();
+
+            return StatusCode(StatusCodes.Status200OK, result);
         }
         /// <summary>
         /// Lấy đối tượng theo id
@@ -52,8 +62,11 @@ namespace HCode.Api
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(Guid id)
         {
-            var entity = await _service.GetAsync(id);
-            return StatusCode(StatusCodes.Status200OK, entity);
+            var result = new ServerResponse();
+
+            result.Data = await _service.GetAsync(id);
+
+            return StatusCode(StatusCodes.Status200OK, result);
         }
         #endregion
     }

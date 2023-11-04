@@ -5,7 +5,7 @@
     /// </summary>
     /// <typeparam name="TEntityDto">Dto thực thể</typeparam>
     /// Created by: nlnhat (18/07/2023)
-    public interface IReadOnlyService<TEntityDto>
+    public interface IReadOnlyService<TEntityDto> : ICoreService
     {
         /// <summary>
         /// Lấy danh sách đối tượng

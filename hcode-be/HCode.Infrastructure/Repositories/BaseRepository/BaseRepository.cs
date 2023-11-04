@@ -1,7 +1,7 @@
 using Dapper;
 using HCode.Domain;
-using Newtonsoft.Json;
 using System.Data;
+using System.Text.Json;
 using static Dapper.SqlMapper;
 
 namespace HCode.Infrastructure
@@ -55,7 +55,7 @@ namespace HCode.Infrastructure
             {
                 var proc = $"{Procedure}InsertMany";
 
-                var entitiesJson = JsonConvert.SerializeObject(entities);
+                var entitiesJson = JsonSerializer.Serialize(entities);
 
                 var param = new DynamicParameters();
                 param.Add($"p_{Table}s", entitiesJson);
@@ -95,7 +95,7 @@ namespace HCode.Infrastructure
             {
                 var proc = $"{Procedure}UpdateMany";
 
-                var entitiesJson = JsonConvert.SerializeObject(entities);
+                var entitiesJson = JsonSerializer.Serialize(entities);
 
                 var param = new DynamicParameters();
                 param.Add($"p_{Table}s", entitiesJson);
@@ -137,7 +137,7 @@ namespace HCode.Infrastructure
             {
                 var proc = $"{Procedure}DeleteMany";
 
-                var idsJson = JsonConvert.SerializeObject(ids);
+                var idsJson = JsonSerializer.Serialize(ids);
 
                 var param = new DynamicParameters();
                 param.Add($"p_{TableId}s", idsJson);

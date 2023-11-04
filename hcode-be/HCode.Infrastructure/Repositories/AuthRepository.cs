@@ -7,11 +7,11 @@ using static Dapper.SqlMapper;
 namespace HCode.Infrastructure
 {
     /// <summary>
-    /// Repository nguyên vật liệu
+    /// Repository auth
     /// </summary>
     /// <typeparam name="Material">Entity nguyên vật liệu</typeparam>
     /// Created by: nlnhat (17/08/2023)
-    public class MaterialRepository : BaseRepository<Material>, IMaterialRepository
+    public class AuthRepository : BaseRepository<Account>, IAuthRepository
     {
         #region Constructors
         /// <summary>
@@ -19,7 +19,7 @@ namespace HCode.Infrastructure
         /// </summary>
         /// <param name="unitOfWork">Đối tượng unit of work được inject</param>
         /// Created by: nlnhat (17/08/2023)
-        public MaterialRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
+        public AuthRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
         #endregion

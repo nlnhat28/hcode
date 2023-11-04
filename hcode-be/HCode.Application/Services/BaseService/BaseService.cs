@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.Extensions.Localization;
 using HCode.Domain;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace HCode.Application
 {
@@ -35,7 +36,11 @@ namespace HCode.Application
         /// <param name="mapper">Mapper đối tượng</param>
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (18/07/2023)
-        public BaseService(IBaseRepository<TEntity> repository, IStringLocalizer<Resource> resource, IMapper mapper, IUnitOfWork unitOfWork)
+        public BaseService(
+            IBaseRepository<TEntity> repository, 
+            IStringLocalizer<Resource> resource, 
+            IMapper mapper, 
+            IUnitOfWork unitOfWork)
             : base(repository, resource, mapper) 
         {
             _repository = repository;
@@ -92,8 +97,7 @@ namespace HCode.Application
         /// Created by: nlnhat (18/07/2023)
         public virtual async Task<int> UpdateAsync(Guid id, TEntityDto entityDto)
         {
-            _ = await _repository.GetAsync(id) ??
-                throw new NotFoundException(data: new ExceptionData("Id", id.ToString()));
+            _ = await _repository.GetAsync(id);
 
             var entity = MapUpdateDtoToEntity(entityDto);
 
