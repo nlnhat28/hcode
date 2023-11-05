@@ -38,6 +38,53 @@ namespace HCode.Application
         {
             return JsonSerializer.Serialize(this);
         }
+        /// <summary>
+        /// Thành công
+        /// </summary>
+        public void OnSuccess() 
+        {
+            Success = true;
+        }
+        /// <summary>
+        /// Thành công
+        /// </summary>
+        /// <param name="data"></param>
+        public void OnSuccess(object? data)
+        {
+            Success = true;
+            Data = data;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        public void OnError()
+        {
+            Success = false;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <param name="userMsg"></param>
+        public void OnError(ErrorCode errorCode, string? userMsg)
+        {
+            Success = false;
+            ErrorCode = errorCode;
+            UserMsg = userMsg;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <param name="userMsg"></param>
+        /// <param name="exceptionData"></param>
+        public void OnError(ErrorCode errorCode, string? userMsg, ErrorData? exceptionData)
+        {
+            Success = false;
+            ErrorCode = errorCode;
+            UserMsg = userMsg;
+            Data = exceptionData;
+        }
         #endregion
     }
 }

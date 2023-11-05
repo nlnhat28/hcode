@@ -21,8 +21,8 @@ namespace HCode.Application
         /// <summary>
         /// Gửi email xác thực
         /// </summary>
-        /// <returns></returns>
-        Task SendVerifyCodeAsync(AuthDto authDto, ServerResponse res);
+        /// <returns>Mã xác thực</returns>
+        Task<string?> SendVerifyCodeAsync(AuthDto authDto, ServerResponse res);
         /// <summary>
         /// Đăng nhập
         /// </summary>

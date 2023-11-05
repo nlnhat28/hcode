@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System.Reflection;
 
 namespace HCode.Domain
 {
@@ -48,9 +49,13 @@ namespace HCode.Domain
 
             foreach (var property in properties)
             {
-                var propertyName = "p_" + property.Name;
-                var propertyValue = entity != null ? property.GetValue(entity) : null;
-                param.Add(propertyName, propertyValue);
+                var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
+                if (notMapped == null)
+                {
+                    var propertyName = "p_" + property.Name;
+                    var propertyValue = entity != null ? property.GetValue(entity) : null;
+                    param.Add(propertyName, propertyValue);
+                }    
             }
 
             return param;

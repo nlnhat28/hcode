@@ -42,7 +42,8 @@ namespace HCode.Api
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             // Add repositories
-            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
             // Add mapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

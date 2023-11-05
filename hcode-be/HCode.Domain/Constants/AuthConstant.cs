@@ -6,6 +6,9 @@ namespace HCode.Domain
     /// </summary>
     public static class AuthConstant
     {
+        /// <summary>
+        /// Thời gian mã xác thực có hiệu lực
+        /// </summary>
         public const int VerifyTime = 2;
     }
 }

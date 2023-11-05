@@ -32,7 +32,7 @@ namespace HCode.Infrastructure
         /// Tên stored procedure
         /// </summary>
         /// Created by: nlnhat (18/07/2023)
-        public virtual string Procedure { get; set; } = $"Proc_{typeof(TEntity).Name}_";
+        public virtual string Procedure { get; set; } = $"proc_{typeof(TEntity).Name}_";
         #endregion
 
         #region Constructors
@@ -88,7 +88,7 @@ namespace HCode.Infrastructure
         /// <param name="id"></param>
         /// <returns>Bản ghi có id được truy vấn</returns>
         /// Created by: nlnhat (16/08/2023)
-        public virtual async Task<TEntity> GetAsync(Guid id)
+        public virtual async Task<TEntity?> GetAsync(Guid id)
         {
             var proc = $"{Procedure}Get";
 

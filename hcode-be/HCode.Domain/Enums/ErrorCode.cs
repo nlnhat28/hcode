@@ -57,7 +57,15 @@
         /// <summary>
         /// Verify lỗi
         /// </summary>
-        AuthVerify = 102
+        AuthVerify = 102,
+        /// <summary>
+        /// Đã tồn tại username
+        /// </summary>
+        AuthExistedUsername = 103,
+        /// <summary>
+        /// Mã xác thực không đúng
+        /// </summary>
+        AuthIncorrectVerifyCode = 104,
         #endregion
     }
 }

@@ -1,18 +1,18 @@
 ﻿namespace HCode.Domain
 {
     /// <summary>
-    /// Data đính kèm exception
+    /// Data đính kèm response lỗi
     /// </summary>
     /// Created by: nlnhat (18/07/2023)
-    public class ExceptionData
+    public class ErrorData
     {
         #region Properties
         /// <summary>
-        /// Loại exception data
+        /// Loại lỗi
         /// </summary>
-        public ExceptionKey? ExceptionKey { get; set; }
+        public ErrorKey? ErrorKey { get; set; }
         /// <summary>
-        /// Mô tả loại exception data
+        /// Mô tả loại lỗi
         /// </summary>
         public string? Description { get; set; }
         /// <summary>
@@ -32,12 +32,12 @@
         /// </summary>
         /// <param name="key">Từ khoá tìm kiếm dữ liệu</param>
         /// <param name="value">Giá trị</param>
-        public ExceptionData(string? key = null, string? value = null, ExceptionKey? exceptionKey = null, string? description = null)
+        public ErrorData(string? key = null, string? value = null, ErrorKey? errorKey = null, string? description = null)
         {
             Key = key;
             Value = value;
             Description = description;
-            ExceptionKey = exceptionKey;
+            ErrorKey = errorKey;
         }
         #endregion
     }

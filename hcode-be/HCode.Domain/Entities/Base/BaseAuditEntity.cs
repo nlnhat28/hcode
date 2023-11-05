@@ -9,14 +9,11 @@ namespace HCode.Domain
     public class BaseAuditEntity
     {
         #region Properties
-        /// <summary>
-        /// Số thứ tự
-        /// </summary>
-        public int? Index { get; set; }
+        public int? RowIndex { get; set; }
         /// <summary>
         /// Ngày tạo
         /// </summary>
-        public DateTime? CreatedDate { get; set; }
+        public DateTimeOffset? CreatedTime { get; set; }
         /// <summary>
         /// Người tạo
         /// </summary>
@@ -24,7 +21,7 @@ namespace HCode.Domain
         /// <summary>
         /// Ngày cập nhật
         /// </summary>
-        public DateTime? ModifiedDate { get; set; }
+        public DateTimeOffset? ModifiedTime { get; set; }
         /// <summary>
         /// Người cập nhật
         /// </summary>  

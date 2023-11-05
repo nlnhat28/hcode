@@ -1,14 +1,14 @@
 ﻿namespace HCode.Domain
 {
     /// <summary>
-    /// Loại exception data
+    /// Loại lỗi
     /// </summary>
     /// Created by: nlnhat (09/08/2023)
-    public enum ExceptionKey
+    public enum ErrorKey
     {
         /// <summary>
         /// Trường dữ liệu trong form
         /// </summary>
-        FormItem = 0,
+        FormItem = 1,
     }
 }

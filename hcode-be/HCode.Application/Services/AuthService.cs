@@ -2,8 +2,7 @@
 using HCode.Domain;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
-using MimeKit.Cryptography;
-
+using Org.BouncyCastle.Crypto.Generators;
 namespace HCode.Application
 {
     /// <summary>
@@ -20,7 +19,11 @@ namespace HCode.Application
         /// <summary>
         /// Repo auth
         /// </summary>
-        private readonly IAuthRepository _repository;
+        private new readonly IAccountRepository _repository;
+        /// <summary>
+        /// Repo vai trò
+        /// </summary>
+        private new readonly IRoleRepository _roleRepository;
         /// <summary>
         /// Cache
         /// </summary>
@@ -37,13 +40,50 @@ namespace HCode.Application
         /// <param name="mapper">Mapper map đối tượng</param>
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (17/08/2023)
-        public AuthService(IAuthRepository repository, IStringLocalizer<Resource> resource,
-                           IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService, IMemoryCache cache)
+        public AuthService(IAccountRepository repository, IRoleRepository roleRepository,
+                           IStringLocalizer<Resource> resource, IMapper mapper, 
+                           IUnitOfWork unitOfWork, IEmailService emailService, IMemoryCache cache)
                          : base(repository, resource, mapper, unitOfWork)
         {
             _repository = repository;
+            _roleRepository = roleRepository;
             _emailService = emailService;
             _cache = cache;
+        }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Validate tài khoản tạo mới
+        /// </summary>
+        /// <param name="authDto"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        private async Task ValidateCreateAccountAsync(AuthDto authDto, ServerResponse res)
+        {
+            var existedAccount = await _repository.GetByUsernameAsync(authDto.UserName);
+
+            // Nếu đã tồn tại Username dùng cho account khác
+            if (existedAccount != null && existedAccount.AccountId != authDto.AccountId)
+            {
+                res.OnError(
+                    ErrorCode.AuthExistedUsername,
+                    _resource["AuthExistedUsername"],
+                    new ErrorData("refUsername", authDto.UserName, ErrorKey.FormItem)
+                );
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns>HashedPassword: Password đã hashed; Salt: Salt</returns>
+        private (string hashedPassword, string salt) HashPassword(string password)
+        {
+            var salt = BCrypt.Net.BCrypt.GenerateSalt(10);
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt);
+
+            return (hashedPassword, salt);
         }
         /// <summary>
         /// Đăng ký tài khoản
@@ -53,13 +93,56 @@ namespace HCode.Application
         /// <returns></returns>
         public async Task SignupAsync(AuthDto authDto, ServerResponse res)
         {
-            await SendVerifyCodeAsync(authDto, res);
+            await ValidateCreateAccountAsync(authDto, res);
+
+            if (res.Success)
+            {
+                var role = await _roleRepository.GetByCodeAsync(RoleConstant.RoleCode.Admin);
+                var roleId = (role != null) ? role.RoleId : Guid.Empty;
+
+                var (password, salt) = HashPassword(authDto.Password);
+
+                var accountId = Guid.NewGuid();
+
+                var account = new Account()
+                {
+                    AccountId = accountId,
+                    Username = authDto.UserName,
+                    Password = password,
+                    Email = authDto.Email ?? string.Empty,
+                    Salt = salt,
+                    RoleId = roleId,
+                    CreatedTime = DateTime.UtcNow,
+                    CreatedBy = accountId.ToString(),
+                };
+
+                var insertRes = await _repository.InsertAsync(account);
+
+                if (insertRes != Guid.Empty)
+                {
+                    var verifyCode = await SendVerifyCodeAsync(authDto, res);
+
+                    if (res.Success)
+                    {
+                        var options = new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpiration = DateTime.Now.AddMinutes(AuthConstant.VerifyTime)
+                        };
+
+                        _cache.Set($"Username_{authDto.UserName}", verifyCode, options);
+                    };
+                }
+                else
+                {
+                    res.OnError(ErrorCode.AuthVerify, _resource["AuthSignupError"]);
+                }
+            }
         }
         /// <summary>
         /// Gửi mã xác thực
         /// </summary>
         /// <returns></returns> 
-        public async Task SendVerifyCodeAsync(AuthDto authDto, ServerResponse res)
+        public async Task<string?> SendVerifyCodeAsync(AuthDto authDto, ServerResponse res)
         {
             if (!string.IsNullOrWhiteSpace(authDto.Email))
             {
@@ -81,19 +164,20 @@ namespace HCode.Application
 
                 var sendResult = await _emailService.SendEmailAsync(message);
 
-                res.Success = true;
-                res.DevMsg = message.Content;
+                res.Success = sendResult.Success;
+                res.DevMsg = sendResult.DevMsg;
 
                 if (!res.Success)
                 {
                     res.UserMsg = _resource["AuthVerifyError"];
-                }
+                };
+
+                return verifyCode;
             }
             else
             {
-                res.Success = false;
-                res.ErrorCode = ErrorCode.AuthVerify;
-                res.UserMsg = _resource["AuthSignupError"];
+                res.OnError(ErrorCode.AuthVerify, _resource["AuthSignupError"]);
+                return null;
             }
         }
         /// <summary>
@@ -102,7 +186,21 @@ namespace HCode.Application
         /// <returns></returns> 
         public async Task VerifyAsync(AuthDto authDto, ServerResponse res)
         {
-
+            if (_cache.TryGetValue($"Username_{authDto.UserName}", out string? cacheVerifyCode))
+            {
+                if (authDto.VerifyCode == cacheVerifyCode)
+                {
+                    res.OnSuccess();
+                }
+                else
+                {
+                    res.OnError(
+                        ErrorCode.AuthIncorrectVerifyCode,
+                        _resource["AuthIncorrectVerifyCode"],
+                        new ErrorData("refVerifyCode", authDto.VerifyCode, ErrorKey.FormItem)
+                    );
+                }
+            }
         }
         /// <summary>
         /// Đăng nhập
@@ -125,15 +223,10 @@ namespace HCode.Application
             throw new NotImplementedException();
         }
 
-
         public Task ValidateAsync(AuthDto entity)
         {
             throw new NotImplementedException();
         }
-        #endregion
-
-        #region Methods
-
         #endregion
     }
 }

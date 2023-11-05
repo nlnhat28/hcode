@@ -122,6 +122,9 @@
 Mã xác thực là: {1}. &lt;br/&gt;
 Thời gian hiệu lực: {2} phút.</value>
   </data>
+  <data name="AuthIncorrectVerifyCode" xml:space="preserve">
+    <value>Mã xác thực không đúng</value>
+  </data>
   <data name="AuthSignupError" xml:space="preserve">
     <value>Đăng ký tài khoản bị lỗi</value>
   </data>

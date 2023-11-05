@@ -12,18 +12,17 @@ namespace HCode.Application
         /// <summary>
         /// Tên tài khoản
         /// </summary>
+        public Guid? AccountId { get; set; }
+        /// <summary>
+        /// Tên tài khoản
+        /// </summary>
         [MaxLength(50)]
-        public string? UserName { get; set; }
+        public string UserName { get; set; }
         /// <summary>
         /// Mật khẩu (hashed)
         /// </summary>
         [MaxLength(255)]
-        public string? Password { get; set; }
-        /// <summary>
-        /// Salt
-        /// </summary>
-        [MaxLength(255)]
-        public string? Salt { get; set; }
+        public string Password { get; set; }
         /// <summary>
         /// Email
         /// </summary>

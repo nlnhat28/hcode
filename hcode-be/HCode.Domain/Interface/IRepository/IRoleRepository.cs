@@ -1,10 +1,10 @@
 ﻿namespace HCode.Domain
 {
     /// <summary>
-    /// Repo auth
+    /// Repo vai trò
     /// </summary>
     /// Created by: nlnhat (16/08/2023)
-    public interface IAuthRepository : IBaseRepository<Account>
+    public interface IRoleRepository : IBaseCodeRepository<Role>
     {
 
     }
