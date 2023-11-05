@@ -23,6 +23,7 @@
                     hasClear
                     isRequired
                     isFocused
+                    noSpace
                     :maxLength="50"
                     :label="$t('auth.username')"
                 />

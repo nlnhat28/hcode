@@ -74,9 +74,64 @@ const enums = {
     /**
      * Màu
      */
-    color: {
-
-    }
-
+    color: {},
+    /**
+     * Type of sort
+     */
+    sortType: {
+        disable: 0,
+        asc: 1,
+        desc: 2,
+        blur: 3,
+    },
+    /**
+     * Type of compare
+     */
+    compareType: {
+        contain: 1,
+        notContain: 2,
+        equal: 3,
+        less: 4,
+        more: 5,
+        range: 6,
+        empty: 7,
+        startWith: 8,
+        endWith: 9,
+        lessEqual: 10,
+        moreEqual: 11,
+        notEqual: 12,
+    },
+    /**
+     * Type of logic
+     */
+    logicType: {
+        and: 1,
+        or: 2,
+    },
+    /**
+     * Type of data filter
+     */
+    filterType: {
+        disable: 0,
+        text: 1,
+        date: 2,
+        selectId: 3,
+        selectName: 4,
+        selectMany: 5,
+        number: 6,
+    },
+    /**
+     * Apply state
+     */
+    applyState: {
+        activated: 1,
+        deactivated: 2,
+    },
+    /**
+     * Type of error key in error data
+     */
+    errorKey: {
+        formItem: 1,
+    },
 };
 export default enums;

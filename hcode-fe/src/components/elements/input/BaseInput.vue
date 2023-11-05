@@ -51,6 +51,20 @@ export default {
             default: false,
         },
         /**
+         * Xoá khoảng trắng 2 đầu
+         */
+        applyTrim: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Xoá hết khoảng trắng
+         */
+        noSpace: {
+            type: Boolean,
+            default: false,
+        },
+        /**
          * Dùng placeholder
          */
         applyPlaceholder: {
@@ -236,6 +250,15 @@ export default {
          */
         formatComputed() {
             try {
+                if (this.innerValue) {
+                    if (this.noSpace) {
+                        this.innerValue = this.$rfm.removeSpace(this.innerValue);
+                    }
+                    else if (this.applyTrim) {
+                        this.innerValue = this.innerValue.trim();
+                    }
+                };
+
                 if (this.format)
                     return this.format(this.innerValue)
             } catch (error) {

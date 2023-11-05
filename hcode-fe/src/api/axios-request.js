@@ -1,6 +1,7 @@
 import axios from "axios";
 import emitter from "tiny-emitter/instance";
 import enums from "@/enums/enums.js";
+import { t } from "@/i18n/i18n.js";
 
 const axiosRequest = axios.create({
     baseURL: window.config.server.baseURL,
@@ -20,25 +21,24 @@ axiosRequest.interceptors.response.use(
     },
     (error) => {
         if (!error.response?.status) {
-            emitter.emit(
-                "showDialogError",
-                resources["vn"].cannotConnectServer
-            );
+            emitter.emit("dialogError", t("msg.cannotConnectServer"));
         } else {
             const data = error.response.data;
 
             const userMsg = data.UserMsg;
             const key = data.Data?.Key;
-            const exceptionKey = data.Data?.ExceptionKey;
+            const errorKey = data.Data?.ErrorKey;
 
-            let message = resources["vn"].userMsg400;
-            if (userMsg && userMsg != "") message = userMsg;
+            let message = t("msg.clientError");
+            if (userMsg && userMsg != "") {
+                message = userMsg;
+            }
 
             let actionOnClose = null;
 
-            switch (exceptionKey) {
+            switch (errorKey) {
                 // Nếu exception key là form item thì focus vào form item bị lỗi
-                case enums.exceptionKey.formItem:
+                case enums.errorKey.formItem:
                     let ref = null;
                     if (key && key != "") ref = key;
 
@@ -53,7 +53,7 @@ axiosRequest.interceptors.response.use(
                     break;
             }
 
-            emitter.emit("showDialogError", message, actionOnClose);
+            emitter.emit("dialogError", message, actionOnClose);
         }
     }
 );
