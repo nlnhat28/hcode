@@ -2,13 +2,13 @@
     <div class="auth-container">
         <v-logo-hcode />
         <div class="auth__title">
-            {{ $t('auth.verifyEmail') }}
+                {{ $t('auth.verifyEmail') }}
         </div>
         <div class="auth__body">
             <div class="auth__subtitle">
                 <p>
                     {{ $t('auth.verifySubtitle') }}
-                    <span class="yellow-400">{{ authStore.auth.Email }}</span>.
+                    <span class="yellow-400">{{ instance.Email }}</span>.
                     {{ $t('auth.typeVerifyCode') }}
                 </p>
             </div>
@@ -68,18 +68,10 @@ export default {
             disabledSendVerifyCode: false,
         }
     },
-    computed: {
-    },
-    created() {
-        this.mode = this.$enums.formMode.post;
-        this.instanceService = authService;
-    },
     mounted() {
         this.refs = [
             this.$refs['refVerifyCode'],
         ]
-    },
-    watch: {
     },
     computed: {
         /**
@@ -88,13 +80,47 @@ export default {
         ...mapStores(useAuthStore),
     },
     methods: {
+        initStaticData() {
+            this.mode = this.$enums.formMode.post;
+            this.instanceService = authService;
+            this.instance = this.authStore.auth;
+        },
+        /**
+         * Click xác thực
+         */
+        async funcOnSave() {
+            const data = {
+                Username: this.instance.Username,
+                VerifyCode: this.instance.VerifyCode
+            };
+            await this.verify(data);
+        },
         /**
          * Gửi lại mã
          */
         async clickSendVerifyCode() {
             this.disabledSendVerifyCode = true;
-            await new Promise((resolve) => setTimeout(resolve, 5000));
+            this.sendVerifyCode(this.instance);
+            await this.$cf.sleep(5);
             this.disabledSendVerifyCode = false;
+        },
+        /**
+         * Create new instance
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        async verify(data) {
+            try {
+                const response = await this.instanceService.verify(data);
+                if (response?.status == this.$enums.httpStatus.ok) {
+                    this.isSuccessResponseFlag = true;
+                } else {
+                    this.isSuccessResponseFlag = false;
+                }
+            } catch (error) {
+                console.error(error);
+                this.isSuccessResponseFlag = false;
+            }
         },
         /**
          * Create new instance
@@ -103,7 +129,6 @@ export default {
          */
         async sendVerifyCode(data) {
             try {
-                // return this.$cf.sleep(10);
                 const response = await this.instanceService.sendVerifyCode(data);
                 if (response?.status == this.$enums.httpStatus.ok) {
                     this.instance.InstanceId = response.data.Data;
@@ -116,68 +141,6 @@ export default {
                 this.isSuccessResponseFlag = false;
             }
         },
-        /**
-         * Override base
-         */
-        beforeValidate() {
-            let email = this.instance.Email;
-
-            if (email) {
-                this.instance.Email = email.includes("@") ? email : `${email}@gmail.com`;
-            };
-        },
-        /**
-         * Xử lý thêm validate
-         */
-        customValidate() {
-            if (this.messageValidate == null) {
-                if (this.instance.Password != this.instance.ConfirmPassword) {
-                    this.messageValidate = this.$t("auth.invalidConfirmPassword");
-                    this.refError = this.$refs["refConfirmPassword"];
-                    this.$refs["refConfirmPassword"].setErrorMessage(this.messageValidate);
-                };
-            };
-        },
-        /**
-         * Validate xác nhận mật khẩu
-         */
-        validConfirmPassword() {
-            if (this.instance.Password == this.instance.ConfirmPassword) {
-                this.$refs["refConfirmPassword"].clearErrorMessage();
-            }
-        },
-        /**
-         * Create new instance
-         *
-         * Author: nlnhat (02/07/2023)
-         */
-        async signup(data) {
-            try {
-                // return this.$cf.sleep(10);
-                const response = await this.instanceService.signup(data);
-                if (response?.status == this.$enums.httpStatus.ok) {
-                    this.instance.InstanceId = response.data.Data;
-                    this.isSuccessResponseFlag = true;
-                } else {
-                    this.isSuccessResponseFlag = false;
-                }
-            } catch (error) {
-                console.error(error);
-                this.isSuccessResponseFlag = false;
-            }
-        },
-        /**
-         * Click đăng ký
-         */
-        async funcOnSave() {
-            await this.signup(this.instance);
-        },
-        /**
-         * Xử lý khi lưu thành công
-         */
-        afterSaveSuccess() {
-            this.authStore.setAuth(this.instance);
-        }
     }
 
 }

@@ -22,6 +22,20 @@ class AuthService extends BaseService {
         return response;
     }
     /**
+     * Xác thực
+     *
+     * Author: nlnhat (17/08/2023)
+     * @param {*} data Thông tin xác thực
+     * @return
+     */
+    async verify(data) {
+        const response = await this.baseRequest.post(
+            this.baseUrl + "/Verify",
+            data
+        );
+        return response;
+    }
+    /**
      * Gửi email xác thực
      *
      * Author: nlnhat (17/08/2023)

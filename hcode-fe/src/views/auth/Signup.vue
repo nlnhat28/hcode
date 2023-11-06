@@ -82,11 +82,6 @@ export default {
             instanceService: authService,
         }
     },
-    created() {
-        this.mode = this.$enums.formMode.post;
-        this.instanceService = authService;
-        this.instance = this.authStore.auth;
-    },
     mounted() {
         this.refs = [
             this.$refs['refEmail'],
@@ -110,6 +105,11 @@ export default {
         ...mapStores(useAuthStore),
     },
     methods: {
+        initStaticData() {
+            this.mode = this.$enums.formMode.post;
+            this.instanceService = authService;
+            this.instance = this.authStore.auth;
+        },
         /**
          * Override base
          */
@@ -147,7 +147,6 @@ export default {
          */
         async signup(data) {
             try {
-                // return this.$cf.sleep(10);
                 const response = await this.instanceService.signup(data);
                 if (response?.status == this.$enums.httpStatus.ok ) {
                     this.instance.InstanceId = response.data.Data;

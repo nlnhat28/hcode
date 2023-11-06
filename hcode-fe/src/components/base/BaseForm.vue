@@ -79,6 +79,8 @@ export default {
         };
     },
     async created() {
+        this.initStaticData();
+
         this.$emitter.on("focusFormItem", (ref) => {
             this.focusErrorItem(ref);
         });
@@ -135,6 +137,12 @@ export default {
         },
     },
     methods: {
+        /**
+         * Khởi tại dữ liệu data
+         */
+        initStaticData() {
+
+        },
         /**
          * Handle instance on created()
          *
