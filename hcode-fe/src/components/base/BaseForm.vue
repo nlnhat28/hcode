@@ -79,7 +79,7 @@ export default {
         };
     },
     async created() {
-        this.initOnCreated()();
+        this.initOnCreated();
 
         this.$emitter.on("focusFormItem", (ref) => {
             this.focusErrorItem(ref);
@@ -140,7 +140,7 @@ export default {
         /**
          * Khởi tại dữ liệu data
          */
-        initOnCreated()() {
+        initOnCreated() {
 
         },
         /**

@@ -80,7 +80,7 @@ export default {
         ...mapStores(useAuthStore),
     },
     methods: {
-        initOnCreated()() {
+        initOnCreated() {
             this.mode = this.$enums.formMode.post;
             this.instanceService = authService;
             this.instance = this.authStore.auth;
