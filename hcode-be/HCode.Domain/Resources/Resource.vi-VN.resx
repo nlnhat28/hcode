@@ -122,6 +122,9 @@
 Mã xác thực là: {1}. &lt;br/&gt;
 Thời gian hiệu lực: {2} phút.</value>
   </data>
+  <data name="AuthExistedUsername" xml:space="preserve">
+    <value>Tên tài khoản đã tồn tại</value>
+  </data>
   <data name="AuthIncorrectVerifyCode" xml:space="preserve">
     <value>Mã xác thực không đúng</value>
   </data>
@@ -130,6 +133,9 @@ Thời gian hiệu lực: {2} phút.</value>
   </data>
   <data name="AuthSubjectVerifyEmail" xml:space="preserve">
     <value>Xác thực email HCode</value>
+  </data>
+  <data name="AuthTimeoutVerifyCode" xml:space="preserve">
+    <value>Mã xác thực hết hiệu lực. Vui lòng ấn gửi lại mã.</value>
   </data>
   <data name="AuthVerifyError" xml:space="preserve">
     <value>Xác thực email bị lỗi</value>

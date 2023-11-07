@@ -52,7 +52,7 @@ namespace HCode.Api
         public async Task<IActionResult> VerifyAsync([FromBody] AuthDto authDto)
         {
             var res = new ServerResponse();
-            await _service.SignupAsync(authDto, res);
+            await _service.VerifyAsync(authDto, res);
             return StatusCode(StatusCodes.Status200OK, res);
         }
         /// <summary>

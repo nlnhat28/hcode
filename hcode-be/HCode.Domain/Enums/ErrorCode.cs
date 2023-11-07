@@ -66,6 +66,10 @@
         /// Mã xác thực không đúng
         /// </summary>
         AuthIncorrectVerifyCode = 104,
+        /// <summary>
+        /// Mã xác thực hết hiệu lực
+        /// </summary>
+        AuthTimeoutVerifyCode = 105,
         #endregion
     }
 }

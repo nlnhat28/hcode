@@ -201,6 +201,14 @@ namespace HCode.Application
                     );
                 }
             }
+            else
+            {
+                res.OnError(
+                    ErrorCode.AuthTimeoutVerifyCode,
+                    _resource["AuthTimeoutVerifyCode"],
+                    new ErrorData("refVerifyCode", authDto.VerifyCode, ErrorKey.FormItem)
+                );
+            }
         }
         /// <summary>
         /// Đăng nhập
