@@ -18,6 +18,7 @@ const auth = {
     verifySubtitle: "Hệ thống đã gửi mã xác thực đến địa chỉ",
     typeVerifyCode: "Vui lòng nhập mã xác thực:",
     sendVerifyCodeAgain: "Gửi lại mã",
+    verifedEmail: "Email đã được xác thực",
 };
 
 export default auth;

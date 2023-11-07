@@ -80,10 +80,11 @@ export default {
         ...mapStores(useAuthStore),
     },
     methods: {
-        initStaticData() {
+        initOnCreated()() {
             this.mode = this.$enums.formMode.post;
             this.instanceService = authService;
             this.instance = this.authStore.auth;
+            this.instance.VerifyCode = null;
         },
         /**
          * Click xác thực
@@ -114,6 +115,7 @@ export default {
                 const response = await this.instanceService.verify(data);
                 if (response?.status == this.$enums.httpStatus.ok) {
                     this.isSuccessResponseFlag = true;
+                    this.messageOnToast = this.$t("auth.verifedEmail");
                 } else {
                     this.isSuccessResponseFlag = false;
                 }

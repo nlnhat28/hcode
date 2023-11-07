@@ -105,7 +105,7 @@ export default {
         ...mapStores(useAuthStore),
     },
     methods: {
-        initStaticData() {
+        initOnCreated()() {
             this.mode = this.$enums.formMode.post;
             this.instanceService = authService;
             this.instance = this.authStore.auth;
@@ -136,7 +136,7 @@ export default {
          * Validate xác nhận mật khẩu
          */
         validConfirmPassword() {
-            if (this.instance.Password == this.instance.ConfirmPassword) {
+            if (this.instance.Password == this.instance.ConfirmPassword && this.$refs["refConfirmPassword"]) {
                 this.$refs["refConfirmPassword"].clearErrorMessage();
             }
         },
