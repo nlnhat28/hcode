@@ -79,6 +79,7 @@ export default {
     extends: BaseForm,
     data() {
         return {
+            subSystemCode: 'Signup',
             instanceService: authService,
         }
     },
@@ -148,8 +149,7 @@ export default {
         async signup(data) {
             try {
                 const response = await this.instanceService.signup(data);
-                if (response?.status == this.$enums.httpStatus.ok ) {
-                    this.instance.InstanceId = response.data.Data;
+                if (this.$cf.onSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;

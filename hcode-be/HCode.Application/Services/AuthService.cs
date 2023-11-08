@@ -120,17 +120,7 @@ namespace HCode.Application
 
                 if (insertRes != Guid.Empty)
                 {
-                    var verifyCode = await SendVerifyCodeAsync(authDto, res);
-
-                    if (res.Success)
-                    {
-                        var options = new MemoryCacheEntryOptions
-                        {
-                            AbsoluteExpiration = DateTime.Now.AddMinutes(AuthConstant.VerifyTime)
-                        };
-
-                        _cache.Set($"Username_{authDto.UserName}", verifyCode, options);
-                    };
+                    await SendVerifyCodeAsync(authDto, res);
                 }
                 else
                 {
@@ -169,14 +159,23 @@ namespace HCode.Application
 
                 if (!res.Success)
                 {
-                    res.UserMsg = _resource["AuthVerifyError"];
-                };
+                    res.OnError(ErrorCode.AuthVerifyError, _resource["AuthVerifyError"]);
+                }
+                else
+                {
+                    var options = new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpiration = DateTime.Now.AddMinutes(AuthConstant.VerifyTime)
+                    };
+
+                    _cache.Set($"Username_{authDto.UserName}", verifyCode, options);
+                }
 
                 return verifyCode;
             }
             else
             {
-                res.OnError(ErrorCode.AuthVerify, _resource["AuthSignupError"]);
+                res.OnError(ErrorCode.AuthVerifyError, _resource["AuthVerifyError"]);
                 return null;
             }
         }
@@ -204,8 +203,8 @@ namespace HCode.Application
             else
             {
                 res.OnError(
-                    ErrorCode.AuthTimeoutVerifyCode,
-                    _resource["AuthTimeoutVerifyCode"],
+                    ErrorCode.AuthIncorrectVerifyCode,
+                    _resource["AuthIncorrectVerifyCode"],
                     new ErrorData("refVerifyCode", authDto.VerifyCode, ErrorKey.FormItem)
                 );
             }

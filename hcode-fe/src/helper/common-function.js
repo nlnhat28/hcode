@@ -34,23 +34,31 @@ const commonFuction = {
     },
     /**
      * Gen salt
-     * @param {*} round 
-     * @returns 
+     * @param {*} round
+     * @returns
      */
     genSalt() {
         const saltRounds = 10;
         const salt = bcrypt.genSaltSync(saltRounds);
-        return salt
+        return salt;
     },
     /**
      * Sleep
-     * @param {number} second 
+     * @param {number} second
      */
     async sleep(second) {
         if (!second) {
             second = 5;
-        };
+        }
         return new Promise((resolve) => setTimeout(resolve, second * 1000));
-    }
+    },
+    /**
+     * Success response
+     *
+     * @param {number} response
+     */
+    onSuccess(response) {
+        return response && response.Success;
+    },
 };
 export default commonFuction;

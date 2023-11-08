@@ -12,7 +12,7 @@ const validate = {
      * @returns 
      */
     email(label, value) {
-        if (cf.isNullString(value) || regex.regexEmail(value)) {
+        if (cf.isNullString(value) || regex.email(value)) {
             return null;
         }
         else if (!value.includes("@")) {
@@ -27,7 +27,7 @@ const validate = {
      * @returns 
      */
     password(label, value) {
-        if (cf.isNullString(value) || regex.regexPassword(value)) {
+        if (cf.isNullString(value) || regex.password(value)) {
             return null;
         }
         return t("msg.weakPassword");

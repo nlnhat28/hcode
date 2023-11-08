@@ -32,6 +32,7 @@ export default {
     },
     data() {
         return {
+            subSystemCode: '',
             /**
              * Service
              */
@@ -81,10 +82,10 @@ export default {
     async created() {
         this.initOnCreated();
 
-        this.$emitter.on("focusFormItem", (ref) => {
+        this.$emitter.on(`focusFormItem_${this.subSystemCode}`, (ref) => {
             this.focusErrorItem(ref);
         });
-        this.$emitter.on("setMessageFormItem", (ref, errorMessage) => {
+        this.$emitter.on(`setMessageFormItem_${this.subSystemCode}`, (ref, errorMessage) => {
             this.setErrorMessage(ref, errorMessage);
         });
 
@@ -179,8 +180,8 @@ export default {
         async getInstance(id) {
             if (this.instanceService) {
                 const response = await instanceService.get(id);
-                if (response?.status == this.$enums.httpStatus.ok) {
-                    this.instance = this.$lodash.cloneDeep(response.data.Data);
+                if (this.$cf.onSuccess(response)) {
+                    this.instance = this.$lodash.cloneDeep(response.Data);
                     this.processResponseGetData();
                     this.storeOriginalInstance();
                 }
@@ -200,8 +201,8 @@ export default {
         async createInstance() {
             try {
                 const response = await instanceService.post(this.reformatInstance);
-                if (response?.status == this.$enums.httpStatus.created) {
-                    this.instance.InstanceId = response.data.Data;
+                if (this.$cf.onSuccess(response)) {
+                    this.instance.InstanceId = response.Data;
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;
@@ -222,7 +223,7 @@ export default {
                     this.instance.InstanceId,
                     this.reformatInstance
                 );
-                if (response?.status == this.$enums.httpStatus.ok) {
+                if (this.$cf.onSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;

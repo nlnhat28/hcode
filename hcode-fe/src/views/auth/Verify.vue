@@ -41,9 +41,10 @@
                 />
                 <v-button
                     link
-                    :loading="disabledSendVerifyCode"
-                    :disabled="disabledSendVerifyCode"
+                    :loading="sendCodeState.isLoading"
+                    :disabled="sendCodeState.isDisabled"
                     :label="$t('auth.sendVerifyCodeAgain')"
+                    :icon="sendCodeState.isSuccess ? 'fa fa-check' : null"
                     @click="clickSendVerifyCode()"
                 />
             </div>
@@ -61,11 +62,20 @@ export default {
     extends: BaseForm,
     data() {
         return {
+            subSystemCode: 'Verify',
             instanceService: authService,
             /**
              * Disable nút gửi lại code
              */
             disabledSendVerifyCode: false,
+            /**
+             * Gửi mã thành công
+             */
+            sendCodeState: {
+                isSuccess: false,
+                isDisabled: false,
+                isLoading: false,
+            }
         }
     },
     mounted() {
@@ -100,10 +110,34 @@ export default {
          * Gửi lại mã
          */
         async clickSendVerifyCode() {
-            this.disabledSendVerifyCode = true;
-            this.sendVerifyCode(this.instance);
+            this.sendCodeState.isDisabled = true;
+            this.sendCodeState.isLoading = true;
+
+            const data = {
+                Username: this.instance.Username,
+                Email: this.instance.Email,
+                VerifyCode: this.instance.VerifyCode,
+            };
+            const response = await this.instanceService.sendVerifyCode(data);
+            if (this.$cf.onSuccess(response)) {
+                this.sendCodeState.isSuccess = true;
+            }
+
+            this.sendCodeState.isLoading = false;
+
             await this.$cf.sleep(5);
-            this.disabledSendVerifyCode = false;
+
+            this.sendCodeState.isSuccess = false;
+            this.sendCodeState.isDisabled = false;
+        },
+        /**
+         * Validate lại email
+         */
+        customValidate() {
+            if (this.messageValidate == null) {
+                if (!this.$reg.email(this.instance.Email))
+                this.messageValidate = this.$t("msg.invalidEmail");
+            };
         },
         /**
          * Create new instance
@@ -113,28 +147,9 @@ export default {
         async verify(data) {
             try {
                 const response = await this.instanceService.verify(data);
-                if (response?.status == this.$enums.httpStatus.ok) {
+                if (response && response?.Success) {
                     this.isSuccessResponseFlag = true;
                     this.messageOnToast = this.$t("auth.verifedEmail");
-                } else {
-                    this.isSuccessResponseFlag = false;
-                }
-            } catch (error) {
-                console.error(error);
-                this.isSuccessResponseFlag = false;
-            }
-        },
-        /**
-         * Create new instance
-         *
-         * Author: nlnhat (02/07/2023)
-         */
-        async sendVerifyCode(data) {
-            try {
-                const response = await this.instanceService.sendVerifyCode(data);
-                if (response?.status == this.$enums.httpStatus.ok) {
-                    this.instance.InstanceId = response.data.Data;
-                    this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;
                 }

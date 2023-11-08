@@ -77,6 +77,7 @@ import enums from "@/enums/enums.js";
 import toast from "@/components/overlay/toast/toast.js";
 import dialog from "@/components/overlay/dialog/dialog.js";
 import validate from "@/helper/validate.js";
+import regex from "@/helper/regex.js";
 import lodash from "lodash";
 
 app.config.globalProperties.$emitter = emitter;
@@ -90,6 +91,7 @@ app.config.globalProperties.$ts = toast;
 app.config.globalProperties.$dl = dialog;
 app.config.globalProperties.$vld = validate;
 app.config.globalProperties.$lodash = lodash;
+app.config.globalProperties.$reg = regex;
 /**
  * Directives
  */

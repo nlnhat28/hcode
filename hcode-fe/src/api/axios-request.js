@@ -17,7 +17,7 @@ const axiosRequest = axios.create({
  */
 axiosRequest.interceptors.response.use(
     (response) => {
-        if (response.data.Success) return response;
+        if (response.data.Success) return response.data;
         else {
             handleErrorResponse(response);
         }

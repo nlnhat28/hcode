@@ -7,6 +7,6 @@ window.config = {
         timeout: 300000,
     },
     toast: {
-        life: 50000,
+        life: 5000,
     }
 };

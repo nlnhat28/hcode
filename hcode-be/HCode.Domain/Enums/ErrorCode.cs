@@ -69,7 +69,11 @@
         /// <summary>
         /// Mã xác thực hết hiệu lực
         /// </summary>
-        AuthTimeoutVerifyCode = 105,
+        AuthTimeoutVerifyCode = 105, 
+        /// <summary>
+        /// Xác thực email lỗi
+        /// </summary>
+        AuthVerifyError = 106,
         #endregion
     }
 }
