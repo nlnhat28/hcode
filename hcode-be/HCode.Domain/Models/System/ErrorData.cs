@@ -32,7 +32,7 @@
         /// </summary>
         /// <param name="key">Từ khoá tìm kiếm dữ liệu</param>
         /// <param name="value">Giá trị</param>
-        public ErrorData(string? key = null, string? value = null, ErrorKey? errorKey = null, string? description = null)
+        public ErrorData(string? key = null, string? value = null, ErrorKey? errorKey = Domain.ErrorKey.FormItem, string? description = null)
         {
             Key = key;
             Value = value;

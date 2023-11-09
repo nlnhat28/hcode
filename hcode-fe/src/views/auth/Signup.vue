@@ -109,7 +109,7 @@ export default {
         initOnCreated() {
             this.mode = this.$enums.formMode.post;
             this.instanceService = authService;
-            this.instance = this.authStore.auth;
+            this.instance = this.$cf.cloneDeep(this.authStore.auth);
         },
         /**
          * Override base
@@ -169,7 +169,12 @@ export default {
          * Xử lý khi lưu thành công
          */
         afterSaveSuccess() {
-            this.authStore.setAuth(this.instance);
+            const data = {
+                Username: this.instance.Username,
+                Email: this.instance.Email,
+                VerifyCode: this.instance.VerifyCode
+            };
+            this.authStore.setAuth(data);
             this.$router.push(this.$path.verify);
         }
     }

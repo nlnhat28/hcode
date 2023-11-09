@@ -2,14 +2,12 @@
  * Import
  */
 import { createApp } from "vue";
-import { createPinia } from "pinia";
 import App from "./App.vue";
 import "@/css/main.css";
 import "@/helper/prototype.js";
 /**
  * Create
  */
-const pinia = createPinia();
 const app = createApp(App);
 
 /**
@@ -105,7 +103,15 @@ app.directive("tooltip", tooltip);
 import router from "@/router/router.js";
 import i18n from "@/i18n/i18n.js";
 import ToastService from "primevue/toastservice";
+import { createPinia } from "pinia";
+import { createPersistedState } from "pinia-plugin-persistedstate";
 
+const pinia = createPinia();
+pinia.use(
+    createPersistedState({
+        key: (id) => `__persisted__${id}`,
+    })
+);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(pinia);

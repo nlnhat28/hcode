@@ -14,13 +14,15 @@
     "keep-countdown": "^1.0.0",
     "lodash": "^4.17.21",
     "pinia": "^2.1.6",
+    "pinia-plugin-persistedstate": "^3.2.0",
     "primeicons": "^6.0.1",
     "primevue": "^3.34.1",
     "simple-code-editor": "^2.0.8",
     "tiny-emitter": "^2.1.0",
     "vue": "^3.3.4",
     "vue-i18n": "^9.5.0",
-    "vue-router": "^4.2.4"
+    "vue-router": "^4.2.4",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

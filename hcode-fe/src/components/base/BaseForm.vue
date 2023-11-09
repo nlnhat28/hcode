@@ -170,7 +170,7 @@ export default {
          * Author: nlnhat (30/08/2023)
          */
         storeOriginalInstance() {
-            this.originalInstance = this.$lodash.cloneDeep(this.instance);
+            this.originalInstance = this.$cf.cloneDeep(this.instance);
         },
         /**
          * Lấy đối tượng theo id
@@ -181,7 +181,7 @@ export default {
             if (this.instanceService) {
                 const response = await instanceService.get(id);
                 if (this.$cf.onSuccess(response)) {
-                    this.instance = this.$lodash.cloneDeep(response.Data);
+                    this.instance = this.$cf.cloneDeep(response.Data);
                     this.processResponseGetData();
                     this.storeOriginalInstance();
                 }

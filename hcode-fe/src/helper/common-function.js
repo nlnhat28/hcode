@@ -1,4 +1,8 @@
 import bcrypt from "bcryptjs";
+import _ from "lodash";
+import emitter from "tiny-emitter/instance";
+import enums from "@/enums/enums.js";
+import { t } from "@/i18n/i18n.js";
 
 const commonFuction = {
     /**
@@ -60,5 +64,47 @@ const commonFuction = {
     onSuccess(response) {
         return response && response.Success;
     },
+    /**
+     * Clone deep
+     */
+    onError(error, owner) {
+        const data = error.data,
+              userMsg = data.UserMsg,
+              key = data.Data?.Key,
+              errorKey = data.Data?.ErrorKey;
+
+        let message = t("msg.clientError"),
+            actionOnClose = null;
+
+        if (userMsg && userMsg != "") {
+            message = userMsg;
+        }
+
+        if 
+        switch (errorKey) {
+            // Nếu error key là form item thì focus vào form item bị lỗi
+            case enums.errorKey.formItem:
+                let ref = null;
+                if (key && key != "") ref = key;
+
+                emitter.emit("setMessageFormItem", ref, message);
+
+                actionOnClose = () => {
+                    emitter.emit("focusFormItem", ref);
+                };
+                break;
+
+            default:
+                break;
+        }
+
+        emitter.emit("dialogError", message, actionOnClose);
+    }
+    /**
+     * Clone deep
+     */
+    cloneDeep(obj) {
+        return _.cloneDeep(obj);
+    }
 };
 export default commonFuction;

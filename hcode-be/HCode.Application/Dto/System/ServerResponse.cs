@@ -77,13 +77,26 @@ namespace HCode.Application
         /// </summary>
         /// <param name="errorCode"></param>
         /// <param name="userMsg"></param>
-        /// <param name="exceptionData"></param>
-        public void OnError(ErrorCode errorCode, string? userMsg, ErrorData? exceptionData)
+        /// <param name="errorData"></param>
+        public void OnError(ErrorCode errorCode, string? userMsg, ErrorData? errorData)
         {
             Success = false;
             ErrorCode = errorCode;
             UserMsg = userMsg;
-            Data = exceptionData;
+            Data = errorData;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <param name="userMsg"></param>
+        /// <param name="errorDatas"></param>
+        public void OnError(ErrorCode errorCode, string? userMsg, List<ErrorData>? errorDatas)
+        {
+            Success = false;
+            ErrorCode = errorCode;
+            UserMsg = userMsg;
+            Data = errorDatas;
         }
         #endregion
     }
