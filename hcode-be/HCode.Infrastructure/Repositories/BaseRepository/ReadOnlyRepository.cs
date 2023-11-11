@@ -33,6 +33,11 @@ namespace HCode.Infrastructure
         /// </summary>
         /// Created by: nlnhat (18/07/2023)
         public virtual string Procedure { get; set; } = $"proc_{typeof(TEntity).Name}_";
+        /// <summary>
+        /// Tên stored procedure
+        /// </summary>
+        /// Created by: nlnhat (18/07/2023)
+        public virtual string View { get; set; } = $"view_{typeof(TEntity).Name}";
         #endregion
 
         #region Constructors
@@ -55,12 +60,24 @@ namespace HCode.Infrastructure
         /// Created by: nlnhat (16/08/2023)
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            var proc = $"{Procedure}GetAll";
+            try
+            {
+                var proc = $"{Procedure}GetAll";
 
-            var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
-                proc, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
+                    proc, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
-            return result;
+                return result;
+            }
+            catch
+            {
+                var sql = $"SELECT * FROM {View}"; 
+                var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
+                    sql, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                return result;
+            }
+
         }
         /// <summary>
         /// Lấy đối tượng theo danh sách id
@@ -70,17 +87,33 @@ namespace HCode.Infrastructure
         /// Created by: nlnhat (16/08/2023)
         public async Task<IEnumerable<TEntity>> GetManyAsync(IEnumerable<Guid> ids)
         {
-            var proc = $"{Procedure}GetMany";
+            try
+            {
+                var proc = $"{Procedure}GetMany";
 
-            var idsJson = JsonSerializer.Serialize(ids);
+                var idsJson = JsonSerializer.Serialize(ids);
 
-            var param = new DynamicParameters();
-            param.Add($"p_{TableId}s", idsJson);
+                var param = new DynamicParameters();
+                param.Add($"p_{TableId}s", idsJson);
 
-            var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
+                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
-            return result;
+                return result;
+            }
+            catch
+            {
+                var sql = $"SELECT * FROM {View} WHERE {TableId} IN @ids";
+
+                var param = new DynamicParameters();
+                param.Add("ids", ids);
+
+                var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
+                    sql, param, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                return result;
+            }
+
         }
         /// <summary>
         /// Lấy đối tượng theo id
@@ -90,15 +123,30 @@ namespace HCode.Infrastructure
         /// Created by: nlnhat (16/08/2023)
         public virtual async Task<TEntity?> GetAsync(Guid id)
         {
-            var proc = $"{Procedure}Get";
+            try
+            {
+                var proc = $"{Procedure}Get";
 
-            var param = new DynamicParameters();
-            param.Add($"p_{TableId}", id);
+                var param = new DynamicParameters();
+                param.Add($"p_{TableId}", id);
 
-            var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(
+                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
-            return result;
+                return result;
+            }
+            catch
+            {
+                var sql = $"SELECT * FROM {View} WHERE {TableId} = @id";
+
+                var param = new DynamicParameters();
+                param.Add("id", id);
+
+                var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(
+                    sql, param, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                return result;
+            }
         }
         #endregion
     }

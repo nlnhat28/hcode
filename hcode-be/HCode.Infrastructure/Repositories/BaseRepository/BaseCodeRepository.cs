@@ -30,15 +30,31 @@ namespace HCode.Infrastructure
         /// <returns>Đối tượng có mã tương ứng</returns>
         public async Task<TEntity?> GetByCodeAsync(string code)
         {
-            var proc = $"{Procedure}GetByCode";
+            try
+            {
+                var proc = $"{Procedure}GetByCode";
 
-            var param = new DynamicParameters();
-            param.Add($"p_{Table}Code", code);
+                var param = new DynamicParameters();
+                param.Add($"p_{Table}Code", code);
 
-            var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(
-                proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(
+                    proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
-            return result;
+                return result;
+            }
+            catch
+            {
+                var sql = $"SELECT * FROM {View} WHERE {Table}Code LIKE '@code'";
+
+                var param = new DynamicParameters();
+                param.Add("code", code);
+
+                var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(
+                    sql, param, _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                return result;
+            }
+
         }
         /// <summary>
         /// Lấy đối tượng theo danh sách mã
@@ -49,16 +65,32 @@ namespace HCode.Infrastructure
         {
             if (codes?.Count > 0)
             {
-                var proc = $"{Procedure}GetManyByCode";
+                try
+                {
+                    var proc = $"{Procedure}GetManyByCode";
 
-                var param = new DynamicParameters();
-                var codesJson = JsonSerializer.Serialize(codes);
-                param.Add($"p_{Table}Codes", codesJson);
+                    var param = new DynamicParameters();
+                    var codesJson = JsonSerializer.Serialize(codes);
+                    param.Add($"p_{Table}Codes", codesJson);
 
-                var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
-                    proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                    var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
+                        proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
-                return result;
+                    return result;
+                }
+                catch
+                {
+                    var sql = $"SELECT * FROM {View} WHERE {Table}Code IN @codes";
+
+                    var param = new DynamicParameters();
+                    param.Add("codes", codes);
+
+                    var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
+                        sql, param, _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                    return result;
+                }
+
             }
             return new List<TEntity>();
         }

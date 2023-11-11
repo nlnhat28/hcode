@@ -7,10 +7,10 @@ using HCode.Application;
 namespace Hcode.Api
 {
     /// <summary>
-    /// Middleware xử lý ngoại lệ
+    /// Middleware xử lý request, response
     /// </summary>
     /// Created by: nlnhat (12/07/2023)
-    public class ExceptionMiddleware : IMiddleware
+    public class HandleMiddleware : IMiddleware
     {
         #region Fields
         /// <summary>
@@ -23,7 +23,7 @@ namespace Hcode.Api
         /// <summary>
         /// Inject dịch vụ logger
         /// </summary>
-        public ExceptionMiddleware(IStringLocalizer<Resource> resource)
+        public HandleMiddleware(IStringLocalizer<Resource> resource)
         {
             _resource = resource;
         }
@@ -115,7 +115,14 @@ namespace Hcode.Api
                     UserMsg = _resource["ServerError"],
                     TraceId = context.TraceIdentifier,
                     MoreInfo = exception.HelpLink,
-                    Data = {}
+                    ErrorKey = ErrorKey.Exception,
+                    Data = new
+                    {
+                        exception.Source,
+                        exception.Data,
+                        exception.StackTrace,
+                        TargetSite = exception.TargetSite?.ToString(),
+                    }
                 }.ToString() ?? ""
             );
         }

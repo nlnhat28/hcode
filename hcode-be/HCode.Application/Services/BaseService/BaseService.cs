@@ -129,6 +129,16 @@ namespace HCode.Application
             var result = await _repository.DeleteManyAsync(ids);
             return result;
         }
+        /// <summary>
+        /// Xoá hết đối tượng
+        /// </summary>
+        /// <returns>Số bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (18/07/2023)
+        public virtual async Task<int> DeleteAllAsync()
+        {
+            var result = await _repository.DeleteAllAsync();
+            return result;
+        }
         #endregion
     }
 }

@@ -12,7 +12,7 @@ namespace HCode.Application
         /// <summary>
         /// Ngày tạo
         /// </summary>
-        public DateTime? CreatedDate { get; set; } 
+        public DateTime? CreatedTime { get; set; } 
         /// <summary>
         /// Người tạo
         /// </summary>
@@ -21,7 +21,7 @@ namespace HCode.Application
         /// <summary>
         /// Ngày cập nhật
         /// </summary>
-        public DateTime? ModifiedDate { get; set; }
+        public DateTime? ModifiedTime { get; set; }
         /// <summary>
         /// Người cập nhật
         /// </summary>  

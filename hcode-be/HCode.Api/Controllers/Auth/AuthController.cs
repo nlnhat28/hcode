@@ -12,7 +12,7 @@ namespace HCode.Api
     {
         #region Fields
         /// <summary>
-        /// Service nguyên vật liệu
+        /// Service auth
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
         private readonly IAuthService _service;
@@ -22,7 +22,7 @@ namespace HCode.Api
         /// <summary>
         /// Tạo mới tài khoản
         /// </summary>
-        /// <param name="service">Service nguyên vật liệu</param>
+        /// <param name="service">Service auth</param>
         /// Created by: nlnhat (17/08/2023)
         public AuthController(IAuthService service, IWebHostEnvironment webHostEnvironment) : base(service, webHostEnvironment)
         {

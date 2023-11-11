@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { cloneDeep } from "lodash";
-import storeKey from "./store-key.js";
 
 const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -10,8 +9,13 @@ const useAuthStore = defineStore("auth", {
         setAuth(newAuth) {
             this.auth = cloneDeep(newAuth);
         },
+        setVerifyMode(mode) {
+            this.auth.verifyMode = mode;
+        },
     },
-    persist: true,
+    persist: {
+        storage: sessionStorage,
+    },
 });
 
 export default useAuthStore;

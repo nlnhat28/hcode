@@ -73,6 +73,7 @@ import BaseForm from "@/components/base/BaseForm.vue";
 import { authService } from "@/services/services.js";
 import { useAuthStore } from "@/stores/stores.js";
 import { mapStores, mapState } from 'pinia';
+import authEnum from "@/enums/auth-enum.js"
 
 export default {
     name: "Auth",
@@ -153,6 +154,7 @@ export default {
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;
+                    this.handleError(response);
                 }
             } catch (error) {
                 console.error(error);

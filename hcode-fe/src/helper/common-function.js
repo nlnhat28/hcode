@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import _ from "lodash";
 import emitter from "tiny-emitter/instance";
 import enums from "@/enums/enums.js";
@@ -25,29 +24,8 @@ const commonFuction = {
         return true;
     },
     /**
-     * Hàm băm
-     * @param {*} password
-     * @param {*} salt
-     */
-    hash(value, salt) {
-        if (this.isNullValue(value) || this.isNullValue(salt)) {
-            return value;
-        }
-        var hashed = bcrypt.hashSync(value, salt);
-        return hashed;
-    },
-    /**
-     * Gen salt
-     * @param {*} round
-     * @returns
-     */
-    genSalt() {
-        const saltRounds = 10;
-        const salt = bcrypt.genSaltSync(saltRounds);
-        return salt;
-    },
-    /**
      * Sleep
+     *
      * @param {number} second
      */
     async sleep(second) {
@@ -66,45 +44,11 @@ const commonFuction = {
     },
     /**
      * Clone deep
-     */
-    onError(error, owner) {
-        const data = error.data,
-              userMsg = data.UserMsg,
-              key = data.Data?.Key,
-              errorKey = data.Data?.ErrorKey;
-
-        let message = t("msg.clientError"),
-            actionOnClose = null;
-
-        if (userMsg && userMsg != "") {
-            message = userMsg;
-        }
-
-        if 
-        switch (errorKey) {
-            // Nếu error key là form item thì focus vào form item bị lỗi
-            case enums.errorKey.formItem:
-                let ref = null;
-                if (key && key != "") ref = key;
-
-                emitter.emit("setMessageFormItem", ref, message);
-
-                actionOnClose = () => {
-                    emitter.emit("focusFormItem", ref);
-                };
-                break;
-
-            default:
-                break;
-        }
-
-        emitter.emit("dialogError", message, actionOnClose);
-    }
-    /**
-     * Clone deep
+     * 
+     * @param {*} obj Object clone
      */
     cloneDeep(obj) {
         return _.cloneDeep(obj);
-    }
+    },
 };
 export default commonFuction;

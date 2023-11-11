@@ -37,7 +37,7 @@
                     link
                     icon="fa fa-angle-left"
                     :label="$t('com.back')"
-                    @click="$router.push($path.signup)"
+                    @click="$router.back()"
                 />
                 <v-button
                     link
@@ -53,7 +53,7 @@
 </template>
 <script>
 import BaseForm from "@/components/base/BaseForm.vue";
-import { authService } from "@/services/services.js";
+import { authService, accountService } from "@/services/services.js";
 import { useAuthStore } from "@/stores/stores.js";
 import { mapStores, mapState } from 'pinia';
 
@@ -75,7 +75,8 @@ export default {
                 isSuccess: false,
                 isDisabled: false,
                 isLoading: false,
-            }
+            },
+            params: {}
         }
     },
     mounted() {
@@ -95,16 +96,39 @@ export default {
             this.instanceService = authService;
             this.instance = this.authStore.auth;
             this.instance.VerifyCode = null;
+
+            this.params = this.$route.params;
         },
         /**
          * Click xác thực
          */
         async funcOnSave() {
+            this.sendCodeState.isDisabled = false;
             const data = {
                 Username: this.instance.Username,
                 VerifyCode: this.instance.VerifyCode
             };
             await this.verify(data);
+        },
+        /**
+         * Verify
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        async verify(data) {
+            try {
+                const response = await this.instanceService.verify(data);
+                if (response && response?.Success) {
+                    this.isSuccessResponseFlag = true;
+                    this.messageOnToast = this.$t("auth.verifedEmail");
+                } else {
+                    this.isSuccessResponseFlag = false;
+                    this.handleError(response);
+                }
+            } catch (error) {
+                console.error(error);
+                this.isSuccessResponseFlag = false;
+            }
         },
         /**
          * Gửi lại mã
@@ -122,13 +146,15 @@ export default {
             if (this.$cf.onSuccess(response)) {
                 this.sendCodeState.isSuccess = true;
             }
+            else {
+                handleError(response);
+            };
 
             this.sendCodeState.isLoading = false;
 
             await this.$cf.sleep(5);
 
             this.sendCodeState.isSuccess = false;
-            this.sendCodeState.isDisabled = false;
         },
         /**
          * Validate lại email
@@ -138,25 +164,6 @@ export default {
                 if (!this.$reg.email(this.instance.Email))
                 this.messageValidate = this.$t("msg.invalidEmail");
             };
-        },
-        /**
-         * Create new instance
-         *
-         * Author: nlnhat (02/07/2023)
-         */
-        async verify(data) {
-            try {
-                const response = await this.instanceService.verify(data);
-                if (response && response?.Success) {
-                    this.isSuccessResponseFlag = true;
-                    this.messageOnToast = this.$t("auth.verifedEmail");
-                } else {
-                    this.isSuccessResponseFlag = false;
-                }
-            } catch (error) {
-                console.error(error);
-                this.isSuccessResponseFlag = false;
-            }
         },
     }
 

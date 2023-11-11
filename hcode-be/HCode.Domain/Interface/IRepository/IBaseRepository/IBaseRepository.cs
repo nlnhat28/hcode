@@ -49,5 +49,11 @@
         /// <returns>Số lượng bản ghi bị ảnh hưởng</returns>
         /// Created by: nlnhat (15/08/2023)
         Task<int> DeleteManyAsync(IEnumerable<Guid>? ids);
+        /// <summary>
+        /// Xoá tât cả đối tượng
+        /// </summary>
+        /// <returns>Số lượng bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (15/08/2023)
+        Task<int> DeleteAllAsync();
     }
 }

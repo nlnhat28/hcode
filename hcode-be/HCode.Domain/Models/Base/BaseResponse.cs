@@ -51,7 +51,13 @@ namespace HCode.Domain
         {
             Success = false;
             DevMsg = exception.Message;
-            Data = exception.Data;
+            Data = new
+            {
+                exception.Source,
+                exception.Data,
+                exception.StackTrace,
+                TargetSite = exception.TargetSite?.ToString(),
+            };
         }
         #endregion
     }

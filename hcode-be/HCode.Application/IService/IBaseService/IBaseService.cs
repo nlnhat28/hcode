@@ -38,6 +38,12 @@
         /// Created by: nlnhat (17/07/2023)
         Task<int> DeleteManyAsync(IEnumerable<Guid> ids);
         /// <summary>
+        /// Xoá hết đối tượng
+        /// </summary>
+        /// <returns>Số bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (17/07/2023)
+        Task<int> DeleteAllAsync();
+        /// <summary>
         /// Validate đối tượng
         /// </summary>
         /// <param name="entity">Đối tượng để validate</param>

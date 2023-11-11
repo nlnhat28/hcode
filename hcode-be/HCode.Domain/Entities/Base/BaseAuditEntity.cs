@@ -13,7 +13,7 @@ namespace HCode.Domain
         /// <summary>
         /// Ngày tạo
         /// </summary>
-        public DateTimeOffset? CreatedTime { get; set; }
+        public DateTime? CreatedTime { get; set; }
         /// <summary>
         /// Người tạo
         /// </summary>
@@ -21,7 +21,7 @@ namespace HCode.Domain
         /// <summary>
         /// Ngày cập nhật
         /// </summary>
-        public DateTimeOffset? ModifiedTime { get; set; }
+        public DateTime? ModifiedTime { get; set; }
         /// <summary>
         /// Người cập nhật
         /// </summary>  

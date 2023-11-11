@@ -18,5 +18,11 @@
         /// <param name="username">Username</param>
         /// <returns></returns>
         Task<Account?> LoginAsync(string? username, string? password);
+        /// <summary>
+        /// Cập nhật trạng thái đã xác thực
+        /// </summary>
+        /// <param name="accountIds">Id của account</param>
+        /// <returns></returns>
+        Task<int> UpdateVerifiedAsync(IEnumerable<Guid> accountIds);
     }
 }

@@ -1,6 +1,5 @@
 import axios from "axios";
 import emitter from "tiny-emitter/instance";
-import enums from "@/enums/enums.js";
 import { t } from "@/i18n/i18n.js";
 
 const axiosRequest = axios.create({
@@ -17,54 +16,23 @@ const axiosRequest = axios.create({
  */
 axiosRequest.interceptors.response.use(
     (response) => {
-        if (response.data.Success) return response.data;
-        else {
-            handleErrorResponse(response);
-        }
+        return response.data;
     },
     (error) => {
         if (!error.response?.status) {
             emitter.emit("dialogError", t("msg.cannotConnectServer"));
-        } else {
-            handleErrorResponse(error.response);
+        }
+        else {
+            const data = error.response?.data;
+            let userMsg = data.UserMsg;
+
+            if (userMsg == null || userMsg === "") {
+                userMsg = t("msg.clientError");
+            };
+
+            emitter.emit("dialogError", userMsg);
         }
     }
 );
-/**
- * Xử lý response lỗi
- */
-const handleErrorResponse = (response) => {
-    const data = response.data,
-        userMsg = data.UserMsg,
-        key = data.Data?.Key,
-        errorKey = data.Data?.ErrorKey;
-
-    let message = t("msg.clientError"),
-        actionOnClose = null;
-
-    if (userMsg && userMsg != "") {
-        message = userMsg;
-    }
-
-
-    switch (errorKey) {
-        // Nếu error key là form item thì focus vào form item bị lỗi
-        case enums.errorKey.formItem:
-            let ref = null;
-            if (key && key != "") ref = key;
-
-            emitter.emit("setMessageFormItem", ref, message);
-
-            actionOnClose = () => {
-                emitter.emit("focusFormItem", ref);
-            };
-            break;
-
-        default:
-            break;
-    }
-
-    emitter.emit("dialogError", message, actionOnClose);
-};
 
 export default axiosRequest;

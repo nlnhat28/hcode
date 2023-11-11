@@ -7,6 +7,10 @@
     public enum ErrorKey
     {
         /// <summary>
+        /// Exception
+        /// </summary>
+        Exception = 0,
+        /// <summary>
         /// Trường dữ liệu trong form
         /// </summary>
         FormItem = 1,

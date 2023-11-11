@@ -39,6 +39,7 @@ namespace HCode.Api
 
             // Add services
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             // Add repositories
@@ -49,7 +50,7 @@ namespace HCode.Api
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Add middleware
-            builder.Services.AddSingleton<ExceptionMiddleware>();
+            builder.Services.AddSingleton<HandleMiddleware>();
 
 
             builder.Services.AddControllersWithViews(options 
@@ -103,7 +104,7 @@ namespace HCode.Api
 
             app.MapControllers();
 
-            app.UseMiddleware<ExceptionMiddleware>();
+            app.UseMiddleware<HandleMiddleware>();
 
             app.Run();
 

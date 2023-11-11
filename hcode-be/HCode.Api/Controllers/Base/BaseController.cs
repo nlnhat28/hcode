@@ -95,6 +95,20 @@ namespace HCode.Api
 
             return StatusCode(StatusCodes.Status200OK, result);
         }
+        /// <summary>
+        /// Xoá hết đối tượng
+        /// </summary>
+        /// <returns>Số bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpDelete("All")]
+        public async Task<IActionResult> DeleteAllAsync()
+        {
+            var result = new ServerResponse();
+
+            result.Data = await _service.DeleteAllAsync();
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
         #endregion
     }
 }

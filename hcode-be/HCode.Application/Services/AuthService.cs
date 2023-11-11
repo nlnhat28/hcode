@@ -2,11 +2,10 @@
 using HCode.Domain;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
-using Org.BouncyCastle.Crypto.Generators;
 namespace HCode.Application
 {
     /// <summary>
-    /// Triển khai service đơn vị tính từ giao diện
+    /// Triển khai service auth
     /// </summary> 
     /// Created by: nlnhat (15/07/2023)
     public class AuthService : BaseService<AuthDto, Account>, IAuthService
@@ -23,7 +22,7 @@ namespace HCode.Application
         /// <summary>
         /// Repo vai trò
         /// </summary>
-        private new readonly IRoleRepository _roleRepository;
+        private readonly IRoleRepository _roleRepository;
         /// <summary>
         /// Cache
         /// </summary>
@@ -33,9 +32,9 @@ namespace HCode.Application
 
         #region Constructors
         /// <summary>
-        /// Hàm tạo service đơn vị tính
+        /// Hàm tạo service
         /// </summary>
-        /// <param name="repository">Repository đơn vị tính</param>
+        /// <param name="repository">Repository account</param>
         /// <param name="resource">Resource thông báo</param>
         /// <param name="mapper">Mapper map đối tượng</param>
         /// <param name="unitOfWork">Unit of work</param>
@@ -53,12 +52,7 @@ namespace HCode.Application
         #endregion
 
         #region Methods
-        /// <summary>
-        /// Validate tài khoản tạo mới
-        /// </summary>
-        /// <param name="authDto"></param>
-        /// <param name="res"></param>
-        /// <returns></returns>
+
         private async Task ValidateCreateAccountAsync(AuthDto authDto, ServerResponse res)
         {
             var existedAccount = await _repository.GetByUsernameAsync(authDto.UserName);
@@ -69,15 +63,11 @@ namespace HCode.Application
                 res.OnError(
                     ErrorCode.AuthExistedUsername,
                     _resource["AuthExistedUsername"],
-                    new ErrorData("refUsername", authDto.UserName, ErrorKey.FormItem)
+                    new ErrorItem("refUsername", _resource["AuthExistedUsername"])
                 );
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="password"></param>
-        /// <returns>HashedPassword: Password đã hashed; Salt: Salt</returns>
+
         private (string hashedPassword, string salt) HashPassword(string password)
         {
             var salt = BCrypt.Net.BCrypt.GenerateSalt(10);
@@ -85,12 +75,7 @@ namespace HCode.Application
 
             return (hashedPassword, salt);
         }
-        /// <summary>
-        /// Đăng ký tài khoản
-        /// </summary>
-        /// <param name="authDto"></param>
-        /// <param name="res"></param>
-        /// <returns></returns>
+
         public async Task SignupAsync(AuthDto authDto, ServerResponse res)
         {
             await ValidateCreateAccountAsync(authDto, res);
@@ -128,10 +113,7 @@ namespace HCode.Application
                 }
             }
         }
-        /// <summary>
-        /// Gửi mã xác thực
-        /// </summary>
-        /// <returns></returns> 
+
         public async Task<string?> SendVerifyCodeAsync(AuthDto authDto, ServerResponse res)
         {
             if (!string.IsNullOrWhiteSpace(authDto.Email))
@@ -179,10 +161,7 @@ namespace HCode.Application
                 return null;
             }
         }
-        /// <summary>
-        /// Xác thực tài khoản
-        /// </summary>
-        /// <returns></returns> 
+
         public async Task VerifyAsync(AuthDto authDto, ServerResponse res)
         {
             if (_cache.TryGetValue($"Username_{authDto.UserName}", out string? cacheVerifyCode))
@@ -196,7 +175,7 @@ namespace HCode.Application
                     res.OnError(
                         ErrorCode.AuthIncorrectVerifyCode,
                         _resource["AuthIncorrectVerifyCode"],
-                        new ErrorData("refVerifyCode", authDto.VerifyCode, ErrorKey.FormItem)
+                        new ErrorItem("refVerifyCode", _resource["AuthIncorrectVerifyCode"])
                     );
                 }
             }
@@ -205,16 +184,11 @@ namespace HCode.Application
                 res.OnError(
                     ErrorCode.AuthIncorrectVerifyCode,
                     _resource["AuthIncorrectVerifyCode"],
-                    new ErrorData("refVerifyCode", authDto.VerifyCode, ErrorKey.FormItem)
+                    new ErrorItem("refVerifyCode", _resource["AuthIncorrectVerifyCode"])
                 );
             }
         }
-        /// <summary>
-        /// Đăng nhập
-        /// </summary>
-        /// <param name="authDto"></param>
-        /// <param name="res"></param>
-        /// <returns></returns>
+
         public Task LoginAsync(AuthDto authDto, ServerResponse res)
         {
             throw new NotImplementedException();

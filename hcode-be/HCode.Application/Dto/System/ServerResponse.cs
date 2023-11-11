@@ -25,7 +25,11 @@ namespace HCode.Application
         /// <summary>
         /// Thông tin thêm về lỗi
         /// </summary>
-        public string? MoreInfo { get; set; } 
+        public string? MoreInfo { get; set; }
+        /// <summary>
+        /// Loại lỗi
+        /// </summary>
+        public ErrorKey? ErrorKey { get; set; }
         #endregion
 
         #region Methods
@@ -97,6 +101,34 @@ namespace HCode.Application
             ErrorCode = errorCode;
             UserMsg = userMsg;
             Data = errorDatas;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <param name="userMsg"></param>
+        /// <param name="errorItem"></param>
+        public void OnError(ErrorCode errorCode, string? userMsg, ErrorItem? errorItem)
+        {
+            Success = false;
+            ErrorCode = errorCode;
+            UserMsg = userMsg;
+            Data = errorItem;
+            ErrorKey = Domain.ErrorKey.FormItem;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <param name="userMsg"></param>
+        /// <param name="errorItems"></param>
+        public void OnError(ErrorCode errorCode, string? userMsg, List<ErrorItem>? errorItems)
+        {
+            Success = false;
+            ErrorCode = errorCode;
+            UserMsg = userMsg;
+            Data = errorItems;
+            ErrorKey = Domain.ErrorKey.FormItem;
         }
         #endregion
     }

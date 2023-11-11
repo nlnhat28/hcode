@@ -1,11 +1,11 @@
 <script>
 import enums from "@/enums/enums";
-import loading from "@/mixins/loading-effect.js"
+import { loadingEffect, handleResponse } from "@/mixins/mixins.js"
 import { mapStores, mapState } from 'pinia';
 
 export default {
     name: "BaseForm",
-    mixins: [loading],
+    mixins: [loadingEffect, handleResponse],
     props: {
         /**
          * Id của instance
@@ -82,13 +82,6 @@ export default {
     async created() {
         this.initOnCreated();
 
-        this.$emitter.on(`focusFormItem_${this.subSystemCode}`, (ref) => {
-            this.focusErrorItem(ref);
-        });
-        this.$emitter.on(`setMessageFormItem_${this.subSystemCode}`, (ref, errorMessage) => {
-            this.setErrorMessage(ref, errorMessage);
-        });
-
         await this.loadingEffect(async () => {
             await this.handleInstanceOnCreate();
         });
@@ -98,8 +91,6 @@ export default {
         this.refs = [];
     },
     unmounted() {
-        this.$emitter.off("focusFormItem")
-        this.$emitter.off("setMessageFormItem")
     },
     emits: [
         "emitReloadData",
@@ -182,15 +173,18 @@ export default {
                 const response = await instanceService.get(id);
                 if (this.$cf.onSuccess(response)) {
                     this.instance = this.$cf.cloneDeep(response.Data);
-                    this.processResponseGetData();
+                    this.processResponseGetData(response.Data);
                     this.storeOriginalInstance();
+                }
+                else {
+                    this.handleError(response)
                 }
             }
         },
         /**
          * Xử lý dữ liệu trả về
          */
-        processResponseGetData() {
+        processResponseGetData(data) {
 
         },
         /**
@@ -206,6 +200,7 @@ export default {
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;
+                    this.handleError(response);
                 }
             } catch (error) {
                 console.error(error);
@@ -226,6 +221,7 @@ export default {
                 if (this.$cf.onSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                 } else {
+                    this.handleError(response);
                     this.isSuccessResponseFlag = false;
                 }
             } catch (error) {
@@ -488,17 +484,6 @@ export default {
             this.$refs[this.refFocus].focus();
         },
         /**
-         * Focus on error item
-         *
-         * Author: nlnhat (04/08/2023)
-         * @param {*} ref Ref name of error item
-         */
-        focusErrorItem(ref) {
-            if (this.$refs[ref]) {
-                this.$refs[ref].focus();
-            }
-        },
-        /**
          * Focus on ref error
          *
          * Author: nlnhat (04/08/2023)
@@ -506,18 +491,6 @@ export default {
         focusRefError() {
             if (this.refError) {
                 this.refError.focus();
-            }
-        },
-        /**
-         * Set message for error item
-         *
-         * Author: nlnhat (04/08/2023)
-         * @param {*} ref Ref name of error item
-         * @param {*} errorMessage Error message
-         */
-        setErrorMessage(ref, errorMessage) {
-            if (this.$refs[ref]) {
-                this.$refs[ref].errorMessage = errorMessage;
             }
         },
         /**

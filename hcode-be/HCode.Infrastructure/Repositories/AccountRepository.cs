@@ -55,6 +55,22 @@ namespace HCode.Infrastructure
                 proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
             return result;
         }
+        /// <summary>
+        /// Cập nhật trạng thái đã xác thực
+        /// </summary>
+        /// <param name="accountIds">Id của account</param>
+        /// <returns></returns>
+        public async Task<int> UpdateVerifiedAsync(IEnumerable<Guid> accountIds)
+        {
+            var sql = $"UPDATE {Table} SET IsVerified = 1 WHERE {TableId} IN @accountIds";
+
+            var param = new DynamicParameters();
+            param.Add("@accountIds", accountIds);
+
+            var result = await _unitOfWork.Connection.ExecuteAsync(
+                sql, param, _unitOfWork.Transaction, commandType: CommandType.Text);
+            return result;
+        }
     }
     #endregion
 }

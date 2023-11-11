@@ -115,14 +115,29 @@ namespace HCode.Infrastructure
         /// Created by: nlnhat (16/08/2023)
         public async Task<int> DeleteAsync(Guid id)
         {
-            var proc = $"{Procedure}Delete";
+            try
+            {
+                var proc = $"{Procedure}Delete";
 
-            var param = new DynamicParameters();
-            param.Add($"p_{TableId}", id);
+                var param = new DynamicParameters();
+                param.Add($"p_{TableId}", id);
 
-            var result = await _unitOfWork.Connection.ExecuteAsync(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
-            return result;
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                return result;
+            }
+            catch
+            {
+                var sql = $"DELETE FROM {Table} WHERE {TableId} = @id";
+
+                var param = new DynamicParameters();
+                param.Add("id", id);
+
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    sql, param, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+                return result;
+            }
+
         }
         /// <summary>
         /// Xoá nhiều đối tượng theo id
@@ -132,22 +147,59 @@ namespace HCode.Infrastructure
         /// Created by: nlnhat (16/08/2023)
         public async Task<int> DeleteManyAsync(IEnumerable<Guid>? ids)
         {
-
             if (ids?.Count() > 0)
             {
-                var proc = $"{Procedure}DeleteMany";
+                try
+                {
+                    var proc = $"{Procedure}DeleteMany";
 
-                var idsJson = JsonSerializer.Serialize(ids);
+                    var idsJson = JsonSerializer.Serialize(ids);
 
-                var param = new DynamicParameters();
-                param.Add($"p_{TableId}s", idsJson);
+                    var param = new DynamicParameters();
+                    param.Add($"p_{TableId}s", idsJson);
 
-                var result = await _unitOfWork.Connection.ExecuteAsync(
-                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
-                return result;
+                    var result = await _unitOfWork.Connection.ExecuteAsync(
+                        proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                    return result;
+                }
+                catch
+                {
+                    var sql = $"DELETE FROM {Table} WHERE {TableId} IN @ids";
+
+                    var param = new DynamicParameters();
+                    param.Add("ids", ids);
+
+                    var result = await _unitOfWork.Connection.ExecuteAsync(
+                        sql, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                    return result;
+                }
             }
 
             return 0;
+        }
+        /// <summary>
+        /// Xoá tât cả đối tượng
+        /// </summary>
+        /// <returns>Số lượng bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (15/08/2023)
+        public async Task<int> DeleteAllAsync()
+        {
+            try
+            {
+                var proc = $"{Procedure}DeleteAll";
+
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    proc, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                return result;
+            }
+            catch
+            {
+                var sql = $"DELETE FROM {Table}";
+
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    sql, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+                return result;
+            }
         }
         #endregion
     }
