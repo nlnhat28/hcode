@@ -14,9 +14,12 @@
                 />
             </div>
             <div class="auth__form">
+                <!-- Loading -->
+                <v-mask-loading v-if="isLoading" />
                 <!-- Tên người dùng -->
                 <v-input-text
                     ref="refUsername"
+                    v-model="instance.Username"
                     icon="fa fa-user"
                     hasClear
                     isRequired
@@ -25,18 +28,19 @@
                 />
                 <!-- Mật khẩu -->
                 <v-password
-                    v-model="instance.password"
+                    v-model="instance.Password"
                     ref="refPassword"
                     icon="fa fa-key"
                     isRequired
                     :label="$t('auth.password')"
                     :tooltip="$t('auth.username')"
                 />
+                <v-button
+                    style="margin-top: 8px"
+                    :label="$t('auth.login')"
+                    @click="onClickSave()"
+                />
             </div>
-            <v-button
-                :label="$t('auth.login')"
-                @click="onClickSave()"
-            />
             <div class="auth__footer">
                 <v-button
                     link
@@ -49,9 +53,13 @@
 </template>
 <script>
 import BaseForm from "@/components/base/BaseForm.vue";
+import { authService } from "@/services/services.js";
+import { useAuthStore } from "@/stores/stores.js";
+import { mapStores, mapState } from 'pinia';
+import authEnum from "@/enums/auth-enum.js"
 
 export default {
-    name: "Auth",
+    name: "Login",
     extends: BaseForm,
     data() {
         return {
@@ -59,18 +67,23 @@ export default {
         }
     },
     computed: {
-
-    },
-    created() {
+        /**
+         * Store
+         */
+        ...mapStores(useAuthStore),
 
     },
     mounted() {
         this.refs = [
             this.$refs['refPassword'],
-            this.$refs['refUsernameOrEmail'],
+            this.$refs['refUsername'],
         ]
     },
     methods: {
+        initOnCreated() {
+            this.mode = this.$enums.formMode.post;
+            this.instanceService = authService;
+        },
         /**
          * Click Quên mật khẩu
          */

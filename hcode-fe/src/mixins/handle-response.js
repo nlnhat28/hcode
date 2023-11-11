@@ -75,5 +75,11 @@ export default {
                 this.$refs[refName].focus();
             }
         },
+        /**
+         * Response success
+         */
+        onSuccess(res) {
+            return res && res.Success;
+        }
     },
 };

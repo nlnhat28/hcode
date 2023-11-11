@@ -30,12 +30,14 @@ import VIcon from "@/components/elements/icon/VIcon.vue";
 import VInputText from "@/components/elements/input/VInputText.vue";
 import VInputGroup from "@/components/elements/input/VInputGroup.vue";
 import VLogoHCode from "@/components/elements/logo/VLogoHcode.vue";
+import VMaskDialog from "@/components/elements/mask/VMaskDialog.vue";
 import VMaskLoading from "@/components/elements/mask/VMaskLoading.vue";
 import VNav from "@/components/elements/nav/VNav.vue";
 import VNavItem from "@/components/elements/nav/VNavItem.vue";
 import VPassword from "@/components/elements/input/VPassword.vue";
-import VSpinner from "@/components/elements/loader/VSpinner.vue";
 import VLoader from "@/components/elements/loader/VLoader.vue";
+import VLoaderLock from "@/components/elements/loader/VLoaderLock.vue";
+import VSpinner from "@/components/elements/loader/VSpinner.vue";
 import VTooltip from "@/components/elements/tooltip/VTooltip.vue";
 /**
  * Others
@@ -55,11 +57,13 @@ app.component("v-input-group", VInputGroup);
 app.component("v-input-text", VInputText);
 app.component("v-logo-hcode", VLogoHCode);
 app.component("v-mask-loading", VMaskLoading);
+app.component("v-mask-dialog", VMaskDialog);
 app.component("v-nav", VNav);
 app.component("v-nav-item", VNavItem);
 app.component("v-password", VPassword);
-app.component("v-spinner", VSpinner);
 app.component("v-loader", VLoader);
+app.component("v-loader-lock", VLoaderLock);
+app.component("v-spinner", VSpinner);
 app.component("v-tooltip", VTooltip);
 
 /**

@@ -1,11 +1,12 @@
 <template>
-    <v-icon
+    <!-- <v-icon
         :class="{
             'v-spinner': true,
         }"
         :color=color
         icon="fa-duotone fa-spinner fa-spin-pulse"
-    ></v-icon>
+    ></v-icon> -->
+    <div class="spinner"></div>
 </template>
 <script>
 export default {
@@ -31,5 +32,5 @@ export default {
 }
 </script>
 <style scoped>
-/* @import './spinner.css'; */
+@import './spinner.css';
 </style>

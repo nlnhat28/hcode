@@ -19,6 +19,9 @@
 .mask.mask--dark {
   background-color: #0000003b;
 }
+.mask.mask--darker {
+  background-color: #00000052;
+}
 .mask__icon {
   width: 80px;
   height: 80px;

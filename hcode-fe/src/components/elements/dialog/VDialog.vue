@@ -6,7 +6,7 @@
 import Dialog from "primevue/dialog";
 
 export default {
-    name: "TheDialog",
+    name: "VDialog",
     components: {
         Dialog,
     },

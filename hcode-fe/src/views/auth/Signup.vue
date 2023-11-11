@@ -14,6 +14,7 @@
                 />
             </div>
             <div class="auth__form">
+                <!-- Loading -->
                 <v-mask-loading v-if="isLoading" />
                 <!-- Tên người dùng -->
                 <v-input-text
@@ -33,6 +34,7 @@
                     ref="refPassword"
                     icon="fa fa-key"
                     isRequired
+                    isShowTitle
                     :warn="$vld.password"
                     :maxLength="255"
                     :label="$t('auth.password')"
@@ -80,7 +82,6 @@ export default {
     extends: BaseForm,
     data() {
         return {
-            subSystemCode: 'Signup',
             instanceService: authService,
         }
     },
@@ -151,6 +152,7 @@ export default {
             try {
                 const response = await this.instanceService.signup(data);
                 if (this.$cf.onSuccess(response)) {
+                    this.instance.AccountId = response.Data;
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;
@@ -172,11 +174,14 @@ export default {
          */
         afterSaveSuccess() {
             const data = {
+                AccountId: this.instance.AccountId,
                 Username: this.instance.Username,
+                Password: this.instance.Password,
                 Email: this.instance.Email,
                 VerifyCode: this.instance.VerifyCode
             };
             this.authStore.setAuth(data);
+            this.authStore.setVerifyMode(authEnum.verifyMode.signup);
             this.$router.push(this.$path.verify);
         }
     }

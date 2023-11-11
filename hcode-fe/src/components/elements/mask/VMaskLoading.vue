@@ -1,6 +1,6 @@
 <template>
     <div class="mask mask--dark">
-        <v-loader/>
+        <v-spinner/>
     </div>
 </template>
 <script>

@@ -22,6 +22,20 @@ class AuthService extends BaseService {
         return response;
     }
     /**
+     * Đăng nhập
+     *
+     * Author: nlnhat (17/08/2023)
+     * @param {*} data Thông tin đăng nhập
+     * @return
+     */
+    async login(data) {
+        const response = await this.baseRequest.post(
+            this.baseUrl + "/Login",
+            data
+        );
+        return response;
+    }
+    /**
      * Xác thực
      *
      * Author: nlnhat (17/08/2023)
@@ -49,6 +63,6 @@ class AuthService extends BaseService {
         );
         return response;
     }
-};
+}
 const authService = new AuthService();
 export default authService;

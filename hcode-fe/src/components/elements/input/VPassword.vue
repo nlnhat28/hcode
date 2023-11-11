@@ -69,6 +69,13 @@ export default {
             default: false
         },
         /**
+         * Show title hướng dẫn
+         */
+        isShowTitle: {
+            type: Boolean,
+            default: false
+        },
+        /**
          * Đã nhập lại đúng mật khẩu
          */
         password: {
@@ -97,7 +104,10 @@ export default {
          * Title cho password
          */
         titleComputed() {
-            return this.isConfirm ? null : this.$t("com.passwordTooltip");
+            if (this.isShowTitle) {
+                return this.isConfirm ? null : this.$t("com.passwordTooltip");
+            }
+            return null;
         },
         /**
          * Đã nhập đúng mật khẩu

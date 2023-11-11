@@ -1,8 +1,13 @@
 <template>
     <div class="auth-container">
+        <v-mask-dialog
+            v-if="isLoging"
+            type="spinner"
+            :text="$t('auth.loging')"
+        />
         <v-logo-hcode />
         <div class="auth__title">
-                {{ $t('auth.verifyEmail') }}
+            {{ $t('auth.verifyEmail') }}
         </div>
         <div class="auth__body">
             <div class="auth__subtitle">
@@ -56,18 +61,22 @@ import BaseForm from "@/components/base/BaseForm.vue";
 import { authService, accountService } from "@/services/services.js";
 import { useAuthStore } from "@/stores/stores.js";
 import { mapStores, mapState } from 'pinia';
+import authEnum from "@/enums/auth-enum.js";
 
 export default {
     name: "Verify",
     extends: BaseForm,
     data() {
         return {
-            subSystemCode: 'Verify',
             instanceService: authService,
             /**
              * Disable nút gửi lại code
              */
             disabledSendVerifyCode: false,
+            /**
+             * Đang đăng nhập
+             */
+            isLoging: false,
             /**
              * Gửi mã thành công
              */
@@ -131,6 +140,47 @@ export default {
             }
         },
         /**
+         * Xử lý khi lưu thành công
+         */
+        async afterSaveSuccess() {
+            switch (this.authStore.auth.verifyMode) {
+                // Là form đăng ký thì tiến hành đăng nhập
+                case (authEnum.verifyMode.signup):
+                    let res = false;
+                    try {
+                        this.isLoging = true;
+                        res = await this.login();
+                    } finally {
+                        this.isLoging = false;
+                    }
+
+                    if (res) {
+                        this.$router.push(this.$path.problems);
+                    };
+
+                    break;
+                default:
+                    break;
+            }
+        },
+        /**
+         * Đăng nhập sau khi xác thực
+         */
+        async login() {
+            const data = {
+                AccountId: this.instance.AccountId,
+                Username: this.instance.Username,
+                Password: this.instance.Password
+            };
+            const response = await this.accountService.login(data);
+            if (this.$cf.onSuccess(response)) {
+                return true;
+            } else {
+                this.handleError(response);
+                return false;
+            };
+        },
+        /**
          * Gửi lại mã
          */
         async clickSendVerifyCode() {
@@ -162,7 +212,7 @@ export default {
         customValidate() {
             if (this.messageValidate == null) {
                 if (!this.$reg.email(this.instance.Email))
-                this.messageValidate = this.$t("msg.invalidEmail");
+                    this.messageValidate = this.$t("msg.invalidEmail");
             };
         },
     }
