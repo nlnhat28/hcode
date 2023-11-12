@@ -45,27 +45,16 @@
     </div>
 </template>
 <script>
-import BaseForm from "@/components/base/BaseForm.vue";
-import { authService } from "@/services/services.js";
-import { useAuthStore, useAccountStore } from "@/stores/stores.js";
-import { mapStores, mapState } from 'pinia';
-import authEnum from "@/enums/auth-enum.js"
+import BaseAuth from "./BaseAuth.vue";
 
 export default {
     name: "ForgotPassword",
-    extends: BaseForm,
+    extends: BaseAuth,
     data() {
         return {
-
         }
     },
     computed: {
-        /**
-         * Store
-         */
-        ...mapStores(useAuthStore),
-        ...mapStores(useAccountStore),
-
     },
     mounted() {
         this.refs = [
@@ -74,8 +63,6 @@ export default {
     },
     methods: {
         initOnCreated() {
-            this.mode = this.$enums.formMode.post;
-            this.instanceService = authService;
         },
         /**
          * Click đăng nhập
@@ -147,12 +134,12 @@ export default {
                 AccountId: this.instance.AccountId,
                 Username: this.instance.Username,
                 Email: this.instance.Email,
-                VerifyMode: authEnum.verifyMode.changePassword,
+                VerifyMode: this.authEnum.verifyMode.changePassword,
             };
             const response = await this.instanceService.sendVerifyCode(data);
             if (this.$cf.onSuccess(response)) {
                 this.authStore.setAuth(data);
-                this.authStore.setVerifyMode(authEnum.verifyMode.changePassword);
+                this.authStore.setVerifyMode(this.authEnum.verifyMode.changePassword);
                 this.$router.push(this.$path.verify);
             }
             else {

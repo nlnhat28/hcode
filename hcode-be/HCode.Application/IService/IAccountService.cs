@@ -18,9 +18,9 @@ namespace HCode.Application
         /// <summary>
         /// Cập nhật lại password
         /// </summary>
-        /// <param name="accountDto">Id tài khoản</param>
+        /// <param name="authDto">Id tài khoản</param>
         /// <param name="res">Mật khẩu mới</param>
         /// <returns></returns>
-        Task ChangePasswordAsync(AccountDto accountDto, ServerResponse res);
+        Task ChangePasswordAsync(AuthDto authDto, ServerResponse res);
     }
 }

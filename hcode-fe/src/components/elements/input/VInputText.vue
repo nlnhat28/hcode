@@ -102,25 +102,43 @@ export default {
 
     },
     created() {
-        // Config nếu có copy
-        if (this.hasCopy) {
-            this.innerAction = {
-                icon: 'far fa-copy',
-                tooltip: this.$t('com.copy'),
-                method: () => {
-                    return this.$cf.copyToClipboard(this.innerValue)
-                },
-                hasLoading: true,
+        this.customOnChangeValue();
+    },
+    methods: {
+        /**
+         * Custom khi dữ liệu thay đổi
+         */
+        customOnChangeValue() {
+            // Config nếu có copy
+            if (this.hasCopy) {
+                if (this.$cf.isNullString(this.innerValue)) {
+                    this.innerAction = null;
+                }
+                else {
+                    this.innerAction = {
+                        icon: 'far fa-copy',
+                        tooltip: this.$t('com.copy'),
+                        method: () => {
+                            return this.$cf.copyToClipboard(this.innerValue)
+                        },
+                        hasLoading: true,
+                    }
+                }
             }
-        }
-        // Config nếu có clear
-        else if (this.hasClear) {
-            this.innerAction = {
-                icon: 'fa fa-xmark',
-                method: () => {
-                    this.innerValue = null;
-                },
-                hasLoading: false,
+            // Config nếu có clear
+            else if (this.hasClear) {
+                if (this.$cf.isNullString(this.innerValue)) {
+                    this.innerAction = null;
+                }
+                else {
+                    this.innerAction = {
+                        icon: 'fa fa-xmark',
+                        method: () => {
+                            this.innerValue = null;
+                        },
+                        hasLoading: false,
+                    }
+                }
             }
         }
     }

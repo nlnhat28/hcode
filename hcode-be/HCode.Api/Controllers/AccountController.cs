@@ -46,13 +46,13 @@ namespace HCode.Api
         /// <summary>
         /// Cập nhật mật khẩu
         /// </summary>
-        /// <param name="accountDto">AccountDto</param>
+        /// <param name="authDto">AuthDto</param>
         /// Created by: nlnhat (17/08/2023)
         [HttpPut("Password")]
-        public async Task<IActionResult> ChangePasswordAsync(AccountDto accountDto)
+        public async Task<IActionResult> ChangePasswordAsync(AuthDto authDto)
         {
             var res = new ServerResponse();
-            await _service.ChangePasswordAsync(accountDto, res);
+            await _service.ChangePasswordAsync(authDto, res);
             return StatusCode(StatusCodes.Status200OK, res);
         }
         #endregion

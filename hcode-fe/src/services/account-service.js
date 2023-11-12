@@ -21,15 +21,16 @@ class AccountService extends BaseService {
         return response;
     }
     /**
-     * Cập nhật đã xác thực
+     * Cập nhật mật khẩu
      *
      * Author: nlnhat (17/08/2023)
-     * @param {*} accountId Id tài khoản
+     * @param {*} data Data mật khẩu mới
      * @return
      */
-    async updatePassword(accountId) {
+    async changePassword(data) {
         const response = await this.baseRequest.put(
-            `${this.baseUrl}/Password/${accountId}`
+            this.baseUrl + "/Password",
+            data
         );
         return response;
     }

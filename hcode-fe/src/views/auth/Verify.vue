@@ -57,22 +57,13 @@
     </div>
 </template>
 <script>
-import BaseForm from "@/components/base/BaseForm.vue";
-import { authService, accountService } from "@/services/services.js";
-import { useAuthStore } from "@/stores/stores.js";
-import { mapStores, mapState } from 'pinia';
-import authEnum from "@/enums/auth-enum.js";
+import BaseAuth from "./BaseAuth.vue";
 
 export default {
     name: "Verify",
-    extends: BaseForm,
+    extends: BaseAuth,
     data() {
         return {
-            instanceService: authService,
-            /**
-             * Disable nút gửi lại code
-             */
-            disabledSendVerifyCode: false,
             /**
              * Đang đăng nhập
              */
@@ -85,7 +76,6 @@ export default {
                 isDisabled: false,
                 isLoading: false,
             },
-            params: {}
         }
     },
     mounted() {
@@ -94,19 +84,11 @@ export default {
         ]
     },
     computed: {
-        /**
-         * Store
-         */
-        ...mapStores(useAuthStore),
     },
     methods: {
         initOnCreated() {
-            this.mode = this.$enums.formMode.post;
-            this.instanceService = authService;
             this.instance = this.$cf.cloneDeep(this.authStore.auth);
             this.instance.VerifyCode = null;
-
-            this.params = this.$route.params;
         },
         /**
          * Click xác thực
@@ -144,7 +126,7 @@ export default {
         async afterSaveSuccess() {
             switch (this.authStore.auth.verifyMode) {
                 // Là form đăng ký thì tiến hành đăng nhập
-                case (authEnum.verifyMode.signup):
+                case (this.authEnum.verifyMode.signup):
                     let res = false;
                     try {
                         this.isLoging = true;
@@ -159,7 +141,7 @@ export default {
 
                     break;
                 // Là form đổi mật khẩu
-                case (authEnum.verifyMode.changPassword):
+                case (this.authEnum.verifyMode.changPassword):
                     this.$router.push(this.$path.changePassword);
                     break;
                 default:

@@ -60,18 +60,13 @@
     </div>
 </template>
 <script>
-import BaseForm from "@/components/base/BaseForm.vue";
-import { authService } from "@/services/services.js";
-import { useAuthStore, useAccountStore } from "@/stores/stores.js";
-import { mapStores, mapState } from 'pinia';
-import authEnum from "@/enums/auth-enum.js"
+import BaseAuth from "./BaseAuth.vue";
 
 export default {
-    name: "Login",
-    extends: BaseForm,
+    name: "ChangePassword",
+    extends: BaseAuth,
     data() {
         return {
-
         }
     },
     watch: {
@@ -83,12 +78,6 @@ export default {
         },
     },
     computed: {
-        /**
-         * Store
-         */
-        ...mapStores(useAuthStore),
-        ...mapStores(useAccountStore),
-
     },
     mounted() {
         this.refs = [
@@ -98,8 +87,6 @@ export default {
     },
     methods: {
         initOnCreated() {
-            this.mode = this.$enums.formMode.post;
-            this.instanceService = authService;
             this.instance = this.$cf.cloneDeep(this.authStore.auth);
         },
         /**
@@ -140,7 +127,7 @@ export default {
          */
         async changePassword(data) {
             try {
-                const response = await this.instanceService.changePassword(data);
+                const response = await this.accountService.changePassword(data);
                 if (this.$cf.onSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                     this.messageOnToast = this.$t("auth.successfullyChangePassword");
@@ -160,7 +147,6 @@ export default {
             this.$router.push(this.$path.login);
         },
     }
-
 }
 </script>
 <style scoped>

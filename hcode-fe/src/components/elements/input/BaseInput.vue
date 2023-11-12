@@ -360,6 +360,7 @@ export default {
 
                 this.checkValidate();
                 this.checkWarn();
+                this.customOnChangeValue();
 
             } catch (error) {
                 console.error(error);
@@ -422,11 +423,13 @@ export default {
          * Author: nlnhat (23/07/2023)
          */
         onAction() {
-            if (this.innerAction.hasLoading) {
-                this.makeLoadingEffect(this.innerAction.method)
-            }
-            else {
-                this.innerAction.method();
+            if (this.innerAction) {
+                if (this.innerAction.hasLoading) {
+                    this.makeLoadingEffect(this.innerAction.method)
+                }
+                else {
+                    this.innerAction.method();
+                }
             }
         },
         /**
@@ -477,6 +480,11 @@ export default {
         debounceUpdate: debounce(function () {
             this.$emit('update:modelValue', this.innerValue)
         }, 1000),
+        /**
+         * Custom khi dữ liệu thay đổi
+         */
+        customOnChangeValue() {
+        }
     }
 }
 </script>

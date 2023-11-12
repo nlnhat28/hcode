@@ -55,6 +55,7 @@
                     v-model="instance.Email"
                     ref="refEmail"
                     icon="fa fa-envelope"
+                    hasClear
                     isRequired
                     :validate="$vld.email"
                     :maxLength="100"
@@ -70,18 +71,13 @@
     </div>
 </template>
 <script>
-import BaseForm from "@/components/base/BaseForm.vue";
-import { authService } from "@/services/services.js";
-import { useAuthStore } from "@/stores/stores.js";
-import { mapStores, mapState } from 'pinia';
-import authEnum from "@/enums/auth-enum.js"
+import BaseAuth from "./BaseAuth.vue";
 
 export default {
     name: "Auth",
-    extends: BaseForm,
+    extends: BaseAuth,
     data() {
         return {
-            instanceService: authService,
         }
     },
     mounted() {
@@ -101,16 +97,10 @@ export default {
         },
     },
     computed: {
-        /**
-         * Store
-         */
-        ...mapStores(useAuthStore),
     },
     methods: {
         initOnCreated() {
-            this.mode = this.$enums.formMode.post;
-            this.instanceService = authService;
-            this.instance = this.$cf.cloneDeep(this.authStore.auth);
+            // this.instance = this.$cf.cloneDeep(this.authStore.auth);
         },
         /**
          * Override base
@@ -146,7 +136,7 @@ export default {
          * Click đăng ký
          */
         async funcOnSave() {
-            this.instance.VerifyMode = authEnum.verifyMode.signup;
+            this.instance.VerifyMode = this.authEnum.verifyMode.signup;
             await this.signup(this.instance);
         },
         /**
@@ -181,7 +171,7 @@ export default {
                 VerifyCode: this.instance.VerifyCode
             };
             this.authStore.setAuth(data);
-            this.authStore.setVerifyMode(authEnum.verifyMode.signup);
+            this.authStore.setVerifyMode(this.authEnum.verifyMode.signup);
             this.$router.push(this.$path.verify);
         }
     }

@@ -90,11 +90,13 @@ namespace HCode.Application
         }
 
         // Cập nhật mật khẩu xác thực
-        public async Task ChangePasswordAsync(AccountDto accountDto, ServerResponse res)
+        public async Task ChangePasswordAsync(AuthDto authDto, ServerResponse res)
         {
-            var (newPassword, salt) = ApplicationHelper.HashPassword(accountDto.Password);
+            var (newPassword, salt) = ApplicationHelper.HashPassword(authDto.Password);
 
-            var updateRes = await _repository.UpdatePasswordAsync(accountDto.AccountId, newPassword, salt);
+            var accountId = authDto.AccountId ?? Guid.NewGuid();
+
+            var updateRes = await _repository.UpdatePasswordAsync(accountId, newPassword, salt);
 
             res.Data = updateRes;
         }

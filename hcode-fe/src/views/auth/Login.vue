@@ -52,27 +52,16 @@
     </div>
 </template>
 <script>
-import BaseForm from "@/components/base/BaseForm.vue";
-import { authService } from "@/services/services.js";
-import { useAuthStore, useAccountStore } from "@/stores/stores.js";
-import { mapStores, mapState } from 'pinia';
-import authEnum from "@/enums/auth-enum.js"
+import BaseAuth from "./BaseAuth.vue";
 
 export default {
     name: "Login",
-    extends: BaseForm,
+    extends: BaseAuth,
     data() {
         return {
-
         }
     },
     computed: {
-        /**
-         * Store
-         */
-        ...mapStores(useAuthStore),
-        ...mapStores(useAccountStore),
-
     },
     mounted() {
         this.refs = [
@@ -82,8 +71,6 @@ export default {
     },
     methods: {
         initOnCreated() {
-            this.mode = this.$enums.formMode.post;
-            this.instanceService = authService;
         },
         /**
          * Click đăng nhập
