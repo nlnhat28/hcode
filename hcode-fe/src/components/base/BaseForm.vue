@@ -152,6 +152,7 @@ export default {
                     await this.getInstance(this.instanceId)
                     break;
                 default:
+                    this.storeOriginalInstance();
                     break;
             }
         },
@@ -294,10 +295,12 @@ export default {
                 await this.beforeValidate();
                 this.messageValidate = null;
                 this.refs.forEach((ref) => {
-                    const message = ref.checkValidate();
-                    if (message) {
-                        this.messageValidate = message;
-                        this.refError = ref;
+                    if (ref) {
+                        const message = ref.checkValidate();
+                        if (message) {
+                            this.messageValidate = message;
+                            this.refError = ref;
+                        }
                     }
                 });
                 this.customValidate();
@@ -305,6 +308,7 @@ export default {
                 return this.messageValidate == null;
             } catch (error) {
                 console.error(error);
+                this.messageValidate == null
                 return false;
             }
         },
@@ -333,7 +337,7 @@ export default {
                     }
                 } else {
                     this.$dl.error(this.messageValidate, this.focusRefError);
-                    
+
                     this.afterSaveError();
                 }
             } catch (error) {
@@ -357,7 +361,7 @@ export default {
 
                             this.$ts.success(this.messageOnToast);
                         };
-                
+
                         await this.afterSaveSuccess();
 
                         this.resetThis();

@@ -10,8 +10,6 @@ export default {
     components: {
         Dialog,
     },
-    created() {
-    }
 };
 </script>
 <style>

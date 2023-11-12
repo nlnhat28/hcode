@@ -4,6 +4,8 @@ import Home from "@/views/home/Home.vue";
 import Login from "@/views/auth/Login.vue";
 import Signup from "@/views/auth/Signup.vue";
 import Verify from "@/views/auth/Verify.vue";
+import ForgotPassword from "@/views/auth/ForgotPassword.vue";
+import ChangePassword from "@/views/auth/ChangePassword.vue";
 import ProblemsList from "@/views/problem/ProblemsList.vue";
 
 const routes = [
@@ -33,6 +35,20 @@ const routes = [
         name: "verify",
         components: {
             viewApp: Verify,
+        },
+    },
+    {
+        path: path.forgotPassword,
+        name: "forgotPassword",
+        components: {
+            viewApp: ForgotPassword,
+        },
+    },
+    {
+        path: path.changePassword,
+        name: "changePassword",
+        components: {
+            viewApp: ChangePassword,
         },
     },
     {

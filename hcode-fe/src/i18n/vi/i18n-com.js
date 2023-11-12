@@ -16,7 +16,7 @@ const com = {
     warn: "Cảnh báo",
     info: "Thông báo",
     gotIt: "Đã hiểu",
-    yes: "Có", 
+    yes: "Có",
     no: "Không",
     ok: "Đồng ý",
     confirm: "Xác nhận",
@@ -24,6 +24,9 @@ const com = {
     contests: "Bài thi",
     about: "Giới thiệu",
     back: "Quay lại",
+    search: "Tìm kiếm",
+    next: "Tiếp theo",
+    send: "Gửi",
 };
 
 export default com;

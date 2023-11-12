@@ -189,6 +189,18 @@ namespace HCode.Application
             prefix = prefix.ToUpper();
             return prefix;
         }
+        /// <summary>
+        /// Hash password
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns>HashedPassword: Mật khẩu được mã hoá; Salt: Salt</returns>
+        public static (string hashedPassword, string salt) HashPassword(string password)
+        {
+            var salt = BCrypt.Net.BCrypt.GenerateSalt(10);
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt);
+
+            return (hashedPassword, salt);
+        }
         #endregion
     }
 }

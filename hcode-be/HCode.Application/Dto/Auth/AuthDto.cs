@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HCode.Domain;
+using System.ComponentModel.DataAnnotations;
 
 namespace HCode.Application
 {
@@ -33,6 +34,10 @@ namespace HCode.Application
         /// </summary>
         [MaxLength(6)]
         public string? VerifyCode { get; set; }
+        /// <summary>
+        /// Chế độ xác thực
+        /// </summary>
+        public VerifyMode? VerifyMode { get; set; }
         #endregion
     }
 }

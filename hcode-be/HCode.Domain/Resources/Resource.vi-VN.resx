@@ -117,16 +117,33 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AuthChangeEmail" xml:space="preserve">
+    <value>đổi email tài khoản</value>
+  </data>
+  <data name="AuthChangePassword" xml:space="preserve">
+    <value>đổi mật khẩu tài khoản</value>
+  </data>
   <data name="AuthContentVerifyEmail" xml:space="preserve">
-    <value>Bạn đang sử dụng địa chỉ email này để tạo tài khoản: {0}.&lt;br/&gt;
-Mã xác thực là: {1}. &lt;br/&gt;
-Thời gian hiệu lực: {2} phút.</value>
+    <value>Bạn đang sử dụng địa chỉ email này để {0}: {1}.&lt;br&gt;
+Mã xác thực là: {2}. Thời gian hiệu lực: {3} phút.</value>
   </data>
   <data name="AuthExistedUsername" xml:space="preserve">
     <value>Tên tài khoản đã tồn tại</value>
   </data>
+  <data name="AuthIncorrectPassword" xml:space="preserve">
+    <value>Mật khẩu không chính xác</value>
+  </data>
   <data name="AuthIncorrectVerifyCode" xml:space="preserve">
     <value>Mã xác thực không đúng</value>
+  </data>
+  <data name="AuthLoginError" xml:space="preserve">
+    <value>Đăng nhập không thành công</value>
+  </data>
+  <data name="AuthNotExistsUsername" xml:space="preserve">
+    <value>Tên tài khoản không tồn tại</value>
+  </data>
+  <data name="AuthSignup" xml:space="preserve">
+    <value>tạo tài khoản</value>
   </data>
   <data name="AuthSignupError" xml:space="preserve">
     <value>Đăng ký tài khoản bị lỗi</value>
@@ -137,7 +154,7 @@ Thời gian hiệu lực: {2} phút.</value>
   <data name="AuthTimeoutVerifyCode" xml:space="preserve">
     <value>Mã xác thực hết hiệu lực. Vui lòng ấn gửi lại mã.</value>
   </data>
-  <data name="AuthVerifyError" xml:space="preserve">
+  <data name="AuthVerifyEmail" xml:space="preserve">
     <value>Xác thực email bị lỗi</value>
   </data>
   <data name="ServerError" xml:space="preserve">

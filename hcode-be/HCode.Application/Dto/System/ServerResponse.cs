@@ -120,13 +120,39 @@ namespace HCode.Application
         /// Lỗi
         /// </summary>
         /// <param name="errorCode"></param>
+        /// <param name="errorItem"></param>
+        public void OnError(ErrorCode errorCode, ErrorItem? errorItem)
+        {
+            Success = false;
+            ErrorCode = errorCode;
+            UserMsg = errorItem?.ErrorMessage;
+            Data = errorItem;
+            ErrorKey = Domain.ErrorKey.FormItem;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        /// <param name="errorCode"></param>
         /// <param name="userMsg"></param>
         /// <param name="errorItems"></param>
         public void OnError(ErrorCode errorCode, string? userMsg, List<ErrorItem>? errorItems)
         {
             Success = false;
             ErrorCode = errorCode;
-            UserMsg = userMsg;
+            UserMsg = userMsg ?? errorItems?.FirstOrDefault()?.ErrorMessage;
+            Data = errorItems;
+            ErrorKey = Domain.ErrorKey.FormItem;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <param name="errorItems"></param>
+        public void OnError(ErrorCode errorCode, List<ErrorItem>? errorItems)
+        {
+            Success = false;
+            ErrorCode = errorCode;
+            UserMsg = errorItems?.FirstOrDefault()?.ErrorMessage;
             Data = errorItems;
             ErrorKey = Domain.ErrorKey.FormItem;
         }

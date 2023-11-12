@@ -103,7 +103,7 @@ export default {
         initOnCreated() {
             this.mode = this.$enums.formMode.post;
             this.instanceService = authService;
-            this.instance = this.authStore.auth;
+            this.instance = this.$cf.cloneDeep(this.authStore.auth);
             this.instance.VerifyCode = null;
 
             this.params = this.$route.params;
@@ -129,7 +129,6 @@ export default {
                 const response = await this.instanceService.verify(data);
                 if (response && response?.Success) {
                     this.isSuccessResponseFlag = true;
-                    this.messageOnToast = this.$t("auth.verifedEmail");
                 } else {
                     this.isSuccessResponseFlag = false;
                     this.handleError(response);
@@ -158,6 +157,10 @@ export default {
                         this.$router.push(this.$path.problems);
                     };
 
+                    break;
+                // Là form đổi mật khẩu
+                case (authEnum.verifyMode.changPassword):
+                    this.$router.push(this.$path.changePassword);
                     break;
                 default:
                     break;
@@ -190,7 +193,7 @@ export default {
             const data = {
                 Username: this.instance.Username,
                 Email: this.instance.Email,
-                VerifyCode: this.instance.VerifyCode,
+                VerifyMode: this.instance.VerifyMode
             };
             const response = await this.instanceService.sendVerifyCode(data);
             if (this.$cf.onSuccess(response)) {

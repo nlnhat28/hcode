@@ -3,7 +3,7 @@
     /// <summary>
     /// Setting cho Email
     /// </summary>
-    public class EmailSetting
+    public class EmailConfig
     {
         /// <summary>
         /// Địa chỉ người gửi

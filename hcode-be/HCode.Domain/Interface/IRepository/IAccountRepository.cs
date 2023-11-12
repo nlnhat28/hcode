@@ -24,5 +24,13 @@
         /// <param name="accountIds">Id của account</param>
         /// <returns></returns>
         Task<int> UpdateVerifiedAsync(IEnumerable<Guid> accountIds);
+        /// <summary>
+        /// Cập nhật lại password
+        /// </summary>
+        /// <param name="accountId">Id tài khoản</param>
+        /// <param name="newPassword">Mật khẩu mới</param>
+        /// <param name="salt">Salt</param>
+        /// <returns></returns>
+        Task<int> UpdatePasswordAsync(Guid accountId, string newPassword, string salt);
     }
 }

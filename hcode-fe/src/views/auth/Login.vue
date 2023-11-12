@@ -54,7 +54,7 @@
 <script>
 import BaseForm from "@/components/base/BaseForm.vue";
 import { authService } from "@/services/services.js";
-import { useAuthStore } from "@/stores/stores.js";
+import { useAuthStore, useAccountStore } from "@/stores/stores.js";
 import { mapStores, mapState } from 'pinia';
 import authEnum from "@/enums/auth-enum.js"
 
@@ -71,6 +71,7 @@ export default {
          * Store
          */
         ...mapStores(useAuthStore),
+        ...mapStores(useAccountStore),
 
     },
     mounted() {
@@ -85,11 +86,49 @@ export default {
             this.instanceService = authService;
         },
         /**
+         * Click đăng nhập
+         */
+        async funcOnSave() {
+            const data = {
+                AccountId: this.instance.AccountId,
+                Username: this.instance.Username,
+                Password: this.instance.Password
+            };
+            await this.login(data);
+        },
+        /**
+         * Đăng nhập
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        async login(data) {
+            try {
+                const response = await this.instanceService.login(data);
+                if (this.$cf.onSuccess(response)) {
+                    this.isSuccessResponseFlag = true;
+                    this.accountStore.setAccount(response.Data);
+                    this.messageOnToast = this.$t("auth.successfullyLogin");
+                } else {
+                    this.isSuccessResponseFlag = false;
+                    this.handleError(response);
+                }
+            } catch (error) {
+                console.error(error);
+                this.isSuccessResponseFlag = false;
+            }
+        },
+        /**
+         * Xử lý khi lưu thành công
+         */
+        afterSaveSuccess() {
+            this.$router.push(this.$path.problems);
+        },
+        /**
          * Click Quên mật khẩu
          */
         clickForgotPassword() {
-
-        }
+            this.$router.push(this.$path.forgotPassword);
+        },
     }
 
 }

@@ -25,7 +25,9 @@ import Dialog from "primevue/dialog";
 /**
  * Custom
  */
+import VButton from "@/components/elements/button/VButton.vue";
 import VButtonContainer from "@/components/elements/button/VButtonContainer.vue";
+import VDialog from "@/components/elements/dialog/VDialog.vue";
 import VIcon from "@/components/elements/icon/VIcon.vue";
 import VInputText from "@/components/elements/input/VInputText.vue";
 import VInputGroup from "@/components/elements/input/VInputGroup.vue";
@@ -47,8 +49,8 @@ import "simple-code-editor/themes/themes.css";
 import CountDown from 'keep-countdown'
 // import 'keep-countdown/index.css'
 
-app.component("v-button", Button);
-app.component("v-btn-container", VButtonContainer);
+app.component("v-button", VButton);
+app.component("v-button-container", VButtonContainer);
 app.component("v-code-editor", CodeEditor);
 app.component("v-countdown-simple", CountDown);
 app.component("v-dialog", Dialog);

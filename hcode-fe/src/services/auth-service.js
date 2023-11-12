@@ -63,6 +63,20 @@ class AuthService extends BaseService {
         );
         return response;
     }
+    /**
+     * Quên mật khẩu
+     *
+     * Author: nlnhat (17/08/2023)
+     * @param {*} data Thông tin tài khoản
+     * @return
+     */
+    async forgotPassword(data) {
+        const response = await this.baseRequest.post(
+            this.baseUrl + "/ForgotPassword",
+            data
+        );
+        return response;
+    }
 }
 const authService = new AuthService();
 export default authService;

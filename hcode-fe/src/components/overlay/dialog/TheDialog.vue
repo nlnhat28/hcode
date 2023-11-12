@@ -21,18 +21,22 @@
             </div>
         </div>
         <template #footer>
-            <v-button
-                v-for="(button, index) in dialog.buttons"
-                :key="index"
-                :label=button.label
-                :icon=button.icon
-                :serverity="button.serverity"
-                :text="button.text ?? false"
-                :outlined="button.outlined ?? false"
-                :autofocus="button.autofocus ?? true"
-                size="small"
-                @click="onClickButton(button)"
-            />
+            <v-button-container flexEnd>
+                <v-button
+                    v-for="(button, index) in dialog.buttons"
+                    :key="index"
+                    :label=button.label
+                    :icon=button.icon
+                    :severity="button.severity"
+                    :text="button.text ?? false"
+                    :outlined="button.outlined ?? false"
+                    :autofocus="button.autofocus || index == dialog.buttons.length - 1"
+                    :loading="button.loading"
+                    :disabled="disabledAllButton"
+                    size="small"
+                    @click="onClickButton(button)"
+                />
+            </v-button-container>
         </template>
     </v-dialog>
 </template>
@@ -53,6 +57,10 @@ export default {
                 buttons: [],
                 callback: null,
             },
+            /**
+             * Disable các button khi đang loading
+             */
+            disabledAllButton: false,
         }
     },
     computed: {
@@ -66,10 +74,10 @@ export default {
             this.assignDialog(message, callback, header, null, this.$enums.dialogType.info)
         });
         this.$emitter.on("dialogWarn", (message, buttons, header) => {
-            this.assignDialog(message, header, buttons, this.$enums.dialogType.warn)
+            this.assignDialog(message, null, header, buttons, this.$enums.dialogType.warn)
         });
         this.$emitter.on("dialogConfirm", (message, buttons, header) => {
-            this.assignDialog(message, header, buttons, this.$enums.dialogType.confirm)
+            this.assignDialog(message, null, header, buttons, this.$enums.dialogType.confirm)
         });
     },
     unmounted() {
@@ -157,12 +165,20 @@ export default {
          * Xử lý click button
          * @param {*} button 
          */
-        onClickButton(button) {
-            this.dialog.visible = false;
+        async onClickButton(button) {
             if (button.click) {
-                button.click();
+                try {
+                    this.disabledAllButton = true;
+                    button.loading = true;
+                    await button.click();
+                }
+                finally {
+                    button.loading = false;
+                    this.disabledAllButton = false;
+                }
             }
-        }
+            this.dialog.visible = false;
+        },
     }
 };
 </script>

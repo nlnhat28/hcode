@@ -1,4 +1,6 @@
-﻿namespace HCode.Domain
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HCode.Domain
 {
     /// <summary>
     /// Tài khoản
@@ -50,8 +52,12 @@
         /// </summary>
         public string? Salt { get; set; }
         /// <summary>
-        /// Mã vai trò
+        /// Id vai trò
         /// </summary>
         public Guid RoleId { get; set; }
+        /// <summary>
+        /// Mã vai trò
+        /// </summary>
+        public string? RoleCode { get; set; }
     }
 }

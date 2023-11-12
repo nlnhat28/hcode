@@ -28,5 +28,10 @@ namespace HCode.Application
         /// </summary>
         /// <returns></returns>
         Task LoginAsync(AuthDto authDto, ServerResponse res);
+        /// <summary>
+        /// Quên mật khẩu
+        /// </summary>
+        /// <returns></returns>
+        Task ForgotPasswordAsync(AuthDto authDto, ServerResponse res);
     }
 }

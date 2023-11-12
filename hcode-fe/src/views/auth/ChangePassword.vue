@@ -2,32 +2,18 @@
     <div class="auth-container">
         <v-logo-hcode />
         <div class="auth__title">
-            {{ $t('auth.createAccount') }}
+            {{ $t('auth.changePassword') }}
         </div>
         <div class="auth__body">
             <div class="auth__subtitle">
-                {{ $t('auth.alreadyHaveAccount') }}
-                <v-button
-                    link
-                    :label="$t('auth.login')"
-                    @click="$router.push($path.login);"
-                />
+                <p>
+                    {{ $t('auth.changePasswordSubtitle') }}
+                    <span class="yellow-400">{{ instance.Username }}</span>
+                </p>
             </div>
             <div class="auth__form">
                 <!-- Loading -->
                 <v-mask-loading v-if="isLoading" />
-                <!-- Tên người dùng -->
-                <v-input-text
-                    v-model="instance.Username"
-                    ref="refUsername"
-                    icon="fa fa-user"
-                    hasClear
-                    isRequired
-                    isFocused
-                    noSpace
-                    :maxLength="50"
-                    :label="$t('auth.username')"
-                />
                 <!-- Mật khẩu -->
                 <v-password
                     v-model="instance.Password"
@@ -37,7 +23,7 @@
                     isShowTitle
                     :warn="$vld.password"
                     :maxLength="255"
-                    :label="$t('auth.password')"
+                    :label="$t('auth.newPassword')"
                 />
                 <!-- Xác nhận mật khẩu -->
                 <v-password
@@ -50,20 +36,24 @@
                     :label="$t('auth.confirmPassword')"
                     :password="instance.Password"
                 />
-                <!-- Email -->
-                <v-input-text
-                    v-model="instance.Email"
-                    ref="refEmail"
-                    icon="fa fa-envelope"
-                    isRequired
-                    :validate="$vld.email"
-                    :maxLength="100"
-                    :label="'Email'"
-                />
                 <v-button
                     style="margin-top: 8px"
-                    :label="$t('auth.signup')"
+                    :label="$t('auth.login')"
                     @click="onClickSave()"
+                />
+            </div>
+            <div class="auth__footer auth__footer--verify">
+                <v-button
+                    style="color: #fff;"
+                    link
+                    icon="fa fa-angle-left"
+                    :label="$t('com.back')"
+                    @click="$router.back()"
+                />
+                <v-button
+                    link
+                    :label="$t('auth.createAccount')"
+                    @click="this.$router.push(this.$path.signup)"
                 />
             </div>
         </div>
@@ -72,25 +62,17 @@
 <script>
 import BaseForm from "@/components/base/BaseForm.vue";
 import { authService } from "@/services/services.js";
-import { useAuthStore } from "@/stores/stores.js";
+import { useAuthStore, useAccountStore } from "@/stores/stores.js";
 import { mapStores, mapState } from 'pinia';
 import authEnum from "@/enums/auth-enum.js"
 
 export default {
-    name: "Auth",
+    name: "Login",
     extends: BaseForm,
     data() {
         return {
-            instanceService: authService,
+
         }
-    },
-    mounted() {
-        this.refs = [
-            this.$refs['refEmail'],
-            this.$refs['refConfirmPassword'],
-            this.$refs['refPassword'],
-            this.$refs['refUsername'],
-        ]
     },
     watch: {
         "instance.Password"() {
@@ -105,22 +87,20 @@ export default {
          * Store
          */
         ...mapStores(useAuthStore),
+        ...mapStores(useAccountStore),
+
+    },
+    mounted() {
+        this.refs = [
+            this.$refs['refConfirmPassword'],
+            this.$refs['refPassword'],
+        ]
     },
     methods: {
         initOnCreated() {
             this.mode = this.$enums.formMode.post;
             this.instanceService = authService;
             this.instance = this.$cf.cloneDeep(this.authStore.auth);
-        },
-        /**
-         * Override base
-         */
-        beforeValidate() {
-            let email = this.instance.Email;
-
-            if (email) {
-                this.instance.Email = email.includes("@") ? email : `${email}@gmail.com`;
-            };
         },
         /**
          * Xử lý thêm validate
@@ -143,23 +123,27 @@ export default {
             }
         },
         /**
-         * Click đăng ký
+         * Click đăng nhập
          */
         async funcOnSave() {
-            this.instance.VerifyMode = authEnum.verifyMode.signup;
-            await this.signup(this.instance);
+            const data = {
+                AccountId: this.instance.AccountId,
+                Username: this.instance.Username,
+                Password: this.instance.Password
+            };
+            await this.changePassword(data);
         },
         /**
-         * Create new instance
+         * Đăng nhập
          *
          * Author: nlnhat (02/07/2023)
          */
-        async signup(data) {
+        async changePassword(data) {
             try {
-                const response = await this.instanceService.signup(data);
+                const response = await this.instanceService.changePassword(data);
                 if (this.$cf.onSuccess(response)) {
-                    this.instance.AccountId = response.Data;
                     this.isSuccessResponseFlag = true;
+                    this.messageOnToast = this.$t("auth.successfullyChangePassword");
                 } else {
                     this.isSuccessResponseFlag = false;
                     this.handleError(response);
@@ -173,17 +157,8 @@ export default {
          * Xử lý khi lưu thành công
          */
         afterSaveSuccess() {
-            const data = {
-                AccountId: this.instance.AccountId,
-                Username: this.instance.Username,
-                Password: this.instance.Password,
-                Email: this.instance.Email,
-                VerifyCode: this.instance.VerifyCode
-            };
-            this.authStore.setAuth(data);
-            this.authStore.setVerifyMode(authEnum.verifyMode.signup);
-            this.$router.push(this.$path.verify);
-        }
+            this.$router.push(this.$path.login);
+        },
     }
 
 }

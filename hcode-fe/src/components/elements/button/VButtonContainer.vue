@@ -20,17 +20,33 @@ export default {
         /**
          * Hướng column?
          */
-        column: {
+        isColumn: {
             type: Boolean,
             default: false
+        },
+        /**
+         * Flex-end 
+         */
+        flexEnd: {
+            type: Boolean,
+            default: false  
         }
     },
     computed: {
         styleComputed() {
-            if (!this.column) {
-                return `column-gap: ${this.gap}px`;
+            let style = ''
+            if (!this.isColumn) {
+                style = `column-gap: ${this.gap}px; `;
             }
-            return `flex-direction: column; row-gap: ${this.gap}px`;
+            else {
+                style = `flex-direction: column; row-gap: ${this.gap}px; `;
+            };
+
+            if (this.flexEnd) {
+                style += 'justify-content: flex-end;'
+            };
+
+            return style;
         }
     }
 }
@@ -38,5 +54,6 @@ export default {
 <style scoped>
 .v-button-container {
     display: flex;
+    align-items: center;
 }
 </style>

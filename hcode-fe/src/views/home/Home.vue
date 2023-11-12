@@ -10,7 +10,7 @@
                     <div class="home__small-title">
                         {{ $t('home.smallTitle') }}
                     </div>
-                    <v-btn-container>
+                    <v-button-container>
                         <v-button
                             :label="$t('home.practice')"
                             @click="$router.push($path.problems);"
@@ -19,7 +19,7 @@
                             :label="$t('home.createAccount')"
                             @click="$router.push($path.signup);"
                         ></v-button>
-                    </v-btn-container>
+                    </v-button-container>
                 </div>
             </div>
             <div class="home__content--right">

@@ -73,7 +73,19 @@
         /// <summary>
         /// Xác thực email lỗi
         /// </summary>
-        AuthVerifyError = 106,
+        AuthVerifyEmail = 106,
+        /// <summary>
+        /// Đăng nhập không thành công
+        /// </summary>
+        AuthLogin = 107,
+        /// <summary>
+        /// Tên tài khoản không tồn tại
+        /// </summary>
+        AuthNotExistsUsername = 108,
+        /// <summary>
+        /// Mật khẩu không chính xác
+        /// </summary>
+        AuthIncorrectPassword = 109,
         #endregion
     }
 }

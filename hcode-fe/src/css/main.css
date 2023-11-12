@@ -2,6 +2,7 @@
 @import "./class.css";
 @import "./vue.css";
 @import "./lib/fontawesome-pro-6.4.0/css/all.min.css";
+@import "@/components/elements/elements.css";
 
 * {
     box-sizing: border-box;

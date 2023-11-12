@@ -16,7 +16,20 @@ class AccountService extends BaseService {
      */
     async updateVerified(accountId) {
         const response = await this.baseRequest.put(
-            `${this.baseUrl}/UpdateVerified/${accountId}`
+            `${this.baseUrl}/Verified/${accountId}`
+        );
+        return response;
+    }
+    /**
+     * Cập nhật đã xác thực
+     *
+     * Author: nlnhat (17/08/2023)
+     * @param {*} accountId Id tài khoản
+     * @return
+     */
+    async updatePassword(accountId) {
+        const response = await this.baseRequest.put(
+            `${this.baseUrl}/Password/${accountId}`
         );
         return response;
     }

@@ -36,11 +36,23 @@ namespace HCode.Api
         /// </summary>
         /// <param name="id">Account Id</param>
         /// Created by: nlnhat (17/08/2023)
-        [HttpPut("UpdateVerified/{id}")]
+        [HttpPut("Verified/{id}")]
         public async Task<IActionResult> UpdateVerifyAsync(Guid id)
         {
             var res = new ServerResponse();
             await _service.UpdateVerifyAsync(id, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+        /// <summary>
+        /// Cập nhật mật khẩu
+        /// </summary>
+        /// <param name="accountDto">AccountDto</param>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpPut("Password")]
+        public async Task<IActionResult> ChangePasswordAsync(AccountDto accountDto)
+        {
+            var res = new ServerResponse();
+            await _service.ChangePasswordAsync(accountDto, res);
             return StatusCode(StatusCodes.Status200OK, res);
         }
         #endregion

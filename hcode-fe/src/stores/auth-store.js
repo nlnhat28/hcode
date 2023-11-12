@@ -10,7 +10,7 @@ const useAuthStore = defineStore("auth", {
             this.auth = cloneDeep(newAuth);
         },
         setVerifyMode(mode) {
-            this.auth.verifyMode = mode;
+            this.auth.VerifyMode = mode;
         },
     },
     persist: {

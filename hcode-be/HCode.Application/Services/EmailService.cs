@@ -13,14 +13,17 @@ namespace HCode.Application
     public class EmailService : CoreService, IEmailService
     {
         #region Fields
-        private readonly EmailSetting _emailSetting;
+        /// <summary>
+        /// Email setting
+        /// </summary>
+        private readonly EmailConfig _emailConfig;
         #endregion
 
         #region Constructors
-        public EmailService(IOptions<EmailSetting> emailSetting, IStringLocalizer<Resource> resource, IMapper mapper)
+        public EmailService(IOptions<EmailConfig> emailConfig, IStringLocalizer<Resource> resource, IMapper mapper)
             : base(resource, mapper)
         {
-            _emailSetting = emailSetting.Value;
+            _emailConfig = emailConfig.Value;
         }
         #endregion
 
@@ -37,11 +40,11 @@ namespace HCode.Application
 
             var message = new MimeMessage
             {
-                Sender = new MailboxAddress(_emailSetting.DisplayName, _emailSetting.Email),
+                Sender = new MailboxAddress(_emailConfig.DisplayName, _emailConfig.Email),
                 Subject = emailMessage.Subject,
                 Body = builder.ToMessageBody()
             };
-            message.From.Add(new MailboxAddress(_emailSetting.DisplayName, _emailSetting.Email));
+            message.From.Add(new MailboxAddress(_emailConfig.DisplayName, _emailConfig.Email));
             message.To.Add(MailboxAddress.Parse(emailMessage.To));
 
             // dùng SmtpClient của MailKit
@@ -49,8 +52,8 @@ namespace HCode.Application
 
             try
             {
-                await smtp.ConnectAsync(_emailSetting.Host, _emailSetting.Port, SecureSocketOptions.StartTls);
-                await smtp.AuthenticateAsync(_emailSetting.Email, _emailSetting.Password);
+                await smtp.ConnectAsync(_emailConfig.Host, _emailConfig.Port, SecureSocketOptions.StartTls);
+                await smtp.AuthenticateAsync(_emailConfig.Email, _emailConfig.Password);
                 var result = await smtp.SendAsync(message);
                 return new BaseResponse(devMsg: result);
             }

@@ -26,6 +26,14 @@ namespace HCode.Application
             {
                 opt.MapFrom(src =>
                     ApplicationHelper.ConvertDateUtcToLocal(src.ModifiedTime));
+            })
+            .ForMember(dest => dest.Password, opt =>
+            {
+                opt.Ignore();
+            })
+            .ForMember(dest => dest.Salt, opt =>
+            {
+                opt.Ignore();
             });
 
             // AccountDto -> Account

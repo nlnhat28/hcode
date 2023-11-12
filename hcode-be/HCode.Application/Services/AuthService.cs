@@ -2,6 +2,12 @@
 using HCode.Domain;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
 namespace HCode.Application
 {
     /// <summary>
@@ -28,6 +34,14 @@ namespace HCode.Application
         /// </summary>
         /// Created by: nlnhat (13/07/2023
         protected readonly IMemoryCache _cache;
+        /// <summary>
+        /// Jwt setting
+        /// </summary>
+        private readonly JwtConfig _jwtConfig;
+        /// <summary>
+        /// Auth config
+        /// </summary>
+        private readonly AuthConfig _authConfig;
         #endregion
 
         #region Constructors
@@ -40,19 +54,27 @@ namespace HCode.Application
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (17/08/2023)
         public AuthService(IAccountRepository repository, IRoleRepository roleRepository,
-                           IStringLocalizer<Resource> resource, IMapper mapper, 
-                           IUnitOfWork unitOfWork, IEmailService emailService, IMemoryCache cache)
+                           IStringLocalizer<Resource> resource, IMapper mapper,
+                           IUnitOfWork unitOfWork, IEmailService emailService, IMemoryCache cache,
+                           IOptions<JwtConfig> jwtConfig, IOptions<AuthConfig> authConfig)
                          : base(repository, resource, mapper, unitOfWork)
         {
             _repository = repository;
             _roleRepository = roleRepository;
             _emailService = emailService;
             _cache = cache;
+            _jwtConfig = jwtConfig.Value;
+            _authConfig = authConfig.Value;
         }
         #endregion
 
         #region Methods
-
+        /// <summary>
+        /// Validate tạo mới tài khoản
+        /// </summary>
+        /// <param name="authDto"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
         private async Task ValidateCreateAccountAsync(AuthDto authDto, ServerResponse res)
         {
             var existedAccount = await _repository.GetByUsernameAsync(authDto.UserName);
@@ -60,22 +82,15 @@ namespace HCode.Application
             // Nếu đã tồn tại Username dùng cho account khác
             if (existedAccount != null && existedAccount.AccountId != authDto.AccountId)
             {
-                res.OnError(
+                res.OnError
+                (
                     ErrorCode.AuthExistedUsername,
-                    _resource["AuthExistedUsername"],
                     new ErrorItem("refUsername", _resource["AuthExistedUsername"])
                 );
             }
         }
-
-        private (string hashedPassword, string salt) HashPassword(string password)
-        {
-            var salt = BCrypt.Net.BCrypt.GenerateSalt(10);
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt);
-
-            return (hashedPassword, salt);
-        }
-
+        
+        // Đăng ký
         public async Task SignupAsync(AuthDto authDto, ServerResponse res)
         {
             await ValidateCreateAccountAsync(authDto, res);
@@ -85,7 +100,7 @@ namespace HCode.Application
                 var role = await _roleRepository.GetByCodeAsync(RoleConstant.RoleCode.Admin);
                 var roleId = (role != null) ? role.RoleId : Guid.Empty;
 
-                var (password, salt) = HashPassword(authDto.Password);
+                var (password, salt) = ApplicationHelper.HashPassword(authDto.Password);
 
                 var accountId = Guid.NewGuid();
 
@@ -114,21 +129,30 @@ namespace HCode.Application
             }
         }
 
+        // Gửi mã xác thực
         public async Task<string?> SendVerifyCodeAsync(AuthDto authDto, ServerResponse res)
         {
             if (!string.IsNullOrWhiteSpace(authDto.Email))
             {
                 var random = new Random();
-                var randomNumber = random.Next(0, 1000000);
-                var verifyCode = randomNumber.ToString("D6");
-                var expireTime = AuthConstant.VerifyTime;
+                var randomNumber = random.Next(0, _authConfig.MaxVerifyCode);
+                var verifyCode = randomNumber.ToString($"D{_authConfig.PaddingVerifyCode}");
+                var expireTime = _authConfig.VerifyTimeOut;
 
-                var message = new EmailMessage()
+                var verifyModeContent = authDto.VerifyMode switch
+                {
+                    VerifyMode.ChangePassword => _resource["AuthChangePassword"],
+                    VerifyMode.ChangeEmail => _resource["AuthChangeEmail"],
+                    _ => _resource["AuthSignup"]
+                };
+
+            var message = new EmailMessage()
                 {
                     To = authDto.Email,
                     Subject = _resource["AuthSubjectVerifyEmail"],
                     Content = string.Format(
                         _resource["AuthContentVerifyEmail"],
+                        verifyModeContent,
                         $"<b>{authDto.UserName}</b>",
                         $"<b style=\"color: #00f\">{verifyCode}</b>",
                         $"<b>{expireTime}</b>")
@@ -141,13 +165,13 @@ namespace HCode.Application
 
                 if (!res.Success)
                 {
-                    res.OnError(ErrorCode.AuthVerifyError, _resource["AuthVerifyError"]);
+                    res.OnError(ErrorCode.AuthVerifyEmail, _resource["AuthVerifyEmail"]);
                 }
                 else
                 {
                     var options = new MemoryCacheEntryOptions
                     {
-                        AbsoluteExpiration = DateTime.Now.AddMinutes(AuthConstant.VerifyTime)
+                        AbsoluteExpiration = DateTime.Now.AddMinutes(expireTime)
                     };
 
                     _cache.Set($"Username_{authDto.UserName}", verifyCode, options);
@@ -157,11 +181,12 @@ namespace HCode.Application
             }
             else
             {
-                res.OnError(ErrorCode.AuthVerifyError, _resource["AuthVerifyError"]);
+                res.OnError(ErrorCode.AuthVerifyEmail, _resource["AuthVerifyEmail"]);
                 return null;
             }
         }
 
+        // Xác thực
         public async Task VerifyAsync(AuthDto authDto, ServerResponse res)
         {
             if (_cache.TryGetValue($"Username_{authDto.UserName}", out string? cacheVerifyCode))
@@ -172,26 +197,111 @@ namespace HCode.Application
                 }
                 else
                 {
-                    res.OnError(
+                    res.OnError
+                    (
                         ErrorCode.AuthIncorrectVerifyCode,
-                        _resource["AuthIncorrectVerifyCode"],
                         new ErrorItem("refVerifyCode", _resource["AuthIncorrectVerifyCode"])
                     );
                 }
             }
             else
             {
-                res.OnError(
+                res.OnError
+                (
                     ErrorCode.AuthIncorrectVerifyCode,
-                    _resource["AuthIncorrectVerifyCode"],
                     new ErrorItem("refVerifyCode", _resource["AuthIncorrectVerifyCode"])
                 );
             }
         }
 
-        public Task LoginAsync(AuthDto authDto, ServerResponse res)
+        // Đăng nhập
+        public async Task LoginAsync(AuthDto authDto, ServerResponse res)
         {
-            throw new NotImplementedException();
+            var account = await _repository.GetByUsernameAsync(authDto.UserName);
+
+            if (account != null)
+            {
+                var accoutDto = _mapper.Map<AccountDto>(account);
+                var salt = account.Salt;
+                var password = account.Password;
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(authDto.Password, salt);
+
+                if (password == hashedPassword)
+                {
+                    var token = GenerateJwtToken(account);
+                    accoutDto.Token = token;
+                    res.Data = accoutDto;
+                }
+                else
+                {
+                    res.OnError
+                    (
+                        ErrorCode.AuthIncorrectPassword,
+                        new ErrorItem("refPassword", _resource["AuthIncorrectPassword"])
+                    );
+                };
+            }
+            else
+            {
+                res.OnError
+                (
+                    ErrorCode.AuthNotExistsUsername,
+                    new ErrorItem("refUsername", _resource["AuthNotExistsUsername"])
+                );
+            }
+        }
+
+        /// <summary>
+        /// Tạo jwt token
+        /// </summary>
+        /// <param name="account">Tài khoản</param>
+        /// <returns>Jwt token</returns>
+        private string GenerateJwtToken(Account account)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtConfig.SecretKey);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity
+                (
+                    new Claim[]
+                    {
+                        new Claim(ClaimTypes.Name, account.Username),
+                        new Claim(ClaimTypes.Role, account.RoleCode ?? string.Empty),
+                    }
+                ),
+                Expires = DateTime.UtcNow.AddHours(_jwtConfig.ExpireToken),
+                SigningCredentials = new SigningCredentials
+                (
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature
+                )
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        // Quên mật khẩu
+        public async Task ForgotPasswordAsync(AuthDto authDto, ServerResponse res)
+        {
+            var account = await _repository.GetByUsernameAsync(authDto.UserName);
+
+            if (account != null)
+            {
+                res.Data = new 
+                {
+                    account.AccountId,
+                    account.Email
+                };
+            }
+            else
+            {
+                res.OnError
+                (
+                    ErrorCode.AuthNotExistsUsername,
+                    new ErrorItem("refUsername", _resource["AuthNotExistsUsername"])
+                );
+            }
         }
 
         public override Account MapCreateDtoToEntity(AuthDto entityDto)

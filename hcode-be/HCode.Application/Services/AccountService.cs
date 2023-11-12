@@ -76,6 +76,7 @@ namespace HCode.Application
             throw new NotImplementedException();
         }
 
+        // Cập nhật đã xác thực
         public async Task UpdateVerifyAsync(Guid accountId, ServerResponse res)
         {
             var accountIds = new List<Guid>
@@ -84,6 +85,16 @@ namespace HCode.Application
             };
 
             var updateRes = await _repository.UpdateVerifiedAsync(accountIds);
+
+            res.Data = updateRes;
+        }
+
+        // Cập nhật mật khẩu xác thực
+        public async Task ChangePasswordAsync(AccountDto accountDto, ServerResponse res)
+        {
+            var (newPassword, salt) = ApplicationHelper.HashPassword(accountDto.Password);
+
+            var updateRes = await _repository.UpdatePasswordAsync(accountDto.AccountId, newPassword, salt);
 
             res.Data = updateRes;
         }

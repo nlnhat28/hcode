@@ -1,4 +1,5 @@
 ﻿using HCode.Domain;
+using System.ComponentModel.DataAnnotations;
 
 namespace HCode.Application
 {
@@ -14,27 +15,35 @@ namespace HCode.Application
         /// <summary>
         /// Tên tài khoản
         /// </summary>
+        [Required]
+        [MaxLength(50)]
         public string Username { get; set; }
         /// <summary>
-        /// Mật khẩu đã hash
+        /// Mật khẩu
         /// </summary>
+        [Required]
+        [MaxLength(255)]
         public string Password { get; set; }
         /// <summary>
         /// Email
         /// </summary>
+        [Required]
+        [MaxLength(100)]
         public string Email { get; set; }
+        /// <summary>
+        /// Họ tên đầy đủ
+        /// </summary>
+        [MaxLength(100)]
+        public string? FullName { get; set; }
         /// <summary>
         /// Số điện thoại
         /// </summary>
+        [MaxLength(50)]
         public string? Phone { get; set; }
         /// <summary>
         /// Ảnh đại diện
         /// </summary>
         public string? Avatar { get; set; }
-        /// <summary>
-        /// Họ tên đầy đủ
-        /// </summary>
-        public string FullName { get; set; }
         /// <summary>
         /// Giới tính
         /// </summary>
@@ -50,10 +59,20 @@ namespace HCode.Application
         /// <summary>
         /// Salt hash password
         /// </summary>
+        [MaxLength(255)]
         public string? Salt { get; set; }
+        /// <summary>
+        /// Auth token
+        /// </summary>
+        public string? Token { get; set; }
+        /// <summary>
+        /// Id vai trò
+        /// </summary>
+        public Guid RoleId { get; set; }
         /// <summary>
         /// Mã vai trò
         /// </summary>
-        public Guid RoleId { get; set; }
+        [MaxLength(255)]
+        public string? RoleCode { get; set; }
     }
 }

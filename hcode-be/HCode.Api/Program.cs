@@ -6,6 +6,10 @@ using Hcode.Api;
 using HCode.Domain;
 using HCode.Application;
 using HCode.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace HCode.Api
 {
@@ -27,8 +31,9 @@ namespace HCode.Api
             // Add cache
             builder.Services.AddMemoryCache();
 
-            var emailOption = builder.Configuration.GetSection("EmailSetting");
-            builder.Services.Configure<EmailSetting>(emailOption);
+            // Config
+            builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailConfig"));
+            builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("AuthConfig"));
 
             // Add dbconnection
             builder.Services.AddTransient<DbConnection>(options =>
@@ -80,6 +85,29 @@ namespace HCode.Api
                 build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
             }));
 
+            // Auth
+
+            var jwtConfig = builder.Configuration.GetSection("JwtConfig");
+            builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtConfig["Issuer"],
+                    ValidAudience = jwtConfig["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig["SecretKey"]))
+                };
+            });
+
             #endregion
 
             var app = builder.Build();
@@ -97,6 +125,8 @@ namespace HCode.Api
             app.UseRequestLocalization();
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

@@ -5,7 +5,7 @@ const authEnum = {
     },
     verifyMode: {
         signup: 1,
-        forgotPassword: 2,
+        changePassword: 2,
         changeEmail: 3,
     }
 };

@@ -79,6 +79,18 @@ namespace HCode.Api
             await _service.LoginAsync(authDto, res);
             return StatusCode(StatusCodes.Status200OK, res);
         }
+        /// <summary>
+        /// Quên mật khẩu
+        /// </summary>
+        /// <param name="authDto"></param>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPasswordAsync([FromBody] AuthDto authDto)
+        {
+            var res = new ServerResponse();
+            await _service.ForgotPasswordAsync(authDto, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
         #endregion
     }
 }
