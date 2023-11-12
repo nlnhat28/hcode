@@ -17,7 +17,8 @@
                 :size="36"
             />
             <div class="v-dialog__message">
-                {{ dialog.message }}
+                <span v-html="dialog.message"></span>
+                <!-- {{ dialog.message }} -->
             </div>
         </div>
         <template #footer>

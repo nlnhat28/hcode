@@ -94,7 +94,6 @@ export default {
                 if (this.$cf.onSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                     this.accountStore.setAccount(response.Data);
-                    this.messageOnToast = this.$t("auth.successfullyLogin");
                 } else {
                     this.isSuccessResponseFlag = false;
                     this.handleError(response);

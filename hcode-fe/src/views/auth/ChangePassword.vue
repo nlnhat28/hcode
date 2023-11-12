@@ -38,7 +38,7 @@
                 />
                 <v-button
                     style="margin-top: 8px"
-                    :label="$t('auth.login')"
+                    :label="$t('com.save')"
                     @click="onClickSave()"
                 />
             </div>
@@ -49,11 +49,6 @@
                     icon="fa fa-angle-left"
                     :label="$t('com.back')"
                     @click="$router.back()"
-                />
-                <v-button
-                    link
-                    :label="$t('auth.createAccount')"
-                    @click="this.$router.push(this.$path.signup)"
                 />
             </div>
         </div>

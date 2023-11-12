@@ -106,7 +106,7 @@ export default {
          * @param {string} email
          */
         showDialogEmail() {
-            const header = this.$t("auth.sendCode");
+            const header = this.$t("auth.sendVerifyCode");
             const message = this.$t("auth.sendEmailToResetPassword", { email: this.instance.Email });
             const buttons = [
                 {

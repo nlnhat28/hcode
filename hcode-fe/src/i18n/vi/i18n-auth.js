@@ -25,9 +25,9 @@ const auth = {
     backToLogin: "Đang đăng nhập",
     successfullyLogin: "Đăng nhập thành công",
     typeOfUsername: "Vui lòng nhập tên tài khoản của bạn:",
-    sendCode: "Gửi mã",
+    sendVerifyCode: "Gửi mã xác nhận",
     sendEmailToResetPassword:
-        "Bạn có muốn gửi mã xác nhận đến địa chỉ {email} để tạo mới mật khẩu?",
+        "Bạn có muốn gửi mã xác nhận đến địa chỉ <b>{email}</b> để tạo mới mật khẩu?",
     changePassword: "Thay đổi mật khẩu",
     changePasswordSubtitle: "Bạn đang tạo mật khẩu mới cho tài khoản",
     successfullyChangePassword: "Đã thay đổi mật khẩu",
