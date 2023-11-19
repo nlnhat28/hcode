@@ -22,12 +22,15 @@ import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+
 /**
  * Custom
  */
 import VButton from "@/components/elements/button/VButton.vue";
 import VButtonContainer from "@/components/elements/button/VButtonContainer.vue";
+import VCombobox from "@/components/elements/combobox/VCombobox.vue";
 import VDialog from "@/components/elements/dialog/VDialog.vue";
+import VFilter from "@/components/elements/filter/VFilter.vue";
 import VIcon from "@/components/elements/icon/VIcon.vue";
 import VInputText from "@/components/elements/input/VInputText.vue";
 import VInputGroup from "@/components/elements/input/VInputGroup.vue";
@@ -39,21 +42,34 @@ import VNavItem from "@/components/elements/nav/VNavItem.vue";
 import VPassword from "@/components/elements/input/VPassword.vue";
 import VLoader from "@/components/elements/loader/VLoader.vue";
 import VLoaderLock from "@/components/elements/loader/VLoaderLock.vue";
+import VPagination from "@/components/elements/pagination/VPagination.vue";
+import VPageNumber from "@/components/elements/pagination/VPageNumber.vue";
+import VSearchBox from "@/components/elements/search/VSearchBox.vue";
+import VSearchResult from "@/components/elements/search/VSearchResult.vue";
 import VSpinner from "@/components/elements/loader/VSpinner.vue";
 import VTooltip from "@/components/elements/tooltip/VTooltip.vue";
+import VRating from "@/components/elements/rating/VRating.vue";
+import VReaction from "@/components/elements/reaction/VReaction.vue";
+import VTable from "@/components/elements/table/VTable.vue";
+import VTag from "@/components/elements/tag/VTag.vue";
+import VTh from "@/components/elements/table/VTh.vue";
+import VTd from "@/components/elements/table/VTd.vue";
+import VTr from "@/components/elements/table/VTr.vue";
 /**
  * Others
  */
 import CodeEditor from "simple-code-editor";
 import "simple-code-editor/themes/themes.css";
-import CountDown from 'keep-countdown'
+import CountDown from "keep-countdown";
 // import 'keep-countdown/index.css'
 
 app.component("v-button", VButton);
 app.component("v-button-container", VButtonContainer);
 app.component("v-code-editor", CodeEditor);
+app.component("v-combobox", VCombobox);
 app.component("v-countdown-simple", CountDown);
 app.component("v-dialog", Dialog);
+app.component("v-filter", VFilter);
 app.component("v-icon", VIcon);
 app.component("v-input-group", VInputGroup);
 app.component("v-input-text", VInputText);
@@ -65,9 +81,19 @@ app.component("v-nav-item", VNavItem);
 app.component("v-password", VPassword);
 app.component("v-loader", VLoader);
 app.component("v-loader-lock", VLoaderLock);
+app.component("v-pagination", VPagination);
+app.component("v-page-number", VPageNumber);
 app.component("v-spinner", VSpinner);
+app.component("v-search-box", VSearchBox);
+app.component("v-search-result", VSearchResult);
+app.component("v-rating", VRating);
+app.component("v-reaction", VReaction);
 app.component("v-tooltip", VTooltip);
-
+app.component("v-tag", VTag);
+app.component("v-table", VTable);
+app.component("v-th", VTh);
+app.component("v-td", VTd);
+app.component("v-tr", VTr);
 /**
  * Global
  */

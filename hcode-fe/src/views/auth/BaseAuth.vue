@@ -11,6 +11,7 @@ export default {
     data() {
         return {
             instanceService: authService,
+            authService: authService,
             accountService: accountService,
             authEnum: authEnum,
         }

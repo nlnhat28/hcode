@@ -141,7 +141,7 @@ export default {
 
                     break;
                 // Là form đổi mật khẩu
-                case (this.authEnum.verifyMode.changPassword):
+                case (this.authEnum.verifyMode.changePassword):
                     this.$router.push(this.$path.changePassword);
                     break;
                 default:

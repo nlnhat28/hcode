@@ -1,50 +1,26 @@
-
-.auth-container {
+.problems-list-container {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    row-gap: 24px;
     width: 100%;
-    padding: 40px 120px;
+    height: calc(100vh - 72px);
+    padding: 40px;
     overflow: hidden;
+    column-gap: 24px;
 }
-
-.auth__title {
-    font-size: 48px;
-    font-weight: bolder;
-    font-family: "Consolas";
-    color: #fff;
-    margin-bottom: 16px;
+.problems-list__left {
+    flex: 1;
+    height: 100%;
+    /* background-color: var(--tpr-300); */
+    border-radius: 8px;
+    padding: 0 24px
 }
-
-.auth__body {
-    display: flex;
-    flex-direction: column;
-    row-gap: 24px;
-    width: 320px;
+.problems-list__right {
+    height: 100%;
+    /* width: 24%; */
 }
-
-.auth__form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    row-gap: 16px;
-}
-.auth__subtitle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 700;
-    column-gap: 10px;
-}
-.auth__body .p-button.p-button-link {
-    padding: 0;
-    color: var(--yellow-400)
-}
-.auth__forgot-password {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.problems-list__stat {
+    background-color: var(--tpr-300);
+    border-radius: 8px;
+    width: 100%;
+    height: 100%;
 }

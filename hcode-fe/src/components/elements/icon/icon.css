@@ -4,24 +4,39 @@
     justify-content: center;
 }
 
-.dark .icon {    
-    color: var(--grey-700)
+.icon.icon.cursor-pointer {
+    transition: color 0.2s;
 }
+
+.dark .icon {
+    color: var(--grey-700);
+}
+.dark:hover .icon.cursor-pointer {
+    color: var(--grey-500);
+}
+
 .light .icon {
-    color: #fff
+    color: var(--grey-300);
 }
+.light:hover .icon.cursor-pointer {
+    color: var(--highlight);
+}
+.light:active .icon.cursor-pointer {
+    color: var(--highlight-dark);
+}
+
 .success .icon {
-  color: var(--green-500);
+    color: var(--green-500);
 }
-.primary .icon { 
-  color: var(--color-primary);
+.primary .icon {
+    color: var(--color-primary);
 }
 .error .icon {
-  color: var(--red-500);
+    color: var(--red-500);
 }
 .info .icon {
-  color: var(--blue-500)
+    color: var(--blue-500);
 }
 .warn .icon {
-  color: var(--orange-400)
+    color: var(--orange-400);
 }

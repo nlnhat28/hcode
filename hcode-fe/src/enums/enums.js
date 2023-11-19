@@ -74,7 +74,15 @@ const enums = {
     /**
      * Màu
      */
-    color: {},
+    color: {
+        yellow: "#f2d066",
+        orange: "#ffad33",
+        orange200: "#ffd699",
+        blue: "#3395ff",
+        red: "#ff3232",
+        green: "#0ecc57",
+        cyan: "#00f2fa",
+    },
     /**
      * Type of sort
      */
@@ -132,6 +140,14 @@ const enums = {
      */
     errorKey: {
         formItem: 1,
+    },
+    /**
+     * Độ khó
+     */
+    difficulty: {
+        easy: 1,
+        medium: 2,
+        hard: 3,
     },
 };
 export default enums;

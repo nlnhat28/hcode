@@ -154,6 +154,13 @@ export default {
         isShowActionIcon: {
             type: Boolean,
             default: false,
+        },
+        /**
+         * Apply tranparent
+         */
+        isTransparent: {
+            type: Boolean,
+            default: false,
         }
     },
     data() {

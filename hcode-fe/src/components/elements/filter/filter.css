@@ -1,0 +1,71 @@
+/* filter */
+
+.filter {
+  border-radius: 2px;
+  margin: 0px;
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  column-gap: 2px;
+  display: flex;
+  align-items: center;
+}
+.filter__compare,
+.filter__logic {
+  width: 28px;
+}
+.filter__value {
+  flex: 1;
+}
+
+.filter__value .p-inputtext {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: transparent;
+    color: #fff;
+}
+.filter__value .textfield,
+.filter__value .textfield .input-group,
+.filter__value .textfield input,
+.filter__value .combobox .input-group {
+  height: 28px;
+  font-size: 13px;
+}
+.filter__value .combobox input {
+  font-size: 13px;
+}
+.filter__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  width: 28px;
+  background-color: #fff;
+  border-radius: 2px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+}
+
+.filter__action:hover {
+  border: 1px solid var(--orange);
+}
+.filter__action:focus,
+.filter__action:active {
+  border: 1px solid var(--blue-bold);
+}
+
+/* filter-result */
+.filter-result {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  column-gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: var(--grey-200);
+  /* color: var(--blue-500) */
+}
+.filter-result pre.filter-result__value {
+  margin: 0;
+  font-weight: 700;
+}

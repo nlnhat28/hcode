@@ -27,6 +27,11 @@ const com = {
     search: "Tìm kiếm",
     next: "Tiếp theo",
     send: "Gửi",
+    sort: "Sắp xếp",
+    search: "Tìm kiếm",
+    total: "Tổng",
+    recordsPerPage: "Số bản ghi/trang",
+    record: "Bản ghi",
 };
 
 export default com;

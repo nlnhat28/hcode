@@ -1,0 +1,94 @@
+.pagination-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 16px;
+  height: 100%;
+  width: 100%;
+  padding: 0 16px;
+}
+
+/* .pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    column-gap: 24px;
+}
+.pagination__property {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    column-gap: 8px;
+}
+
+/* Tổng */
+.count-wrapper {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    column-gap: 8px;
+}
+
+/* combobox  */
+.pagination__property .p-dropdown {
+    background-color: #000;
+}
+.pagination__property .p-dropdown .p-inputtext {
+    color: #fff
+}
+.pagination__property .p-dropdown .p-inputtext {
+    padding: 0.4rem 0.5rem;
+    color: #fff;
+}
+
+/* switch */
+.pagination__switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 8px;
+}
+
+.pagination__angle {
+    padding-top: 6px;
+}
+
+/* page numbers container */
+.pagination__numbers {
+    display: flex;
+    column-gap: 4px;
+}
+.pagination__numbers.disabled {
+    opacity: 0.8;
+}
+
+/* page number */
+.pagination__view,
+.pagination__page-number {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    transition: color 0.2s;
+    border-radius: 4px;
+}
+.pagination__view:hover,
+.pagination__page-number:hover {
+    color: var(--highlight);
+}
+.pagination__view:active,
+.pagination__page-number:active {
+    color: var(--highlight-dark);
+}
+.pagination__page-number.page-number--active {
+    font-weight: 700;
+    border: 1px solid var(--highlight);
+    /* color: var(--yellow-500); */
+}
+
+.pagination__highlight {
+    color: var(--highlight);
+}

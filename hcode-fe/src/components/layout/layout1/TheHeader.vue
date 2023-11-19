@@ -18,12 +18,29 @@
 
             </div>
             <div class="header__auth">
+                <div class="header__avatar">
+                    <img
+                        class="avatar--sm"
+                        src="@/assets/img/default-avatar.png"
+                        alt="Ảnh đại diện"
+                    />
+                </div>
+                <div class="header__username">
+                    {{ usernameComputed }}
+                </div>
+                <div class="header__dropdown">
 
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script>
+import { authService, accountService } from "@/services/services.js";
+import { useAuthStore, useAccountStore } from "@/stores/stores.js";
+import { mapStores } from 'pinia';
+import authEnum from "@/enums/auth-enum.js";
+
 export default {
     name: 'TheHeader',
     data() {
@@ -47,8 +64,27 @@ export default {
                     text: this.$t("com.about"),
                     to: this.$path.signup
                 }
-            ]
+            ],
+            /**
+             * Auth
+             */
+            authService: authService,
+            accountService: accountService,
+            authEnum: authEnum,
         }
+    },
+    computed: {
+        /**
+         * Hiển thị tên người dùng
+         */
+        usernameComputed() {
+            return this.accountStore.account.Username || this.accountStore.account.FullName;
+        },
+        /**
+         * Store
+         */
+        ...mapStores(useAuthStore),
+        ...mapStores(useAccountStore),
     }
 }
 </script>
@@ -86,6 +122,33 @@ export default {
 .header__right {
     width: 460px;
     justify-content: flex-end;
+    /* background-color: black; */
+}
+.header__auth {
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+    margin-right: 30px;
+}
+
+.header__username {
+    color: #fff;
+    font-family: Consolas;
+    font-weight: 700;
+    font-size: 18px;
+}
+.header__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    /* border: 2px solid var(--grey-500); */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.header__avatar img.avatar--sm {
+    width: 94%;
+    height: 94%;
 }
 .header__logo {
     display: flex;
@@ -93,6 +156,7 @@ export default {
     justify-content: center;
     width: fit-content;
 }
+
 .header__nav {
     height: 100%;
 }

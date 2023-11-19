@@ -23,6 +23,7 @@
                     'p-inputtext p-component',
                     { 'p-invalid': errorMessage != null },
                     { 'p-warn': warnMessage != null && errorMessage == null },
+                    { 'transparent': isTransparent }
                 ]"
                 :placeholder="placeholderComputed"
                 :disabled="isDisabled"

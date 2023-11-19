@@ -5,7 +5,7 @@
             :class="[
                 'logo--hcode',
                 `size--${size}`,
-                { 'cursor--pointer': canClick }
+                { 'cursor-pointer': canClick }
             ]"
             :src="src"
             @click="clickLogo()"

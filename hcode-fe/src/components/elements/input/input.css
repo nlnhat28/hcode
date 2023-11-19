@@ -11,12 +11,20 @@
     color: #000;
     caret-color: auto;
     width: 100%;
+    border-color: var(--border-color);
 }
 .p-inputtext::placeholder {
     color: var(--color-placeholder);
 }
 .p-inputtext:enabled:focus {
     box-shadow: 0 0 0 0.15rem #c7d2fe;
+}
+.p-inputtext.transparent {
+    background-color: transparent;
+    color: #fff;
+}
+.p-inputtext.transparent .icon {
+    color: #fff;
 }
 
 /* input icon */
@@ -48,7 +56,7 @@
     color: var(--grey-700);
 }
 
-.input-icon-right.always-show, 
+.input-icon-right.always-show,
 .input-wrapper:focus-within > .input-icon-right,
 .input-wrapper:hover > .input-icon-right {
     display: flex;

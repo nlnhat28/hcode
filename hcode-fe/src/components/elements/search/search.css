@@ -1,0 +1,21 @@
+/* search-box */
+.search-box {
+    width: 300px;
+}
+
+.search-box .p-inputtext {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: #000;
+    /* background-color: transparent; */
+    color: #fff;
+}
+
+/* search-result */
+.search-result {
+    display: flex;
+    /* color: var(--blue-500) */
+}
+.search-result pre.search-result__key {
+    margin: 0;
+}

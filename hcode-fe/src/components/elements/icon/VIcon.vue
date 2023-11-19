@@ -2,6 +2,7 @@
     <div
         :class="[
             'icon-container',
+            { 'cursor-pointer': applyPointer },
             color
         ]"
         :style="`width: ${size}px; height: ${size}px;`"
@@ -9,7 +10,7 @@
         <i :class="[
             icon,
             'icon',
-            { 'cursor--pointer': applyPointer },
+            { 'cursor-pointer': applyPointer },
         ]"></i>
     </div>
 </template>

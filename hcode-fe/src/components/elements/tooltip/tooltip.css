@@ -1,17 +1,16 @@
 /* tooltip */
 
 /* wrapper */
-/* .tooltip-wrapper {
+.tooltip-wrapper {
   position: absolute;
   display: inline-block;
   height: 38px;
   pointer-events: none;
-} */
+}
 
 [tooltip] {
   position: relative;
 }
-
 /* shape */
 [tooltip]::before,
 [tooltip]::after {
