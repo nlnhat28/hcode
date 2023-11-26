@@ -17,8 +17,8 @@
                 <v-combobox
                     ref="refPageSize"
                     v-model="pageSize"
-                    optionLabel="name"
-                    :options="optionsPageSize"
+                    optionLabel="value"
+                    :options="pageSizeOptions"
                 ></v-combobox>
             </div>
             <div
@@ -128,7 +128,7 @@ export default {
         /**
          * (Props) Page object (includes pageNumber and pageSize 
          */
-        pageModel: {
+        pagingModel: {
             type: Object,
             default: {
                 pageNumber: 1,
@@ -162,7 +162,7 @@ export default {
             /**
              * (Data) Page properties (pageNumber, pageSize)
              */
-            page: this.pageModel,
+            page: this.pagingModel,
             /**
              * Page numbers
              */
@@ -174,26 +174,26 @@ export default {
             /**
              * Selects for records/page 
              */
-            optionsPageSize: [
+            pageSizeOptions: [
                 {
                     id: 10,
-                    name: 10
+                    value: 10
                 },
                 {
                     id: 20,
-                    name: 20
+                    value: 20
                 },
                 {
                     id: 30,
-                    name: 30
+                    value: 30
                 },
                 {
                     id: 50,
-                    name: 50
+                    value: 50
                 },
                 {
                     id: 100,
-                    name: 100
+                    value: 100
                 }
             ],
             /**
@@ -209,7 +209,7 @@ export default {
     created() {
         this.pageNumbers = this.pageNumbersComputed;
         this.pageView = this.page.pageNumber;
-        this.pageSize = this.optionsPageSize[0];
+        this .pageSize = this.pageSizeOptions[0];
     },
     mounted() {
         // Add shortkey event
@@ -295,9 +295,20 @@ export default {
          * 
          * Author: nlnhat (22/06/2023)
          */
-        pageModel: {
+        pagingModel: {
             handler() {
-                this.page = this.pageModel
+                this.page = this.pagingModel
+            },
+            deep: true
+        },
+        /**
+         * Handle when pageSize changes
+         * 
+         * Author: nlnhat (22/06/2023)
+         */
+        pageSize: {
+            handler() {
+                this.page.pageSize = this.pageSize.value;
             },
             deep: true
         },

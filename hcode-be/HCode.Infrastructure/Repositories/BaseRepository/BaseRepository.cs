@@ -33,7 +33,7 @@ namespace HCode.Infrastructure
         {
             var proc = $"{Procedure}Insert";
 
-            var param = InfrastructureHelper.GetParamFromEntity(entity);
+            var param = InfraHelper.GetParamFromEntity(entity);
             param.Add($"p_{TableId}Out", dbType: DbType.Guid, direction: ParameterDirection.Output);
 
             _ = await _unitOfWork.Connection.ExecuteAsync(
@@ -77,7 +77,7 @@ namespace HCode.Infrastructure
         {
             var proc = $"{Procedure}Update";
 
-            var param = InfrastructureHelper.GetParamFromEntity(entity);
+            var param = InfraHelper.GetParamFromEntity(entity);
 
             var result = await _unitOfWork.Connection.ExecuteAsync(
                 proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);

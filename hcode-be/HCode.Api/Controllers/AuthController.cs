@@ -8,7 +8,9 @@ namespace HCode.Api
     /// Controller Auth
     /// </summary>
     /// Created by: nlnhat (13/07/2023)
-    public class AuthController : BaseController<AuthDto, Account>
+    [ApiController]
+    [Route("api/v1/[controller]")]
+    public class AuthController : ControllerBase
     {
         #region Fields
         /// <summary>
@@ -24,7 +26,7 @@ namespace HCode.Api
         /// </summary>
         /// <param name="service">Service auth</param>
         /// Created by: nlnhat (17/08/2023)
-        public AuthController(IAuthService service, IWebHostEnvironment webHostEnvironment) : base(service, webHostEnvironment)
+        public AuthController(IAuthService service)
         {
             _service = service;
         }

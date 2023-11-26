@@ -6,7 +6,7 @@
         <div
             :class="[
                 'th__sort',
-                { 'cursor-pointer': sortType != $enums.sortType.disabled },
+                { 'cursor-pointer': sortConfig.sortType != $enums.sortType.disabled },
                 { 'flex-start': textAlign == 'left' },
                 { 'flex-center': textAlign == 'center' },
                 { 'flex-start': textAlign == 'right' },
@@ -27,8 +27,8 @@
         <div
             class='th__filter'
             v-if="filterConfig"
-            v-click-outside="hideFilter"
         >
+            <!-- v-click-outside="hideFilter" -->
             <v-icon
                 :icon="'far fa-filter'"
                 :class="[
@@ -42,17 +42,19 @@
                 @click="toggleDisplayFilter"
             >
             </v-icon>
-            <!-- <m-filter
-                :filterConfig="filterConfig"
-                :filterItem="filterItem"
-                :name="name"
-                :title="fullTitle ?? title"
-                v-show="isShowFilter"
-                @emitUpdateFilterItem="updateFilterItem"
-                @emitHideFilter="hideFilter"
-                ref="filter"
-            >
-            </m-filter> -->
+            <div class="p-relative">
+                <v-filter
+                    :filterConfig="filterConfig"
+                    :filterModel="filterData"
+                    :name="name"
+                    :title="fullTitle ?? title"
+                    v-show="isShowFilter"
+                    @emitUpdateFilterModel="updateFilterModel"
+                    @emitHideFilter="hideFilter"
+                    ref="filter"
+                >
+                </v-filter>
+            </div>
         </div>
         <span
             class="th__resize"
@@ -111,17 +113,24 @@ export default {
         /**
          * Kiểu sắp xếp
          */
-        sortType: {
-            type: Number,
-            default: sortType.disabled,
-            validator: (value) => {
-                return [
-                    sortType.disabled,
-                    sortType.asc,
-                    sortType.desc,
-                    sortType.blur,
-                ].includes(value);
-            },
+        // sortType: {
+        //     type: Number,
+        //     default: sortType.disabled,
+        //     validator: (value) => {
+        //         return [
+        //             sortType.disabled,
+        //             sortType.asc,
+        //             sortType.desc,
+        //             sortType.blur,
+        //         ].includes(value);
+        //     },
+        // },
+        /**
+         * Config để sort {sortType, field}
+         */
+        sortConfig: {
+            type: Object,
+            default: {}
         },
         /**
          * (Prop) Sort object
@@ -167,7 +176,7 @@ export default {
             /**
              * Sort state
              */
-            sort: this.sortType,
+            sort: this.sortConfig.sortType,
             /**
              * Sort icon
              */
@@ -228,7 +237,7 @@ export default {
             if (this.sort == this.$enums.sortType.asc || this.sort == this.$enums.sortType.desc)
                 return {
                     sortType: this.sort,
-                    columnName: this.name
+                    columnName: this.sortConfig.field,
                 };
             else return null;
         },
@@ -242,6 +251,11 @@ export default {
                 this.filterConfig.filterType == this.$enums.filterType.text ||
                 this.filterConfig.filterType == this.$enums.filterType.date)
         },
+    },
+    created() {
+        if (this.sortConfig && !this.sortConfig.field) {
+            this.sortConfig.field = this.name;
+        }
     },
     methods: {
         /**
@@ -292,7 +306,7 @@ export default {
          * Author: nlnhat (20/07/2023)
          */
         onClickSortType() {
-            if (this.sortType != sortType.disabled) {
+            if (this.sortConfig.sortType != sortType.disabled) {
                 switch (this.sort) {
                     case this.$enums.sortType.blur:
                         this.sort = this.$enums.sortType.asc

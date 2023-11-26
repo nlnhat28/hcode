@@ -7,20 +7,20 @@ namespace HCode.Domain
     public enum ProblemState
     {
         /// <summary>
-        /// Nháp
+        /// Công khai
         /// </summary>
-        Draft = 1,
+        Public = 1,
+        /// <summary>
+        /// Công khai nhưng không kích hoạt
+        /// </summary>
+        DeactivatedPublic = 2,
         /// <summary>
         /// Riêng tư
         /// </summary>
-        Private = 2,
+        Private = 3,
         /// <summary>
-        /// Công khai như không kích hoạt
+        /// Nháp
         /// </summary>
-        DeactivatedPublic = 3,
-        /// <summary>
-        /// Công khai
-        /// </summary>
-        Public = 4,
+        Draft = 4,
     }
 }

@@ -17,9 +17,9 @@
         /// </summary>
         public int AllRecord { get; set; }
         /// <summary>
-        /// Số trang hiện tại
+        /// Thông tin phân trang
         /// </summary>
-        public int PageNumber { get; set; }
+        public PagingModel? PagingModel { get; set; }
         /// <summary>
         /// Danh sách đối tượng thoả mãn điều kiện lọc
         /// </summary>

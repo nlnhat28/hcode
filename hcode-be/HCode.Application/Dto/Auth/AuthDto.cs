@@ -7,7 +7,7 @@ namespace HCode.Application
     /// Dto tạo tài khoản
     /// </summary>
     /// Created by: nlnhat (11/07/2023)
-    public class AuthDto
+    public class AuthDto : BaseDto
     {
         #region Properties
         /// <summary>

@@ -4,36 +4,40 @@
         :class="{
             'td--resizable': content,
         }"
-        ref="td"
         @mouseover="onMouseOver"
     >
+        <v-skeleton />
         <!-- default slot content -->
         <slot name="td"></slot>
-        <span
-            class="tooltip-wrapper"
-            v-if="(isShowTooltip && content) || tooltip"
-            :style="`width: ${widthTooltip}px`"
-        >
-            <!-- Trường hợp có tooltip -->
-            <span
-                v-if="tooltip"
-                v-tooltip="tooltip"
-                style="position: absolute; left: 50%"
-            ></span>
-            <!-- Trường hợp ko có tooltip thì dùng content -->
-            <span
-                v-else
-                v-tooltip="content"
-                style="position: absolute; left: 50%"
-            ></span>
-        </span>
+
         <div :class="[
             'td__content',
             { 'flex-start': style.textAlign == 'left' },
             { 'flex-center': style.textAlign == 'center' },
             { 'flex-start': style.textAlign == 'right' },
         ]">
-            <div class="td__text">
+            <div
+                ref="td"
+                class="td__text"
+            >
+                <span
+                    class="tooltip-wrapper"
+                    v-if="(isShowTooltip && content) || tooltip"
+                    :style="`width: ${widthTooltip}px`"
+                >
+                    <!-- Trường hợp có tooltip -->
+                    <span
+                        v-if="tooltip"
+                        v-tooltip="tooltip"
+                        style="position: absolute; left: 50%"
+                    ></span>
+                    <!-- Trường hợp ko có tooltip thì dùng content -->
+                    <span
+                        v-else
+                        v-tooltip="content"
+                        style="position: absolute; left: 50%"
+                    ></span>
+                </span>
                 {{ content }}
             </div>
             <slot></slot>
@@ -101,8 +105,8 @@ export default {
 <style scoped>
 @import './table.css';
 
-.table td:hover [tooltip]::before,
-.table td:hover [tooltip]::after {
+.table .td__content:hover [tooltip]::before,
+.table .td__content:hover [tooltip]::after {
     display: block;
     opacity: 1;
     transition: opacity 0.6s;

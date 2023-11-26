@@ -10,19 +10,14 @@ namespace HCode.Api
     /// Created by: nlnhat (17/08/2023)
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class ReadOnlyController<TEntityDto> : ControllerBase
+    public class ReadOnlyController<TEntityDto, TEntity> : ControllerBase where TEntityDto : BaseDto where TEntity : BaseEntity
     {
         #region Fields
         /// <summary>
         /// Service chỉ đọc
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
-        private readonly IReadOnlyService<TEntityDto> _service;
-        /// <summary>
-        /// Web host environment
-        /// </summary>
-        /// Created by: nlnhat (11/09/2023)
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IReadOnlyService<TEntityDto, TEntity> _service;
         #endregion
 
         #region Constructors
@@ -31,10 +26,9 @@ namespace HCode.Api
         /// </summary>
         /// <param name="service">Service chỉ đọc</param>
         /// Created by: nlnhat (17/08/2023)
-        public ReadOnlyController(IReadOnlyService<TEntityDto> service, IWebHostEnvironment webHostEnvironment)
+        public ReadOnlyController(IReadOnlyService<TEntityDto, TEntity> service, IWebHostEnvironment webHostEnvironment)
         {
             _service = service;
-            _webHostEnvironment = webHostEnvironment;
         }
         #endregion
 
@@ -65,6 +59,21 @@ namespace HCode.Api
             var result = new ServerResponse();
 
             result.Data = await _service.GetAsync(id);
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        /// <summary>
+        /// Lấy đối tượng theo id
+        /// </summary>
+        /// <param name="id">Id của đối tượng</param>
+        /// <returns>Đối tượng có id được truy vấn</returns>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpPost("Filter")]
+        public async Task<IActionResult> FilterAsync([FromBody]FilterRequestDto filterRequestDto)
+        {
+            var result = new ServerResponse();
+
+            result.Data = await _service.FilterAsync(filterRequestDto.KeySearch, filterRequestDto.PagingModel, filterRequestDto.SortModels, filterRequestDto.FilterModels);
 
             return StatusCode(StatusCodes.Status200OK, result);
         }

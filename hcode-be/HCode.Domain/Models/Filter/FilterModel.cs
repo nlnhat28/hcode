@@ -21,7 +21,7 @@
         /// <summary>
         /// Giá trị lọc
         /// </summary>
-        public string? FilterValue { get; set; }
+        public object? FilterValue { get; set; }
         #endregion
     }
 }

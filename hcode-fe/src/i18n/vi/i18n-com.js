@@ -32,6 +32,18 @@ const com = {
     total: "Tổng",
     recordsPerPage: "Số bản ghi/trang",
     record: "Bản ghi",
+    filter: "Lọc",
+    apply: "Áp dụng",
+    removeFilter: "Bỏ lọc",
+    contain: "Chứa",
+    equal: "Bằng",
+    startWith: "Bắt đầu bằng",
+    endWith: "Kết thúc bằng",
+    before: "Trước",
+    after: "Sau",
+    empty: "Trống",
+    typeFilterValue: "Nhập giá trị",
+    filterValue: "Giá trị lọc",
 };
 
 export default com;

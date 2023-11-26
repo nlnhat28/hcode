@@ -18,7 +18,7 @@
     margin: 0;
 }
 .v-dialog .p-button.p-button-sm {
-    padding: 0.3rem 0.7rem;
+    /* padding: 0.3rem 0.7rem; */
 }
 
 .v-dialog.p-dialog .p-dialog-header,

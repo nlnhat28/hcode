@@ -50,5 +50,26 @@ const commonFuction = {
     cloneDeep(obj) {
         return _.cloneDeep(obj);
     },
+    /**
+     * Tạo document title
+     */
+    documentTitle(title) {
+        if (this.isNullString(title)) {
+            return window.config.app.title;
+        }
+        return `${title} - ${window.config.app.title}`
+    },
+    /**
+     * Tạo mảng n phần tử rỗng
+     */
+    genArrayEmpty(n) {
+        let amount = 1;
+        if (n && Number.isInteger(n) && n > 0) {
+            amount = n;
+        }
+
+        const arr = Array.from({ length: amount }, () => ({}));
+        return arr;
+    }
 };
 export default commonFuction;

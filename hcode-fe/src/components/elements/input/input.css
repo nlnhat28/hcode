@@ -5,10 +5,11 @@
 .input-wrapper {
     width: 100%;
 }
+
 .p-inputtext {
     font-family: var(--font-primary) !important;
     font-size: 18px !important;
-    color: #000;
+    /* color: #000; */
     caret-color: auto;
     width: 100%;
     border-color: var(--border-color);
@@ -30,7 +31,7 @@
 /* input icon */
 .p-input-icon-left > .input-icon-left {
     position: absolute;
-    width: 2.5rem;
+    width: 3rem;
     height: 100%;
     display: flex;
     top: 0;
@@ -46,7 +47,7 @@
 
 .p-input-icon-right > .input-icon-right {
     position: absolute;
-    width: 2.5rem;
+    width: 3rem;
     height: 100%;
     top: 0;
     right: 0;
@@ -61,7 +62,12 @@
 .input-wrapper:hover > .input-icon-right {
     display: flex;
 }
-
+.p-input-icon-left > .p-inputtext {
+    padding-left: 3rem;
+}
+.p-input-icon-right > .p-inputtext {
+    padding-right: 3rem;
+}
 .p-input-icon-right > .p-inputtext {
     padding-right: 0.75rem;
 }

@@ -26,5 +26,22 @@
         /// <returns>Đối tượng được tìm thấy</returns>
         /// Created by: nlnhat (15/08/2023)
         Task<TEntity?> GetAsync(Guid id);
+        /// <summary>
+        /// Lọc đối tượng
+        /// </summary>
+        /// <param name="keySearch"></param>
+        /// <param name="pagingModel"></param>
+        /// <param name="sortModels"></param>
+        /// <param name="filterModels"></param>
+        /// <returns></returns>
+        Task<FilterResultModel<TEntity>> FilterAsync(
+            string? keySearch, PagingModel? pagingModel, List<SortModel>? sortModels, List<FilterModel>? filterModels, Guid? accountId);
+        /// <summary>
+        /// Lấy đối tượng được lọc
+        /// </summary>
+        /// <param name="proc"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        Task<IEnumerable<TEntity>> GetDataFilterAsync(string proc, object? param);
     }
 }

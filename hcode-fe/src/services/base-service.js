@@ -70,9 +70,21 @@ class BaseService {
      * @return Response
      */
     async deleteMany(ids) {
-        const response = await this.baseRequest.delete(this.baseUrl, {
-            data: ids,
-        });
+        const response = await this.baseRequest.delete(this.baseUrl, ids);
+        return response;
+    }
+    /**
+     * Filter
+     *
+     * Author: nlnhat (03/07/2023)
+     * @param {object} data FilterRequestDto
+     * @return Response
+     */
+    async filter(data) {
+        const response = await this.baseRequest.post(
+            `${this.baseUrl}/Filter`,
+            data
+        );
         return response;
     }
 }

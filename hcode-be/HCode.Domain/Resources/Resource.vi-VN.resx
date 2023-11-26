@@ -157,6 +157,15 @@ Mã xác thực là: {2}. Thời gian hiệu lực: {3} phút.</value>
   <data name="AuthVerifyEmail" xml:space="preserve">
     <value>Xác thực email bị lỗi</value>
   </data>
+  <data name="DifficultyEasy" xml:space="preserve">
+    <value>Dễ</value>
+  </data>
+  <data name="DifficultyHard" xml:space="preserve">
+    <value>Khó</value>
+  </data>
+  <data name="DifficultyMedium" xml:space="preserve">
+    <value>Vừa</value>
+  </data>
   <data name="ServerError" xml:space="preserve">
     <value>Lỗi hệ thống</value>
   </data>

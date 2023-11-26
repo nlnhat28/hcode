@@ -1,3 +1,5 @@
+import { t } from "@/i18n/i18n.js";
+
 const enums = {
     /**
      * Chế độ sử dụng form
@@ -145,9 +147,18 @@ const enums = {
      * Độ khó
      */
     difficulty: {
-        easy: 1,
-        medium: 2,
-        hard: 3,
+        easy: {
+            value: 1,
+            label: t("enums.difficulty.easy"),
+        },
+        medium: {
+            value: 2,
+            label: t("enums.difficulty.medium"),
+        },
+        hard: {
+            value: 3,
+            label: t("enums.difficulty.hard"),
+        },
     },
 };
 export default enums;

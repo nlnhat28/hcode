@@ -1,3 +1,4 @@
+using HCode.Domain;
 using System.ComponentModel.DataAnnotations;
 
 namespace HCode.Application
@@ -6,9 +7,17 @@ namespace HCode.Application
     /// Lớp Dto cơ sở
     /// </summary>
     /// Created by: nlnhat (11/07/2023)
-    public class BaseDto
+    public class BaseDto : IHasEntityId
     {
         #region Properties
+        /// <summary>
+        /// Id
+        /// </summary>
+        public Guid Id { get; set; }
+        /// <summary>
+        /// STT
+        /// </summary>
+        public int RowNumber { get; set; }
         /// <summary>
         /// Ngày tạo
         /// </summary>

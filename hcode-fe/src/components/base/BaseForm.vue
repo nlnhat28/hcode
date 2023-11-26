@@ -80,8 +80,8 @@ export default {
         };
     },
     async created() {
-        this.initOnCreated();
-
+        document.title = this.$cf.documentTitle(this.documentTitle);
+        await this.initOnCreated();
         await this.loadingEffect(async () => {
             await this.handleInstanceOnCreate();
         });
@@ -132,8 +132,7 @@ export default {
         /**
          * Khởi tại dữ liệu data
          */
-        initOnCreated() {
-
+        async initOnCreated() {
         },
         /**
          * Handle instance on created()

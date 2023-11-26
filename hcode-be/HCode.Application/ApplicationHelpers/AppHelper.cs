@@ -1,4 +1,6 @@
 ﻿using HCode.Domain;
+using Microsoft.Extensions.Localization;
+using OfficeOpenXml.Drawing.Chart;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,7 +11,7 @@ namespace HCode.Application
     /// Các phương thức trợ giúp tầng Appication
     /// </summary>
     /// Created by: nlnhat (22/07/2023)
-    public class ApplicationHelper
+    public class AppHelper
     {
         #region Methods
         /// <summary>
@@ -134,6 +136,21 @@ namespace HCode.Application
             return null;
         }
         /// <summary>
+        /// Đo khoảng cách từ thời gian tạo đến thời điểm hiện tại để xem mới hay không
+        /// </summary>
+        /// <param name="createdTime">Thời gian tạo</param>
+        /// <param name="days">Nhỏ hơn số ngày này thì IsNew</param>
+        /// <returns></returns>
+        public static bool IsNew(DateTime? createdTime, int? days = 7)
+        {
+            if (createdTime != null)
+            {
+                var difference = (TimeSpan)(DateTime.UtcNow - createdTime);
+                return difference.TotalDays <= days;
+            }
+            return false;
+        }
+        /// <summary>
         /// Lấy chữ cái đầu mỗi từ trong chuỗi. Vd: Nguyên vật liệu -> Nvl
         /// </summary>
         /// <param name="text">Chuỗi đầu vào</param>
@@ -200,6 +217,24 @@ namespace HCode.Application
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt);
 
             return (hashedPassword, salt);
+        }
+        /// <summary>
+        /// Convert độ khó sang tên
+        /// </summary>
+        /// <param name="difficulty">Enum Difficulty</param>
+        /// <param name="resource"></param>
+        /// <returns></returns>
+        public static string? ConvertToDifficultyName(Difficulty? difficulty, IStringLocalizer<Resource> resource)
+        {
+            var difficultyName = difficulty switch
+            {
+                Difficulty.Easy => resource["DifficultyEasy"],
+                Difficulty.Medium => resource["DifficultyMedium"],
+                Difficulty.Hard => resource["DifficultyHard"],
+                _ => string.Empty,
+            };
+
+            return difficultyName;
         }
         #endregion
     }

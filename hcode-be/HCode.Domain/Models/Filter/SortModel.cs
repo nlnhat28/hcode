@@ -12,7 +12,6 @@ namespace HCode.Domain
         /// <summary>
         /// Tên cột sắp xếp
         /// </summary>
-        [Required]
         public string ColumnName { get; set; }
         /// <summary>
         /// Kiểu sắp xếp

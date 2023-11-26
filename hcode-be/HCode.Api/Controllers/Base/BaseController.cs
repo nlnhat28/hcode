@@ -10,7 +10,7 @@ namespace HCode.Api
     /// Created by: nlnhat (17/08/2023)
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class BaseController<TEntityDto, TEntity> : ReadOnlyController<TEntityDto>
+    public class BaseController<TEntityDto, TEntity> : ReadOnlyController<TEntityDto, TEntity> where TEntityDto : BaseDto where TEntity : BaseEntity
     {
         #region Fields
         /// <summary>

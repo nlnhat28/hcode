@@ -6,10 +6,17 @@ namespace HCode.Domain
     /// Lớp thực thể cơ sở
     /// </summary>
     /// Created by: nlnhat (11/07/2023)
-    public class BaseAuditEntity
+    public class BaseAuditEntity : IHasEntityId
     {
         #region Properties
-        public int? RowIndex { get; set; }
+        /// <summary>
+        /// Id
+        /// </summary>
+        public Guid Id { get; set; }
+        /// <summary>
+        /// Số thứ tự
+        /// </summary>
+        public int? RowNumber { get; set; }
         /// <summary>
         /// Ngày tạo
         /// </summary>

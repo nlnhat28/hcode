@@ -17,6 +17,6 @@ namespace HCode.Domain
         /// <summary>
         /// Khó
         /// </summary>
-        Difficult = 3,
+        Hard = 3,
     }
 }

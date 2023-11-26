@@ -2,6 +2,9 @@
 .p-dropdown {
     border-color: var(--border-color);
 }
+.p-dropdown .p-inputtext {
+    font-size: 18px;
+}
 
 /* items */
 .p-dropdown-items-wrapper {

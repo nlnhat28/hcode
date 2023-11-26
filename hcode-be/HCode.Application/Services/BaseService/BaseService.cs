@@ -12,7 +12,8 @@ namespace HCode.Application
     /// <typeparam name="TEntity">Thực thể</typeparam>
     /// Created by: nlnhat (18/07/2023)
     public abstract class BaseService<TEntityDto, TEntity>
-                        : ReadOnlyService<TEntityDto, TEntity>, IBaseService<TEntityDto, TEntity>
+                        : ReadOnlyService<TEntityDto, TEntity>, IBaseService<TEntityDto, TEntity> 
+                        where TEntityDto : BaseDto where TEntity : BaseEntity
     {
         #region Fields
         /// <summary>
@@ -40,8 +41,9 @@ namespace HCode.Application
             IBaseRepository<TEntity> repository, 
             IStringLocalizer<Resource> resource, 
             IMapper mapper, 
-            IUnitOfWork unitOfWork)
-            : base(repository, resource, mapper) 
+            IUnitOfWork unitOfWork,
+            IAuthService authService)
+            : base(repository, resource, mapper, authService) 
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
@@ -64,14 +66,27 @@ namespace HCode.Application
         /// <param name="entityDto">Dto tạo mới</param>
         /// <returns>Thực thể</returns>
         /// Created by: nlnhat (18/07/2023)
-        public abstract TEntity MapCreateDtoToEntity(TEntityDto entityDto);
+        public virtual TEntity MapCreateDtoToEntity(TEntityDto entityDto)
+        {
+            entityDto.Id = Guid.NewGuid();
+            entityDto.CreatedTime ??= DateTime.UtcNow;
+
+            var result = _mapper.Map<TEntity>(entityDto);
+            return result;
+        }
         /// <summary>
         /// Map dto cập nhật sang thực thể
         /// </summary>
         /// <param name="entityDto">Dto cập nhật</param>
         /// <returns>Thực thể</returns>
         /// Created by: nlnhat (18/07/2023)
-        public abstract TEntity MapUpdateDtoToEntity(TEntityDto entityDto);
+        public virtual TEntity MapUpdateDtoToEntity(TEntityDto entityDto)
+        {
+            entityDto.ModifiedTime = DateTime.UtcNow;
+
+            var result = _mapper.Map<TEntity>(entityDto);
+            return result;
+        }
         /// <summary>
         /// Tạo mới đối tượng 
         /// </summary>

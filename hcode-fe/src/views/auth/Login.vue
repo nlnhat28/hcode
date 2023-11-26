@@ -59,6 +59,7 @@ export default {
     extends: BaseAuth,
     data() {
         return {
+            documentTitle: this.$t("auth.login"),
         }
     },
     computed: {

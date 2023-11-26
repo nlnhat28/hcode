@@ -8,10 +8,6 @@
                 </div>
                 <div class="table-toolbar__right">
                     <slot name="toolbarRight"></slot>
-                    <v-search-box
-                        v-model="keySearch"
-                        ref="searchBox"
-                    ></v-search-box>
                 </div>
             </div>
             <!-- table content -->
@@ -20,7 +16,11 @@
                 @scroll="onScroll()"
                 ref="tableContent"
             >
-                <table :class="{ 'table': true, '.disabled': isLoading }">
+                <table :class="[
+                    'table',
+                    { '.disabled': isLoading },
+                    { 'show-skeleton': isLoading }
+                ]">
                     <thead
                         class="table__head"
                         ref="tableHead"
@@ -29,34 +29,36 @@
                         <slot name="thead"></slot>
                         <v-th
                             v-for="(col, index) in columns"
+                            v-model:sortModel="sortModels[index]"
+                            v-model:filterModel="filterModels[index]"
                             :key="index"
                             :textAlign="col.textAlign"
                             :widthCell="col.widthCell"
                             :name="col.name"
                             :title="col.title"
                             :fullTitle="col?.fullTitle"
-                            :sortType="col.sortType"
+                            :sortConfig="col.sortConfig"
                             :filterConfig="col.filterConfig"
                             :resizable="col.resizable == true ? true : resizable"
                         >
-                            <!-- v-model:sortModel="sortModels[index]"
-                            v-model:filterModel="filterModels[index]"
-                        > -->
                             {{ col.title }}
                         </v-th>
                     </thead>
                     <tbody class="table__body">
-                        <slot name="tbody"></slot>
+                        <slot
+                            name="tbody"
+                            v-if="!isLoading"
+                        ></slot>
                         <!-- table body -->
                         <v-tr
-                            v-if="!this.$slots.tbody"
+                            v-if="!this.$slots.tbody && !isLoading"
                             v-for="(item, index) in items"
-                            :key="item[itemId] ?? index"
-                            :index="index"
-                            :id="item[itemId]"
                             ref="tr"
+                            :key="item[itemIdKey] ?? index"
+                            :index="index"
+                            :id="item[itemIdKey]"
                             @emitUpdate="showMaterialForm(item)"
-                            @emitDelete="handleDeleteOnRow(item[itemId])"
+                            @emitDelete="handleDeleteOnRow(item[itemIdKey])"
                             @emitDuplicate="duplicateMaterial(item)"
                             @emitCreate="showEmptyMaterialForm"
                             @emitReload="onReloadData"
@@ -66,7 +68,7 @@
                             @emitFocusById="focusById"
                             @emitSelectMany="selectMany"
                         >
-                            <!-- :isSelected="isSelected(item[itemId])" -->
+                            <!-- :isSelected="isSelected(item[itemIdKey])" -->
                             <template #content>
                                 <v-td
                                     v-for="(col, index) in columns"
@@ -75,19 +77,24 @@
                                     :content="item[col.name]"
                                 >
                                 </v-td>
-                                <!-- Ngừng theo dõi-->
-                                <!-- <v-td textAlign="center">
-                                    <v-checkbox
-                                        :checked="item.IsUnfollow"
-                                        :isReadOnly="true"
-                                    ></v-checkbox>
-                                </v-td> -->
+                            </template>
+                        </v-tr>
+                        <v-tr
+                            v-if="isLoading"
+                            v-for="(item, index) in skeletonItems"
+                            :key="index"
+                        >
+                            <template #content>
+                                <v-td
+                                    v-for="(col, index) in columns"
+                                    :key="index"
+                                >
+                                </v-td>
                             </template>
                         </v-tr>
                     </tbody>
                 </table>
-                <v-loading v-if="isLoading"></v-loading>
-                <v-no-content v-if="(!isLoading && totalRecord == 0)"></v-no-content>
+                <v-no-content v-if="!isLoading && totalRecord == 0"></v-no-content>
             </div>
         </div>
         <!-- table footer -->
@@ -131,7 +138,7 @@ export default {
         /**
          * Tên trường Id
          */
-        itemId: {
+        itemIdKey: {
             type: String,
             default: "id"
         },
@@ -145,7 +152,8 @@ export default {
          * Loading state
          */
         isLoading: {
-            type: Boolean
+            type: Boolean,
+            default: false,
         },
         /**
          * Không show head
@@ -160,6 +168,28 @@ export default {
         resizable: {
             type: Boolean,
             default: true,
+        },
+        /**
+         * (Prop) Sort object
+         */
+        sortModels: {
+            type: Array,
+            default: []
+        },
+        /**
+         * Filter model output
+         */
+        filterModels: {
+            type: Array,
+            default: []
+        },
+    },
+    data() {
+        return {
+            /**
+             * Items rỗng khi loading
+             */
+            skeletonItems: this.$cf.genArrayEmpty(10),
         }
     },
     expose: [

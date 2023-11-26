@@ -1,93 +1,64 @@
 <template>
-    <div class="filter">
-        <!-- <div class="filter__logic">
-            <m-compare-select
-                :compares="logicTypeSelects"
-                :isActiveFilter="filterModel != null"
-                v-model:compareModel="logicType"
-                @emitSelected="handleSelectedLogic()"
-                @emitRemoveFilter=onClickRemove()
-                ref="logic"
-            >
-            </m-compare-select>
+    <div
+        class="filter bg-dark"
+        @keydown="onKeyDown"
+    >
+        <div class="filter__header">
+            {{ $t('com.filter') }} {{ title.toLowerCase() }}
         </div>
-        <div
-            class="filter__compare"
-            v-if="isShowCompareSelects"
-        >
-            <m-compare-select
-                v-model:compareModel="compareType"
-                :compares="compareTypeSelects"
-                :isActiveFilter="filterModel != null"
-                @emitSelected="handleSelectedCompare()"
-                @emitRemoveFilter=onClickRemove()
-                ref="compare"
+        <div class="filter__body">
+            <v-combobox
+                v-if="isShowCompareSelects"
+                :options="compareTypeOptions"
+                optionLabel="name"
+                v-model="compareType"
             >
-            </m-compare-select>
-        </div> -->
-        <div class="filter__value">
-            <!-- <m-combobox
+            </v-combobox>
+            <v-combobox
                 v-if="isShowSelectsId"
-                v-model:id="filterValueKey"
-                v-model:name="filterValueName"
-                :theSelects="selects"
-                :isReadOnly="true"
-                :canSearch="false"
-                :canUnselect="true"
-                @emitEnter="handleUpdateFilterModel()"
                 ref="combobox"
+                v-model="selectedValue"
+                optionLabel="name"
+                :options="selects"
             >
-            </m-combobox>
-            <m-combobox
+            </v-combobox>
+            <v-combobox
                 v-if="isShowSelectsName"
-                v-model:id="filterValueKey"
-                v-model:name="filterValueName"
-                :theSelects="selects"
-                :isReadOnly="false"
-                :canSearch="true"
-                :canUnselect="true"
-                @emitEnter="handleUpdateFilterModel()"
                 ref="combobox"
+                v-model="selectedValue"
+                optionLabel="name"
+                :options="selects"
             >
-            </m-combobox> -->
+            </v-combobox>
             <v-input-text
                 v-if="isShowTextField"
                 ref="textfield"
                 v-model="filterValueKey"
+                :placeholder="`${$t('com.typeFilterValue')}`"
+                :validate="validateCannotNull"
                 :maxLength=255
-                :isReadOnly="isReadOnlyInput"
-                @emitBlur="clearErrorMessage()"
-                @emitEnter="handleUpdateFilterModel()"
+                :label="$t('com.filterValue')"
+                hasClear
             >
             </v-input-text>
+            <!-- <m-date-picker
+                    v-if="isShowDatePicker"
+                    ref="datepicker"
+                    v-model:dateModel="filterValueKey"
+                    :validate="validateCannotNull"
+                    :label="capitalizeFirstChar(title)"
+                    @emitEnterInput="onClickApply()"
+                >
+                </m-date-picker> -->
             <v-input-text
-                v-if="isShowNumberField"
-                ref="textfield"
-                v-model="filterValueKey"
-                :format="formatDecimalInput"
-                :maxLength=255
-                :label="this.$resources['vn'].filterValue"
-                :isReadOnly="isReadOnlyInput"
-                :canSetSelection="true"
-                @emitBlur="clearErrorMessage()"
-                @emitEnter="handleUpdateFilterModel()"
-            >
-            </v-input-text>
-            <m-date-picker
-                v-if="isShowDatePicker"
-                ref="datepicker"
-                v-model:dateModel="filterValueKey"
-                :label="capitalizeFirstChar(title)"
-                @emitEnterInput="onClickApply()"
-            >
-            </m-date-picker>
-            <!-- <v-input-text
                 v-if="isShowMonthField"
                 type="number"
                 ref="textfield"
                 v-model="filterValueKey"
+                :placeholder="$t('com.typeMonth')"
                 :validate="validateMonthField"
                 :maxLength=255
+                :label="$t('com.month')"
             >
             </v-input-text>
             <v-input-text
@@ -95,28 +66,39 @@
                 type="number"
                 ref="textfield"
                 v-model="filterValueKey"
+                :placeholder="$t('com.typeYear')"
                 :validate="validateYearField"
                 :maxLength=255
+                :label="$t('com.year')"
             >
-            </v-input-text> -->
+            </v-input-text>
+        </div>
+        <div class="filter__footer">
+            <v-button
+                ref="apply"
+                :label="$t('com.apply')"
+                @click="onClickApply"
+            >
+            </v-button>
+            <v-button
+                outlined
+                :label="$t('com.removeFilter')"
+                @click="onClickRemove"
+            >
+            </v-button>
         </div>
     </div>
 </template>
 <script>
 // import { isNullOrEmpty, capitalizeFirstChar } from "@/js/utils/string.js";
 // import { validateMonth, validateYear } from "@/js/form/validate.js";
-// import { formatDecimalInput } from "@/js/utils/format.js";
-// import { reformatDecimal } from "@/js/utils/clean-format.js";
-// import resources from '@/constants/resources.js'
 import enums from '@/enums/enums.js'
-import { debounce } from 'lodash';
 
-const logicType = enums.logicType;
 const compareType = enums.compareType;
 const filterType = enums.filterType;
 
 export default {
-    name: 'VFilter',
+    name: 'MISAFilter',
     props: {
         /**
          * Display name
@@ -137,7 +119,7 @@ export default {
             type: Object
         },
         /**
-         * Filter model output
+         * Filter item output
          */
         filterModel: {
             type: Object
@@ -149,141 +131,76 @@ export default {
              * List of compare type when filter data type is text
              */
             textCompareSelects: [
-                // {
-                //     id: compareType.contain,
-                //     name: '*',
-                //     note: resources['vn'].contain,
-                // },
-                // {
-                //     id: compareType.notContain,
-                //     name: '!',
-                //     note: resources['vn'].notContain,
-                // },
-                // {
-                //     id: compareType.equal,
-                //     name: '=',
-                //     note: resources['vn'].equal,
-                // },
-                // {
-                //     id: compareType.startWith,
-                //     name: '+',
-                //     note: resources['vn'].startWith,
-                // },
-                // {
-                //     id: compareType.endWith,
-                //     name: '-',
-                //     note: resources['vn'].endWith,
-                // },
+                {
+                    id: compareType.contain,
+                    name: this.$t('com.contain')
+                },
+                {
+                    id: compareType.equal,
+                    name: this.$t('com.equal')
+                },
+                {
+                    id: compareType.startWith,
+                    name: this.$t('com.startWith')
+                },
+                {
+                    id: compareType.endWith,
+                    name: this.$t('com.endWith')
+                },
+                {
+                    id: compareType.empty,
+                    name: this.$t('com.empty')
+                },
             ],
             /**
              * List of compare type when filter data type is date
              */
             dateCompareSelects: [
-                // {
-                //     id: compareType.equal,
-                //     name: resources['vn'].equal
-                // },
-                // {
-                //     id: compareType.less,
-                //     name: resources['vn'].before
-                // },
-                // {
-                //     id: compareType.more,
-                //     name: resources['vn'].after
-                // },
-                // {
-                //     id: compareType.month,
-                //     name: resources['vn'].monthEqual
-                // },
-                // {
-                //     id: compareType.year,
-                //     name: resources['vn'].yearEqual
-                // },
-                // {
-                //     id: compareType.empty,
-                //     name: resources['vn'].empty
-                // }
-            ],
-            /**
-             * List of compare type when filter data type is number
-             */
-            numberCompareSelects: [
-                // {
-                //     id: compareType.equal,
-                //     name: '=',
-                //     note: resources['vn'].equal,
-                // },
-                // {
-                //     id: compareType.notEqual,
-                //     name: '<>',
-                //     note: resources['vn'].notEqual,
-                // },
-                // {
-                //     id: compareType.less,
-                //     name: '<',
-                //     note: resources['vn'].less,
-                // },
-                // {
-                //     id: compareType.more,
-                //     name: '>',
-                //     note: resources['vn'].more,
-                // },
-                // {
-                //     id: compareType.lessEqual,
-                //     name: '<=',
-                //     note: resources['vn'].lessEqual,
-                // },
-                // {
-                //     id: compareType.moreEqual,
-                //     name: '>=',
-                //     note: resources['vn'].moreEqual,
-                // },
-            ],
-            /**
-             * Logic type select
-             */
-            logicTypeSelects: [
-                // {
-                //     id: logicType.and,
-                //     name: '&',
-                //     note: resources['vn'].and,
-                // },
-                // {
-                //     id: logicType.or,
-                //     name: '||',
-                //     note: resources['vn'].or,
-                // },
+                {
+                    id: compareType.equal,
+                    name: this.$t('com.equal')
+                },
+                {
+                    id: compareType.less,
+                    name: this.$t('com.before')
+                },
+                {
+                    id: compareType.more,
+                    name: this.$t('com.after')
+                },
+                {
+                    id: compareType.month,
+                    name: this.$t('com.monthEqual')
+                },
+                {
+                    id: compareType.year,
+                    name: this.$t('com.yearEqual')
+                },
+                {
+                    id: compareType.empty,
+                    name: this.$t('com.empty')
+                }
             ],
             /**
              * List of compare type when filter data type is date
              */
-            selectCompareSelects: [
-                // {
-                //     id: compareType.equal,
-                //     name: '=',
-                //     note: resources['vn'].equal
-                // }
+            selectOneCompareSelects: [
+                {
+                    id: compareType.contain,
+                    name: this.$t('com.equal')
+                }
             ],
-            /**
-             * Logic type of filter
-             */
-            logicType: {
-                id: null,
-                name: null,
-                note: null,
-            },
             /**
              * Compare type of filter
              */
             compareType: {
                 id: null,
                 name: null,
-                note: null,
             },
             /**
              * Filter value contain condition filter (key, name)
              */
-            filterValue: { key: '', name: '' },
+            filterValues: [{ key: '', name: '' }],
             /**
              * Select list in case filter type is choice
              */
@@ -291,11 +208,15 @@ export default {
             /**
              * Key of filter value
              */
-            filterValueKey: null,
+            filterValueKey: '',
             /**
              * Name of filter value
              */
-            filterValueName: null,
+            filterValueName: '',
+            /**
+             * 
+             */
+            selectedValue: {},
             /**
              * Number field config
              */
@@ -303,99 +224,67 @@ export default {
                 label: null,
                 placeholder: null,
                 validate: null,
-            },
-            /**
-             * Trạng thái filter
-             */
-            appliedFilter: false,
+            }
         }
     },
     created() {
-        this.logicType = { ...this.logicTypeSelects[0] };
-
-        const compares = this.compareTypeSelects;
+        const compares = this.compareTypeOptions;
         this.compareType = { ...compares[0] };
-
         this.mapSelects();
-        if (this.filterModel) {
-            if (this.filterConfig.filterType != filterType.selectName)
-                this.filterValueKey = this.filterModel.value.key;
-            this.filterValueName = this.filterModel.value.name;
-        }
+    },
+    mounted() {
+
     },
     expose: ['focus', 'focusOnApply'],
-    watch: {
-        /**
-         * What select from config to update select data
-         */
-        "filterConfig.selects": function () {
-            this.mapSelects();
-        },
-        /**
-         * Handle when filter value changes
-         */
-        // filterValueKey() {
-        //     this.onChangeFilterValue();
-        // },
-    },
     computed: {
         /**
          * Load compare type to combobox
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
-        compareTypeSelects() {
+        compareTypeOptions() {
             switch (this.filterConfig.filterType) {
                 case filterType.text:
                     return this.textCompareSelects;
                 case filterType.date:
                     return this.dateCompareSelects;
-                case filterType.number:
-                    return this.numberCompareSelects;
-                case filterType.selectId:
-                    return this.selectCompareSelects;
-                case filterType.selectName:
-                    return this.selectCompareSelects;
+                case filterType.selectOne:
+                    return this.selectOneCompareSelects;
                 default:
-                    return this.textCompareSelects;
+                    return this.dateCompareSelects;;
             }
         },
         /**
          * Show combobox select id or not 
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         isShowSelectsId() {
-            return (this.filterConfig.filterType == filterType.selectId)
+            return (this.filterConfig.filterType == filterType.selectId
+                && this.compareType.id != compareType.empty)
         },
         /**
          * Show combobox select name or not
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         isShowSelectsName() {
-            return (this.filterConfig.filterType == filterType.selectName)
+            return (this.filterConfig.filterType == filterType.selectName
+                && this.compareType.id != compareType.empty)
         },
         /**
          * Show textfield or not
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         isShowTextField() {
-            return (this.filterConfig.filterType == filterType.text)
-        },
-        /**
-         * Show number field or not
-         * 
-         * Author: nlnhat (25/08/2023)
-         */
-        isShowNumberField() {
-            return (this.filterConfig.filterType == filterType.number)
+            return (this.filterConfig.filterType == filterType.text
+                && this.compareType.id != compareType.empty)
         },
         /**
          * Show datepicker or not 
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         isShowDatePicker() {
             return (this.filterConfig.filterType == filterType.date
@@ -406,7 +295,7 @@ export default {
         /**
          * Show month field or not
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         isShowMonthField() {
             return (this.compareType.id == compareType.month)
@@ -414,7 +303,7 @@ export default {
         /**
          * Show year field or not
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         isShowYearField() {
             return (this.compareType.id == compareType.year)
@@ -422,189 +311,143 @@ export default {
         /**
          * Show or not compare types select
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         isShowCompareSelects() {
             return (this.filterConfig.filterType == filterType.text
-                || this.filterConfig.filterType == filterType.date
-                || this.filterConfig.filterType == filterType.number)
+                || this.filterConfig.filterType == filterType.date)
         },
         /**
          * Return filter data from compare type and filter value
          *
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         filterDataComputed() {
-            // Xử lý lọc từ combobox
             if (this.filterConfig.filterType == filterType.selectName)
-                this.filterValue.key = this.filterValueName;
-            else
-                this.filterValue.key = this.filterValueKey;
-            this.filterValue.name = this.filterValueName;
+                this.filterValueKey = this.filterValueName;
 
-            // Xử lý giá trị lọc là số
-            if (this.filterConfig.filterType == filterType.number)
-                this.filterValue.key = this.reformatDecimal(this.filterValue.key)?.toString();
-            else
-                this.filterValue.key = this.filterValue.key?.toString();
+            this.filterValues[0].key = this.filterValueKey;
+            this.filterValues[0].name = this.filterValueName;
 
             return {
                 title: this.title,
                 column: this.name,
-                logicType: this.logicType.id,
-                logicName: this.logicType.name.toLowerCase(),
                 compareType: this.compareType.id,
                 compareName: this.compareType.name.toLowerCase(),
                 filterType: this.filterConfig.filterType,
-                value: (this.compareType.id == compareType.empty) ? { key: '', name: '' } : { ...this.filterValue },
+                values: (this.compareType.id == compareType.empty) ? [] : [...this.filterValues],
             }
+        }
+    },
+    watch: {
+        /**
+         * What compare type
+         */
+        compareType: {
+            handler() {
+                this.$nextTick(() => {
+                    this.focus();
+                })
+            },
+            deep: true
         },
         /**
-         * Set readonly input
+         * What select from config to update select data
          */
-        isReadOnlyInput() {
-            return (this.compareType.id == compareType.empty)
+        "filterConfig.selects": function () {
+            this.mapSelects();
+        },
+        /**
+         * Selected value để gán filter 
+         */
+        selectedValue: {
+            handler() {
+                if (this.selectedValue) {
+                    this.filterValueKey = this.selectedValue.key;
+                    this.filterValueName = this.selectedValue.name;
+                }
+            },
+            deep: true
         }
     },
     methods: {
         /**
-         * Handle when filter value changes
-         * 
-         * Author: nlnhat (25/08/2023)
-         */
-        onChangeFilterValue: debounce(function () {
-            this.handleUpdateFilterModel();
-        }, 500),
-        /**
-         * Update filter model
-         * 
-         * Author: nlnhat (25/08/2023)
-         */
-        handleUpdateFilterModel() {
-            if (this.filterValueKey == null || this.filterValueKey === '') {
-                this.onClickRemove();
-            }
-            else {
-                this.onClickApply();
-            }
-        },
-        /**
          * Handle when click apply filter
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         onClickApply() {
-            const data = this.filterDataComputed;
-            this.$emit('emitUpdateFilterModel', data);
-            this.appliedFilter = true;
+            const errorMessage = this.checkValidate();
+            if (errorMessage == null) {
+                const data = this.filterDataComputed;
+                this.$emit('emitUpdateFilterModel', data);
+                this.hideFilter();
+            }
         },
         /**
          * Handle when click remove filter
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         onClickRemove() {
             if (this.filterModel != null)
                 this.$emit('emitUpdateFilterModel', null);
-            this.appliedFilter = false;
+            this.hideFilter();
         },
         /**
-         * Handle after selected logic type
+         * Hide this filter
          * 
-         * Author: nlnhat (29/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
-        handleSelectedLogic() {
-            this.handleUpdateFilterModel();
-            this.focusOnCompare();
-        },
-        /**
-         * Handle after selected compare type
-         * 
-         * Author: nlnhat (29/08/2023)
-         */
-        handleSelectedCompare() {
-            this.handleUpdateFilterModel();
-            this.focus();
-        },
-        /**
-         * Focus on compare select
-         * 
-         * Author: nlnhat (25/08/2023)
-         */
-        focusOnCompare() {
-            this.$nextTick(() => {
-                if (this.$refs.compare != null)
-                    this.$refs.compare.focus();
-                else
-                    this.focus();
-            })
-        },
-        /**
-         * Focus on button apply
-         * 
-         * Author: nlnhat (25/08/2023)
-         */
-        focusOnApply() {
-            this.$nextTick(() => {
-                this.$refs.apply.focus();
-            })
+        hideFilter() {
+            this.$emit('emitHideFilter');
         },
         /**
          * Focus input
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         focus() {
-            if (this.$refs.textfield != null && !this.isReadOnlyInput) {
+            if (this.$refs.textfield != null) {
                 this.$refs.textfield.focus();
                 this.$refs.textfield.select();
             }
-            else if (this.$refs.datepicker != null && !this.isReadOnlyInput) {
+            else if (this.$refs.datepicker != null) {
                 this.$refs.datepicker.focus();
                 this.$refs.datepicker.select();
             }
-            else if (this.$refs.combobox != null && !this.isReadOnlyInput) {
-                this.$refs.combobox.focus();
-            }
-        },
-        /**
-         * Clear error message input
-         * 
-         * Author: nlnhat (25/08/2023)
-         */
-        clearErrorMessage() {
-            if (this.$refs.textfield != null)
-                this.$refs.textfield.clearErrorMessage();
-            if (this.$refs.combobox != null)
-                this.$refs.combobox.clearErrorMessage();
+            // else if (this.$refs.combobox != null) {
+            //     this.$refs.combobox.focus();
+            // }
+            else this.focusOnApply();
         },
         /**
          * Clear input
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         clearInput() {
-            this.filterValue = [];
+            this.filterValues = [];
         },
         /**
          * Validate filter value cannot empty
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          * @param {*} label Label of filter
          * @param {*} value Filter value to check
          */
-        validateCannotEmpty(label, value) {
+        validateCannotNull(label, value) {
             if (this.compareType.id == compareType.empty)
                 return null;
-            if (isNullOrEmpty(value)) {
-                return `${label} ${this.$resources['vn'].cannotEmpty}`
+            if (this.$cf.isNullString(value)) {
+                return `${label} ${this.$t('msg.cannotNull')}`
             }
             return null;
         },
         /**
          * Validate month filter
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          * @param {*} label Label of filter
          * @param {*} value Filter value to check
          */
@@ -612,14 +455,14 @@ export default {
             if (this.compareType.id == compareType.empty)
                 return null;
             if (isNullOrEmpty(value)) {
-                return `${label} ${this.$resources['vn'].cannotEmpty}`
+                return `${label} ${$t('msg.cannotNull')}`
             }
             return this.validateMonth(label, value);
         },
         /**
          * Validate year filter
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          * @param {*} label Label of filter
          * @param {*} value Filter value to check
          */
@@ -627,14 +470,14 @@ export default {
             if (this.compareType.id == compareType.empty)
                 return null;
             if (isNullOrEmpty(value)) {
-                return `${label} ${this.$resources['vn'].cannotEmpty}`
+                return `${label} ${$t('msg.cannotNull')}`
             }
             return this.validateYear(label, value);
         },
         /**
          * Check validate filter value
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         checkValidate() {
             let errorMessage = null;
@@ -650,7 +493,7 @@ export default {
             }
 
             // Validate textfield
-            if (this.isShowTextField || this.isShowNumberField || this.isShowMonthField || this.isShowYearField
+            if (this.isShowTextField || this.isShowMonthField || this.isShowYearField
                 && this.$refs.textfield != null) {
                 errorMessage = this.$refs.textfield.checkValidate();
                 if (errorMessage != null) {
@@ -665,19 +508,28 @@ export default {
         /**
          * Map select from props to data
          * 
-         * Author: nlnhat (25/08/2023)
+         * Author: nlnhat (25/07/2023)
          */
         mapSelects() {
             if (this.filterConfig.selects) {
                 this.selects = this.filterConfig.selects;
-                // this.filterValueKey = this.selects[0].id;
-                // this.filterValueName = this.selects[0].name;
+                this.selectedValue = this.selects[0];
             }
+        },
+        /**
+         * Focus on button apply
+         * 
+         * Author: nlnhat (25/07/2023)
+         */
+        focusOnApply() {
+            this.$nextTick(() => {
+                this.$refs.apply.focus();
+            })
         },
         /**
          * Handle short key on filter
          * 
-         * Author: nlnhat (29/08/2023)
+         * Author: nlnhat (29/07/2023)
          * @param {*} event Keydown event on filter
          */
         onKeyDown(event) {
@@ -694,11 +546,13 @@ export default {
         // capitalizeFirstChar,
         // validateMonth,
         // validateYear,
-        // formatDecimalInput,
-        // reformatDecimal,
     }
 }
 </script>
-<style>
-@import "./filter.css";
+<style scoped>
+@import './filter.css';
+
+.textfield {
+    line-height: 35px;
+}
 </style>

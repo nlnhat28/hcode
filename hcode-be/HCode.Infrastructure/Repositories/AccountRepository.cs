@@ -80,7 +80,7 @@ namespace HCode.Infrastructure
                 sql, param, _unitOfWork.Transaction, commandType: CommandType.Text);
             return result;
         }
+        #endregion
     }
-    #endregion
 }
 

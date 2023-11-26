@@ -5,7 +5,7 @@ namespace HCode.Domain
     /// <summary>
     /// Tài khoản
     /// </summary>
-    public class Account : BaseAuditEntity
+    public class Account : BaseEntity
     {
         /// <summary>
         /// Khoá chính

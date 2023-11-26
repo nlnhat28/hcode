@@ -4,11 +4,11 @@
 }
 
 .search-box .p-inputtext {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
     background-color: #000;
-    /* background-color: transparent; */
     color: #fff;
+    /* padding-top: 0.5rem;
+    padding-bottom: 0.5rem; */
+    /* background-color: transparent; */
 }
 
 /* search-result */

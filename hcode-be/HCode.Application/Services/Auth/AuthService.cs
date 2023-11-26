@@ -14,7 +14,7 @@ namespace HCode.Application
     /// Triển khai service auth
     /// </summary> 
     /// Created by: nlnhat (15/07/2023)
-    public class AuthService : BaseService<AuthDto, Account>, IAuthService
+    public class AuthService : CoreService, IAuthService
     {
         #region Fields
         /// <summary>
@@ -54,10 +54,9 @@ namespace HCode.Application
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (17/08/2023)
         public AuthService(IAccountRepository repository, IRoleRepository roleRepository,
-                           IStringLocalizer<Resource> resource, IMapper mapper,
-                           IUnitOfWork unitOfWork, IEmailService emailService, IMemoryCache cache,
+                           IStringLocalizer<Resource> resource, IMapper mapper, IEmailService emailService, IMemoryCache cache,
                            IOptions<JwtConfig> jwtConfig, IOptions<AuthConfig> authConfig)
-                         : base(repository, resource, mapper, unitOfWork)
+                         : base(resource, mapper)
         {
             _repository = repository;
             _roleRepository = roleRepository;
@@ -100,7 +99,7 @@ namespace HCode.Application
                 var role = await _roleRepository.GetByCodeAsync(RoleConstant.RoleCode.Admin);
                 var roleId = (role != null) ? role.RoleId : Guid.Empty;
 
-                var (password, salt) = ApplicationHelper.HashPassword(authDto.Password);
+                var (password, salt) = AppHelper.HashPassword(authDto.Password);
 
                 var accountId = Guid.NewGuid();
 
@@ -304,19 +303,11 @@ namespace HCode.Application
             }
         }
 
-        public override Account MapCreateDtoToEntity(AuthDto entityDto)
+        // Lấy AccountId
+        public async Task<Guid> GetAccountId()
         {
-            throw new NotImplementedException();
-        }
-
-        public override Account MapUpdateDtoToEntity(AuthDto entityDto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task ValidateAsync(AuthDto entity)
-        {
-            throw new NotImplementedException();
+            var accountId = "1bf8a43c-47fb-4d6c-1863-eeb1d8ed8cef";
+            return Guid.Parse(accountId);
         }
         #endregion
     }

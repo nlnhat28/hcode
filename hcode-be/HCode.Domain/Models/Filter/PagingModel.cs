@@ -8,7 +8,7 @@
     {
         #region Properties
         /// <summary>
-        /// Số trang hiện tại
+        /// Trang muốn lấy số liệu
         /// </summary>
         public int PageNumber { get; set; }
         /// <summary>

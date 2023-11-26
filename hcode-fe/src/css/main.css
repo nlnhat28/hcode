@@ -11,6 +11,10 @@
     caret-color: transparent;
 }
 
+html {
+    font-size: 14px;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -41,4 +45,15 @@ body {
     bottom: 5%;
     color: #fff;
     font-family: Consolas;
+}
+
+/* Scroll bar */
+::-webkit-scrollbar {
+    width: 14px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-table); 
+}
+::-webkit-scrollbar-track {
+    background: var(--tpr-300);
 }

@@ -6,7 +6,7 @@ namespace HCode.Application
     /// Service auth
     /// </summary>
     /// Created by: nlnhat (17/08/2023)
-    public interface IAuthService : IBaseService<AuthDto, Account>
+    public interface IAuthService : ICoreService
     {
         /// <summary>
         /// Tạo mới tài khoản
@@ -33,5 +33,10 @@ namespace HCode.Application
         /// </summary>
         /// <returns></returns>
         Task ForgotPasswordAsync(AuthDto authDto, ServerResponse res);
+        /// <summary>
+        /// Lấy AccountId hiện tại
+        /// </summary>
+        /// <returns></returns>
+        Task<Guid> GetAccountId();
     }
 }

@@ -4,13 +4,19 @@ namespace HCode.Domain
     /// <summary>
     /// Lớp bài toán
     /// </summary>
-    public class Problem : BaseAuditEntity
+    [CanSearch("ProblemCode, ProblemName, TopicNames")]
+    public class Problem : BaseEntity
     {
         #region Properties
         /// <summary>
         /// Khoá chính
         /// </summary>
-        public Guid Problemld { get; set; }
+        public Guid ProblemId { get; set; }
+        public Guid Id
+        {
+            get { return ProblemId; }
+            set { ProblemId = value; }
+        }
         /// <summary>
         /// Tên bài toán
         /// </summary>
@@ -18,15 +24,11 @@ namespace HCode.Domain
         /// <summary>
         /// Mã bài toán
         /// </summary>
-        public string ProblemCode { get; set; }
+        public int ProblemCode { get; set; }
         /// <summary>
         /// Alias
         /// </summary>
         public string? Alias { get; set; }
-        /// <summary>
-        /// Số (1 kiểu mã)
-        /// </summary>
-        public int? Number { get; set; }
         /// <summary>
         /// Độ khó
         /// </summary>
@@ -52,9 +54,48 @@ namespace HCode.Domain
         /// </summary>
         public string? Hint { get; set; }
         /// <summary>
-        /// Source code giảis
+        /// Source code giải
         /// </summary>
         public string? Solution { get; set; } 
+        /// <summary>
+        /// Id tài khoản tạo
+        /// </summary>
+        public Guid? AccountId { get; set; }
+        /// <summary>
+        /// Chủ đề
+        /// </summary>
+        public List<Topic>? Topics { get; set; }
+
+        /// <summary>
+        /// Đánh giá
+        /// </summary>
+        [NotMapped]
+        public decimal? Rate { get; set; }
+        /// <summary>
+        /// Lượt xem
+        /// </summary>
+        [NotMapped]
+        public int? SeenCount { get; set; }
+        /// <summary>
+        /// Lượt comment
+        /// </summary>
+        [NotMapped]
+        public int? CommentCount { get; set; }
+        /// <summary>
+        /// Điểm tương tác
+        /// </summary>
+        [NotMapped]
+        public decimal? ReactionScore { get; set; }
+        /// <summary>
+        /// Tên các chủ đề
+        /// </summary>
+        [NotMapped]
+        public string? TopicNames { get; set; }
+        /// <summary>
+        /// Trạng thái của người dùng
+        /// </summary>
+        [NotMapped]
+        public ProblemAccountState ProblemAccountState { get; set; }
         #endregion
     }
 }

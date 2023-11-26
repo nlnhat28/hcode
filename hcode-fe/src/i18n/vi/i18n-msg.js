@@ -10,6 +10,7 @@ const msg = {
     clientError: "Có lỗi xảy ra. Vui lòng kiểm tra lại",
     serverError: "Lỗi hệ thống",
     pleaseWait: "Vui lòng chờ",
+    noContent: "Không có dữ liệu"
 };
 
 export default msg;

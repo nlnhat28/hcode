@@ -11,11 +11,11 @@ const convert = {
      */
     difficultyToColor(difficulty) {
         switch (difficulty) {
-            case enums.difficulty.easy:
+            case enums.difficulty.easy.value:
                 return enums.color.cyan;
-            case enums.difficulty.medium:
+            case enums.difficulty.medium.value:
                 return enums.color.orange;
-            case enums.difficulty.hard:
+            case enums.difficulty.hard.value:
                 return enums.color.red;
             default:
                 return "#fff";
@@ -24,19 +24,21 @@ const convert = {
     /**
      * Trạng thái account với problem sang icon
      *
-     * @param {*} problemAccountStatus
+     * @param {*} problemAccountState
      * @returns
      */
-    problemAccountStatusToIcon(problemAccountStatus) {
-        switch (problemAccountStatus) {
-            case problemEnum.problemAccountStatus.seen:
+    problemAccountStateToIcon(problemAccountState) {
+        switch (problemAccountState) {
+            case problemEnum.problemAccountState.seen.value:
                 return "far fa-eye";
-            case problemEnum.problemAccountStatus.doing:
+            case problemEnum.problemAccountState.doing.value:
                 return "far fa-code";
-            case problemEnum.problemAccountStatus.wrong:
+            case problemEnum.problemAccountState.wrong.value:
                 return "far fa-circle-xmark";
-            case problemEnum.problemAccountStatus.solved:
+            case problemEnum.problemAccountState.solved.value:
                 return "far fa-circle-check";
+            case problemEnum.problemAccountState.draft.value:
+                return "far fa-file";
             default:
                 return null;
         }
@@ -44,46 +46,26 @@ const convert = {
     /**
      * Trạng thái account với problem sang màu
      *
-     * @param {*} problemAccountStatus
+     * @param {*} problemAccountState
      * @returns
      */
-    problemAccountStatusToColor(problemAccountStatus) {
-        switch (problemAccountStatus) {
-            case problemEnum.problemAccountStatus.doing:
+    problemAccountStateToColor(problemAccountState) {
+        switch (problemAccountState) {
+            case problemEnum.problemAccountState.doing.value:
                 return "light";
-            case problemEnum.problemAccountStatus.wrong:
+            case problemEnum.problemAccountState.wrong.value:
                 return "error";
-            case problemEnum.problemAccountStatus.solved:
+            case problemEnum.problemAccountState.solved.value:
                 return "success";
             default:
                 return "light";
         }
     },
     /**
-     * Trạng thái account với problem sang text
-     *
-     * @param {*} problemAccountStatus
-     * @returns
-     */
-    problemAccountStatusToText(problemAccountStatus) {
-        switch (problemAccountStatus) {
-            case problemEnum.problemAccountStatus.seen:
-                return t("problem.problemAccountStatus.seen");
-            case problemEnum.problemAccountStatus.doing:
-                return t("problem.problemAccountStatus.doing");
-            case problemEnum.problemAccountStatus.wrong:
-                return t("problem.problemAccountStatus.wrong");
-            case problemEnum.problemAccountStatus.solved:
-                return t("problem.problemAccountStatus.solved");
-            default:
-                return null;
-        }
-    },
-    /**
      * Đưa về dạng số gọn
      * 12515 -> 12.5K
-     * @param {*} number 
-     * @returns 
+     * @param {*} number
+     * @returns
      */
     numberToSuffix(number) {
         if (number >= 1000) {
@@ -100,7 +82,35 @@ const convert = {
             }
             return shortValue + suffixes[suffixNum];
         }
-        return number.toString();
+        return number?.toString();
+    },
+    /**
+     * Enum thành text
+     *
+     * @param {*} value
+     * @param {*} enumObj
+     */
+    enumToResource(value, enumObj) {
+        for (const key in enumObj) {
+            if (enumObj[key].value == value) {
+                return enumObj[key].label;
+            }
+        }
+        return null;
+    },
+    /**
+     * Chuyển enum sang filter selects {value, label} => [{key, name}]
+     *
+     * @param {*} enumObj
+     */
+    enumToFilterSelects(enumObj) {
+        const enumArray = Object.entries(enumObj).map(
+            ([key, value]) => ({
+                key: value.value,
+                name: value.label,
+            })
+        ); 
+        return enumArray;
     },
 };
 export default convert;

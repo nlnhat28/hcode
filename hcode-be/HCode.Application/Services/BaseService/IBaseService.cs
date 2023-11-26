@@ -1,4 +1,6 @@
-﻿namespace HCode.Application
+﻿using HCode.Domain;
+
+namespace HCode.Application
 {
     /// <summary>
     /// Giao diện service cơ sở
@@ -6,7 +8,7 @@
     /// <typeparam name="TEntityDto">Dto đối tượng</typeparam>
     /// <typeparam name="TEntity">Đối tượng</typeparam>
     /// Created by: nlnhat (17/08/2023)
-    public interface IBaseService<TEntityDto, TEntity> : IReadOnlyService<TEntityDto>
+    public interface IBaseService<TEntityDto, TEntity> : IReadOnlyService<TEntityDto, TEntity> where TEntityDto : BaseDto where TEntity : BaseEntity
     {
         /// <summary>
         /// Tạo mới đối tượng

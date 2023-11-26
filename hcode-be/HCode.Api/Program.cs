@@ -9,7 +9,6 @@ using HCode.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 
 namespace HCode.Api
 {
@@ -30,6 +29,7 @@ namespace HCode.Api
 
             // Add cache
             builder.Services.AddMemoryCache();
+            //builder.Services.AddDistributedMemoryCache();
 
             // Config
             builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailConfig"));
@@ -46,10 +46,12 @@ namespace HCode.Api
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IProblemService, ProblemService>();
 
             // Add repositories
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            builder.Services.AddScoped<IProblemRepository, ProblemRepository>();
 
             // Add mapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -86,7 +88,6 @@ namespace HCode.Api
             }));
 
             // Auth
-
             var jwtConfig = builder.Configuration.GetSection("JwtConfig");
             builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 

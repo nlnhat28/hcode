@@ -19,13 +19,12 @@
     padding: 0 28px;
 }
 .v-nav-item:hover {
-    color: #fff;
-    background-color: var(--tpr-300);
+    color: var(--highlight) !important;
 }
 
 .router-link-active,
 .router-link-exact-active {
-    color: var(--highlight) !important;
+    background-color: var(--tpr-300);
 }
 
 .router-link-active .v-nav-item--active,
@@ -35,4 +34,4 @@
     position: absolute;
     bottom: 0;
     background-color: var(--highlight);
-} 
+}

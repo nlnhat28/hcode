@@ -37,6 +37,7 @@ import VInputGroup from "@/components/elements/input/VInputGroup.vue";
 import VLogoHCode from "@/components/elements/logo/VLogoHcode.vue";
 import VMaskDialog from "@/components/elements/mask/VMaskDialog.vue";
 import VMaskLoading from "@/components/elements/mask/VMaskLoading.vue";
+import VNoContent from "@/components/elements/mask/VNoContent.vue";
 import VNav from "@/components/elements/nav/VNav.vue";
 import VNavItem from "@/components/elements/nav/VNavItem.vue";
 import VPassword from "@/components/elements/input/VPassword.vue";
@@ -46,6 +47,7 @@ import VPagination from "@/components/elements/pagination/VPagination.vue";
 import VPageNumber from "@/components/elements/pagination/VPageNumber.vue";
 import VSearchBox from "@/components/elements/search/VSearchBox.vue";
 import VSearchResult from "@/components/elements/search/VSearchResult.vue";
+import VSkeleton from "@/components/elements/skeleton/VSkeleton.vue";
 import VSpinner from "@/components/elements/loader/VSpinner.vue";
 import VTooltip from "@/components/elements/tooltip/VTooltip.vue";
 import VRating from "@/components/elements/rating/VRating.vue";
@@ -76,6 +78,7 @@ app.component("v-input-text", VInputText);
 app.component("v-logo-hcode", VLogoHCode);
 app.component("v-mask-loading", VMaskLoading);
 app.component("v-mask-dialog", VMaskDialog);
+app.component("v-no-content", VNoContent);
 app.component("v-nav", VNav);
 app.component("v-nav-item", VNavItem);
 app.component("v-password", VPassword);
@@ -86,6 +89,7 @@ app.component("v-page-number", VPageNumber);
 app.component("v-spinner", VSpinner);
 app.component("v-search-box", VSearchBox);
 app.component("v-search-result", VSearchResult);
+app.component("v-skeleton", VSkeleton);
 app.component("v-rating", VRating);
 app.component("v-reaction", VReaction);
 app.component("v-tooltip", VTooltip);
@@ -126,8 +130,12 @@ app.config.globalProperties.$reg = regex;
  * Directives
  */
 import tooltip from "@/directives/tooltip.js";
+import clickOutside from "@/directives/click-outside.js";
+import contextmenuOutside from "@/directives/contextmenu-outside.js";
 
 app.directive("tooltip", tooltip);
+app.directive("click-outside", clickOutside);
+app.directive("contextmenu-outside", contextmenuOutside);
 
 /**
  * Plugin

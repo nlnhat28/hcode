@@ -40,9 +40,9 @@ namespace HCode.Application
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (17/08/2023)
         public AccountService(IAccountRepository repository, IRoleRepository roleRepository,
-                           IStringLocalizer<Resource> resource, IMapper mapper, 
+                           IStringLocalizer<Resource> resource, IMapper mapper, IAuthService authService,
                            IUnitOfWork unitOfWork, IEmailService emailService, IMemoryCache cache)
-                         : base(repository, resource, mapper, unitOfWork)
+                         : base(repository, resource, mapper, unitOfWork, authService)
         {
             _repository = repository;
             _roleRepository = roleRepository;
@@ -92,7 +92,7 @@ namespace HCode.Application
         // Cập nhật mật khẩu xác thực
         public async Task ChangePasswordAsync(AuthDto authDto, ServerResponse res)
         {
-            var (newPassword, salt) = ApplicationHelper.HashPassword(authDto.Password);
+            var (newPassword, salt) = AppHelper.HashPassword(authDto.Password);
 
             var accountId = authDto.AccountId ?? Guid.NewGuid();
 

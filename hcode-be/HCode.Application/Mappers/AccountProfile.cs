@@ -1,32 +1,22 @@
-using AutoMapper;
 using HCode.Domain;
+using Microsoft.Extensions.Localization;
 
 namespace HCode.Application
 {
     /// <summary>
-    /// Tạo mapper nguyên vật liệu
+    /// Tạo mapper account
     /// </summary>
     /// Created by: nlnhat (13/07/2023)
-    public class AccountProfile : Profile
+    public class AccountProfile : BaseProfile<AccountDto, Account>
     {
         #region Constructors
         /// <summary>
         /// Hàm tạo mapper tài khoản
         /// </summary>
         /// Created by: nlnhat (13/07/2023)
-        public AccountProfile()
+        public AccountProfile() : base()
         {
             CreateMap<Account, AccountDto>()
-            .ForMember(dest => dest.CreatedTime, opt =>
-            {
-                opt.MapFrom(src =>
-                    ApplicationHelper.ConvertDateUtcToLocal(src.CreatedTime));
-            })
-            .ForMember(dest => dest.ModifiedTime, opt =>
-            {
-                opt.MapFrom(src =>
-                    ApplicationHelper.ConvertDateUtcToLocal(src.ModifiedTime));
-            })
             .ForMember(dest => dest.Password, opt =>
             {
                 opt.Ignore();
@@ -34,32 +24,17 @@ namespace HCode.Application
             .ForMember(dest => dest.Salt, opt =>
             {
                 opt.Ignore();
-            });
-
-            // AccountDto -> Account
-            CreateMap<AccountDto, Account>()
+            })
             .ForMember(dest => dest.CreatedTime, opt =>
             {
                 opt.MapFrom(src =>
-                 ApplicationHelper.ConvertDateLocalToUtc(src.CreatedTime));
+                    AppHelper.ConvertDateUtcToLocal(src.CreatedTime));
             })
             .ForMember(dest => dest.ModifiedTime, opt =>
             {
                 opt.MapFrom(src =>
-                    ApplicationHelper.ConvertDateLocalToUtc(src.ModifiedTime));
+                    AppHelper.ConvertDateUtcToLocal(src.ModifiedTime));
             });
-
-            // Account -> MaterialExcelDto
-           // CreateMap<Account, MaterialExcelDto>()
-           //.ForMember(dest => dest.TimeUnitName, opt =>
-           //{
-           //    opt.MapFrom(src =>
-           //        ApplicationHelper.GetTimeUnitName(src.TimeUnit));
-           //})
-           //.ForMember(dest => dest.ConversionUnits, opt =>
-           //{
-           //    opt.Ignore();
-           //});
         }
         #endregion
     }

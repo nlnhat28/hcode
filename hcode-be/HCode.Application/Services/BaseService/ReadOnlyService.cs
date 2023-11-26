@@ -11,7 +11,8 @@ namespace HCode.Application
     /// <typeparam name="TEntityDto">Dto thực thể</typeparam>
     /// <typeparam name="TEntity">Thực thể</typeparam>
     /// Created by: nlnhat (18/07/2023
-    public abstract class ReadOnlyService<TEntityDto, TEntity> : CoreService, IReadOnlyService<TEntityDto>
+    public abstract class ReadOnlyService<TEntityDto, TEntity> : CoreService, IReadOnlyService<TEntityDto, TEntity> 
+                                                                 where TEntityDto : BaseDto where TEntity : BaseEntity
     {
         #region Fields
         /// <summary>
@@ -19,6 +20,10 @@ namespace HCode.Application
         /// </summary>
         /// Created by: nlnhat (13/07/2023)ks
         protected readonly IReadOnlyRepository<TEntity> _repository;
+        /// <summary>
+        /// Service auth
+        /// </summary>
+        private readonly IAuthService _authService;
         #endregion
 
         #region Properties
@@ -39,9 +44,11 @@ namespace HCode.Application
         public ReadOnlyService(
             IReadOnlyRepository<TEntity> repository,
             IStringLocalizer<Resource> resource,
-            IMapper mapper) : base(resource, mapper)
+            IMapper mapper,
+            IAuthService authService) : base(resource, mapper)
         {
             _repository = repository;
+            _authService = authService;
         }
         #endregion
 
@@ -86,6 +93,32 @@ namespace HCode.Application
             var entities = await _repository.GetManyAsync(ids);
 
             var result = _mapper.Map<IEnumerable<TEntityDto>>(entities);
+
+            return result;
+        }
+
+        // Lọc
+        public async Task<FilterResultModel<TEntityDto>> FilterAsync(
+            string? keySearch, PagingModel? pagingModel, List<SortModel>? sortModels, List<FilterModel>? filterModels)
+        {
+            if (pagingModel != null && pagingModel.PageNumber < 1)
+            {
+                pagingModel.PageNumber = 1;
+            }
+
+            var accountId = await _authService.GetAccountId();
+
+            var res = await _repository.FilterAsync(keySearch, pagingModel, sortModels, filterModels, accountId);
+
+            var dtos = _mapper.Map<IEnumerable<TEntityDto>>(res.Data);
+
+            var result = new FilterResultModel<TEntityDto>
+            {
+                TotalRecord = res.TotalRecord,
+                AllRecord = res.AllRecord,
+                PagingModel = res.PagingModel,
+                Data = dtos
+            };
 
             return result;
         }

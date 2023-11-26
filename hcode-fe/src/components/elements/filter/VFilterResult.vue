@@ -116,6 +116,8 @@ export default {
     }
 }
 </script>
-<style scoped>.filter-result__remove {
+<style scoped>
+.filter-result__remove {
     scale: 0.64;
-}</style>
+}
+</style>

@@ -1,15 +1,15 @@
 <template>
     <div class="reaction-wrapper">
         <div class="reaction__item">
-            {{ rate }}
-            <v-icon icon='far fa-star'></v-icon>
+            {{ $fm.formatDecimal(rate, 1) }}
+            <v-icon icon='far fa-star' v-if="rate"></v-icon>
         </div>
         <div class="reaction__item">
             {{ $cv.numberToSuffix(comment) }}
             <v-icon icon='far fa-comment'></v-icon>
         </div>
         <div class="reaction__item">
-            {{ $cv.numberToSuffix(seen)  }}
+            {{ $cv.numberToSuffix(seen)}}
             <v-icon icon='far fa-eye'></v-icon>
         </div>
     </div>
@@ -30,14 +30,14 @@ export default {
          */
         comment: {
             type: [String, Number],
-            default: 0,
+            default: null,
         },
         /**
          * Đã xem
          */
         seen: {
             type: [String, Number],
-            default: 0,
+            default: null,
         }
     }
 }

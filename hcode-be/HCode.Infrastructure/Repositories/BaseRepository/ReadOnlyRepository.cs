@@ -71,7 +71,7 @@ namespace HCode.Infrastructure
             }
             catch
             {
-                var sql = $"SELECT * FROM {View}"; 
+                var sql = $"SELECT * FROM {View}";
                 var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
                     sql, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
 
@@ -113,7 +113,6 @@ namespace HCode.Infrastructure
 
                 return result;
             }
-
         }
         /// <summary>
         /// Lấy đối tượng theo id
@@ -147,6 +146,62 @@ namespace HCode.Infrastructure
 
                 return result;
             }
+        }
+        /// <summary>
+        /// Lọc nguyên vật liệu (Tìm kiếm, phân trang, sắp xếp, lọc theo cột)
+        /// </summary>
+        /// <param name="keySearch">Từ khoá tìm kiếm</param>
+        /// <param name="pagingModel">Các thuộc tính phân trang</param>
+        /// <param name="sortModels">Các điều kiện sắp xếp</param>
+        /// <param name="filterModels">Các điều kiện lọc</param>
+        /// <param name="accountId">Id account</param>
+        /// <returns>Kết quả nguyên vật liệu thoả mãn điều kiện lọc</returns>
+        /// Created by: nlnhat (16/08/2023)
+        public async Task<FilterResultModel<TEntity>> FilterAsync(
+            string? keySearch, PagingModel? pagingModel, List<SortModel>? sortModels, List<FilterModel>? filterModels, Guid? accountId)
+        {
+            var proc = $"{Procedure}Filter";
+
+            // Tạo param
+            var param = new DynamicParameters();
+
+            var querySearch = InfraHelper.GenerateQuerySearch<TEntity>(keySearch);
+            param.Add("p_QuerySearch", querySearch);
+
+            var querySort = InfraHelper.GenerateQuerySort<TEntity>(sortModels);
+                param.Add("p_QuerySort", querySort);
+
+            var queryFilter = InfraHelper.GenerateQueryFilter<TEntity>(filterModels);
+            param.Add("p_QueryFilter", queryFilter);
+
+            param.Add("p_AccountId", accountId);
+
+            // Lấy data
+            var data = await GetDataFilterAsync(proc, param);
+
+            // Phân trang
+            var totalRecord = data?.Count() ?? 0;
+
+            // Phân trang
+            data = InfraHelper.Paging(data, ref pagingModel);
+
+            var result = new FilterResultModel<TEntity>()
+            {
+                TotalRecord = totalRecord,
+                PagingModel = pagingModel,
+                Data = data
+            };
+
+            return result;
+        }
+
+        // Lấy đối tượng được lọc
+        public virtual async Task<IEnumerable<TEntity>> GetDataFilterAsync(string proc, object? param)
+        {
+            var data = await _unitOfWork.Connection.QueryAsync<TEntity>(
+                proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+            return data;
         }
         #endregion
     }
