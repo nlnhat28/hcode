@@ -50,6 +50,7 @@ export default {
                     'light',
                     'success',
                     'error',
+                    'danger',
                     'primary',
                     'warn',
                     'info'

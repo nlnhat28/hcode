@@ -37,14 +37,20 @@
 
 /* error */
 .error .icon {
-    color: var(--red-700);
-}
-.error:hover > .icon.cursor-pointer {
     color: var(--red-500);
 }
-.error:active > .icon.cursor-pointer {
+
+/* danger */
+.danger .icon {
+    color: var(--red-700);
+}
+.danger:hover > .icon.cursor-pointer {
+    color: var(--red-500);
+}
+.danger:active > .icon.cursor-pointer {
     color: var(--red-600);
 }
+
 /* infor */
 .info .icon {
     color: var(--blue-500);
