@@ -27,7 +27,7 @@ namespace HCode.Api
         /// <param name="service">Service cơ sở</param>
         /// Created by: nlnhat (17/08/2023)
         public BaseController(IBaseService<TEntityDto, TEntity> service, IWebHostEnvironment webHostEnvironment)
-             : base(service, webHostEnvironment)
+             : base(service)
         {
             _service = service;
         }

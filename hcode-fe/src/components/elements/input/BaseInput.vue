@@ -1,5 +1,8 @@
 <script>
 import { debounce } from 'lodash';
+import { t } from "@/i18n/i18n.js";
+import enums from "@/enums/enums";
+const dataInput = enums.dataInput;
 
 export default {
     name: 'VBaseInput',
@@ -125,7 +128,7 @@ export default {
                     'center',
                     'right',
                 ].includes(value)
-            }
+            },
         },
         /**
          * Set lại con trỏ select về vị trí trước khi text thay đổi
@@ -161,6 +164,32 @@ export default {
         isTransparent: {
             type: Boolean,
             default: false,
+        },
+        /**
+         * Kiểu input
+         */
+        dataInput: {
+            type: Number,
+            validator: (value) => {
+                return [
+                    dataInput.text,
+                    dataInput.integer,
+                    dataInput.decimal
+                ].includes(value)
+            },
+            default: dataInput.text,
+        },
+        /**
+         * Giá trị số nhỏ nhất
+         */
+        minValue: {
+            type: Number,
+        },
+        /**
+         * Giá trị số lớn nhất
+         */
+        maxValue: {
+            type: Number,
         }
     },
     data() {
@@ -196,6 +225,10 @@ export default {
              * Action 
              */
             innerAction: this.action,
+            /**
+             * Text align
+             */
+            innerTextAlign: this.textAlign
         }
     },
     created() {
@@ -207,6 +240,12 @@ export default {
             if (!this.innerAction.hasLoading) {
                 this.innerAction.hasLoading = false;
             }
+        };
+
+        // Là số mà không chỉ định rõ textAlign thì căn phải
+        if ((this.dataInput == this.$enums.dataInput.integer || this.dataInput == this.$enums.dataInput.decimal)
+            && !this.textAlign) {
+            this.innerTextAlign = 'right';
         }
     },
     mounted() {
@@ -233,12 +272,32 @@ export default {
         validateComputed() {
             try {
                 // Validate required
-                if (this.isRequired && this.$cf.isNullString(this.innerValue))
+                if (this.isRequired && this.$cf.isEmptyString(this.innerValue))
                     return `${this.label} ${this.$t('msg.cannotNull')}`;
 
                 // Validate length
                 if (this.maxLength && this.innerValue?.length > this.maxLength)
-                    return `${this.label} ${this.$t('msg.mustLessEqual', { length: this.maxLength })}`;
+                    return `${this.label} ${this.$t('msg.mustLessEqualLength', { length: this.maxLength })}`;
+
+                // Validate số 
+                if (this.innerValue) {
+                    const integerValue = this.$rfm.cleanFormatInteger(this.innerValue);
+                    if (this.minValue && this.maxValue) {
+                        if (integerValue < this.minValue || integerValue > this.maxValue) {
+                            return `${this.label} ${this.$t('msg.mustBetween', { minValue: this.minValue, maxValue: this.maxValue })}`;
+                        }
+                    }
+                    else if (this.minValue) {
+                        if (integerValue < this.minValue) {
+                            return `${this.label} ${this.$t('msg.mustMoreEqual', { minValue: this.minValue })}`;
+                        }
+                    }
+                    else if (this.maxValue) {
+                        if (integerValue > this.maxValue) {
+                            return `${this.label} ${this.$t('msg.mustLessEqual', { maxValue: this.maxValue })}`;
+                        }
+                    }
+                }
 
                 // Custom validate
                 if (this.validate) {
@@ -265,6 +324,11 @@ export default {
                         this.innerValue = this.innerValue.trim();
                     }
                 };
+
+                // Format số nguyên
+                if (this.dataInput == this.$enums.dataInput.integer) {
+                    this.innerValue = this.$fm.formatInteger(this.innerValue)
+                }
 
                 if (this.format)
                     return this.format(this.innerValue)
@@ -295,7 +359,7 @@ export default {
          */
         placeholderComputed() {
             if (this.applyPlaceholder) {
-                if (this.$cf.isNullString(this.placeholder)) {
+                if (this.$cf.isEmptyString(this.placeholder)) {
                     return this.label;
                 };
                 return this.placeholder;

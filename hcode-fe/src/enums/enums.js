@@ -125,10 +125,15 @@ const enums = {
         disable: 0,
         text: 1,
         date: 2,
-        selectId: 3,
+        selectKey: 3,
         selectName: 4,
         selectMany: 5,
         number: 6,
+    },
+    dataInput: {
+        text: 1,
+        integer: 2,
+        decimal: 3,
     },
     /**
      * Apply state
@@ -158,6 +163,77 @@ const enums = {
         hard: {
             value: 3,
             label: t("enums.difficulty.hard"),
+        },
+    },
+    /**
+     * Đơn vị thời gian
+     */
+    timeUnit: {
+        millisecond: {
+            value: 1,
+            label: "millisecond",
+        },
+        second: {
+            value: 2,
+            label: "second",
+        },
+    },
+    /**
+     * Đơn vị bộ nhớ
+     */
+    memoryUnit: {
+        byte: {
+            value: 1,
+            label: "byte",
+        },
+        kb: {
+            value: 2,
+            label: "kb",
+        },
+        mb: {
+            value: 2,
+            label: "mb",
+        },
+    },
+    /**
+     * Kiểu dữ liệu
+     */
+    dataType: {
+        // Chuỗi
+        string: {
+            value: 1,
+            label: "string",
+        },
+        strings: {
+            value: 2,
+            label: "string[]",
+        },
+        // Ký tự
+        char: {
+            value: 3,
+            label: "char",
+        },
+        chars: {
+            value: 4,
+            label: "char[]",
+        },
+        // Số nguyên
+        int: {
+            value: 5,
+            label: "int",
+        },
+        ints: {
+            value: 6,
+            label: "int[]",
+        },
+        // Số thực
+        decimal: {
+            value: 7,
+            label: "decimal",
+        },
+        decimals: {
+            value: 8,
+            label: "decimal[]",
         },
     },
 };

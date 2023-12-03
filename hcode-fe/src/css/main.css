@@ -49,6 +49,9 @@ body {
 
 /* Scroll bar */
 ::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar:hover {
     width: 14px;
 }
 ::-webkit-scrollbar-thumb {

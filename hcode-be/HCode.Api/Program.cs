@@ -47,11 +47,13 @@ namespace HCode.Api
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IProblemService, ProblemService>();
+            builder.Services.AddScoped<ILanguageService, LanguageService>();
 
             // Add repositories
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<IProblemRepository, ProblemRepository>();
+            builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
 
             // Add mapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

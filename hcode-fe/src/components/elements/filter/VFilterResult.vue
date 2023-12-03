@@ -1,11 +1,11 @@
 <template>
     <div class="filter-result">
         <b>{{ capitalizeFirstChar(filterData.title) }}</b>
-        <div class="d-flex">
+        <div class="flex">
             {{ filterData.compareName }}
         </div>
         <div
-            class="d-flex"
+            class="flex"
             v-if="filterValueComputed != null && filterValueComputed != ''"
         >
             "

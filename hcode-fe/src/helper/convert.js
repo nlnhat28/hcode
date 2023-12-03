@@ -103,7 +103,7 @@ const convert = {
      *
      * @param {*} enumObj
      */
-    enumToFilterSelects(enumObj) {
+    enumToSelects(enumObj) {
         const enumArray = Object.entries(enumObj).map(
             ([key, value]) => ({
                 key: value.value,

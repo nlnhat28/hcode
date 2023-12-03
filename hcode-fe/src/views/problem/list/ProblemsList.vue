@@ -15,6 +15,20 @@
                         v-model="keySearch"
                         ref="refSearchBox"
                     ></v-search-box>
+                    <div v-tooltip="$t('com.reload')">
+                        <v-button
+                            icon="far fa-arrows-rotate"
+                            severity="secondary"
+                            outlined
+                            :loading="isLoading"
+                            @click="reloadItems()"
+                        />
+                    </div>
+                    <v-button
+                        icon="fa fa-plus"
+                        :label="$t('com.createNew')"
+                        @click="clickCreate()"
+                    />
                 </template>
                 <template #tbody>
                     <v-tr
@@ -97,7 +111,6 @@
 </template>
 <script>
 import BaseList from "@/components/base/BaseList.vue";
-import problems from "./problems";
 import { problemService } from "@/services/services.js";
 import problemEnum from "@/enums/problem-enum.js";
 
@@ -114,7 +127,7 @@ export default {
              */
             columns: [
                 {
-                    title: this.$t("problem.column.status"),
+                    title: this.$t("problem.field.status"),
                     textAlign: 'center',
                     widthCell: 60,
                     name: "ProblemAccountState",
@@ -123,7 +136,7 @@ export default {
                     }
                 },
                 {
-                    title: this.$t("problem.column.problemName"),
+                    title: this.$t("problem.field.problemName"),
                     textAlign: 'left',
                     widthCell: 200,
                     name: "ProblemName",
@@ -136,7 +149,7 @@ export default {
                     }
                 },
                 {
-                    title: this.$t("problem.column.topic"),
+                    title: this.$t("problem.field.topic"),
                     textAlign: 'left',
                     widthCell: 140,
                     name: "TopicNames",
@@ -145,7 +158,7 @@ export default {
                     }
                 },
                 {
-                    title: this.$t("problem.column.difficulty"),
+                    title: this.$t("problem.field.difficulty"),
                     textAlign: 'left',
                     widthCell: 60,
                     name: "Difficulty",
@@ -153,12 +166,12 @@ export default {
                         sortType: this.$enums.sortType.blur,
                     },
                     filterConfig: {
-                        filterType: this.$enums.filterType.selectId,
-                        selects: this.$cv.enumToFilterSelects(this.$enums.difficulty),
+                        filterType: this.$enums.filterType.selectKey,
+                        selects: this.$cv.enumToSelects(this.$enums.difficulty),
                     }
                 },
                 {
-                    title: this.$t("problem.column.reaction"),
+                    title: this.$t("problem.field.reaction"),
                     textAlign: 'center',
                     widthCell: 100,
                     name: "Reaction",
@@ -168,7 +181,6 @@ export default {
                     }
                 }
             ],
-            problems: problems,
         }
     },
     computed: {
@@ -181,6 +193,12 @@ export default {
          */
         initOnCreated() {
             this.itemService = problemService;
+        },
+        /**
+         * Click vào nút tạo mới
+         */
+        clickCreate() {
+            this.$router.push(this.$path.problem)
         }
     }
 
@@ -188,5 +206,5 @@ export default {
 }
 </script>
 <style scoped>
-@import './problem.css';
+@import './problems-list.css';
 </style>

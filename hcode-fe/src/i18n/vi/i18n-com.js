@@ -3,9 +3,12 @@ const com = {
     send: "Gửi",
     close: "Đóng",
     cancel: "Huỷ",
+    create: "Tạo",
+    createNew: "Tạo mới",
     add: "Thêm",
     edit: "Sửa",
     delete: "Xoá",
+    deleteAll: "Xoá hết",
     showPassword: "Hiện mật khẩu",
     hidePassword: "Ẩn mật khẩu",
     passwordTooltip:
@@ -44,6 +47,8 @@ const com = {
     empty: "Trống",
     typeFilterValue: "Nhập giá trị",
     filterValue: "Giá trị lọc",
+    reload: "Làm mới",
+    value: "Giá trị",
 };
 
 export default com;

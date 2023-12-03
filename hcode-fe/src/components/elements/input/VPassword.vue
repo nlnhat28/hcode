@@ -114,7 +114,7 @@ export default {
          * Đã nhập đúng mật khẩu
          */
         correctComputed() {
-            return !this.$cf.isNullString(this.innerValue) && this.innerValue == this.password;
+            return !this.$cf.isEmptyString(this.innerValue) && this.innerValue == this.password;
         },
     },
     methods: {

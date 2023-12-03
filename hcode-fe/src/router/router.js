@@ -6,7 +6,8 @@ import Signup from "@/views/auth/Signup.vue";
 import Verify from "@/views/auth/Verify.vue";
 import ForgotPassword from "@/views/auth/ForgotPassword.vue";
 import ChangePassword from "@/views/auth/ChangePassword.vue";
-import ProblemsList from "@/views/problem/ProblemsList.vue";
+import ProblemsList from "@/views/problem/list/ProblemsList.vue";
+import ProblemDetail from "@/views/problem/detail/ProblemDetail.vue";
 
 const routes = [
     {
@@ -56,6 +57,13 @@ const routes = [
         name: "problems",
         components: {
             view1: ProblemsList,
+        },
+    },
+    {
+        path: path.problem,
+        name: "problem",
+        components: {
+            viewApp: ProblemDetail,
         },
     },
 ];

@@ -260,7 +260,7 @@ export default {
          * Author: nlnhat (25/07/2023)
          */
         isShowSelectsId() {
-            return (this.filterConfig.filterType == filterType.selectId
+            return (this.filterConfig.filterType == filterType.selectKey
                 && this.compareType.id != compareType.empty)
         },
         /**
@@ -323,11 +323,13 @@ export default {
          * Author: nlnhat (25/07/2023)
          */
         filterDataComputed() {
+            // Key là giá trị lọc
             if (this.filterConfig.filterType == filterType.selectName)
                 this.filterValueKey = this.filterValueName;
 
             this.filterValues[0].key = this.filterValueKey;
             this.filterValues[0].name = this.filterValueName;
+
 
             return {
                 title: this.title,
@@ -439,7 +441,7 @@ export default {
         validateCannotNull(label, value) {
             if (this.compareType.id == compareType.empty)
                 return null;
-            if (this.$cf.isNullString(value)) {
+            if (this.$cf.isEmptyString(value)) {
                 return `${label} ${this.$t('msg.cannotNull')}`
             }
             return null;
@@ -523,7 +525,9 @@ export default {
          */
         focusOnApply() {
             this.$nextTick(() => {
-                this.$refs.apply.focus();
+                if (this.$refs.apply) {
+                    // this.$refs.apply.focus();
+                }
             })
         },
         /**

@@ -48,7 +48,7 @@ export default {
     },
     data() {
         return {
-            src: this.isFull ? 'src/assets/img/logo-text.svg' : 'src/assets/img/logo-h.svg',
+            src: this.isFull ? '/src/assets/img/logo-text.svg' : '/src/assets/img/logo-h.svg',
         }
     },
     methods: {

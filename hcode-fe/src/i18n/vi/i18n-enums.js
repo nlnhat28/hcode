@@ -6,7 +6,7 @@ const enums = {
         easy: "Dễ",
         medium: "Vừa",
         hard: "Khó",
-    }
+    },
 };
 
 export default enums;

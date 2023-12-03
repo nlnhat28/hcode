@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Localization;
 using HCode.Domain;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace HCode.Application
 {
@@ -11,8 +10,7 @@ namespace HCode.Application
     /// <typeparam name="TEntityDto">Dto thực thể</typeparam>
     /// <typeparam name="TEntity">Thực thể</typeparam>
     /// Created by: nlnhat (18/07/2023
-    public abstract class ReadOnlyService<TEntityDto, TEntity> : CoreService, IReadOnlyService<TEntityDto, TEntity> 
-                                                                 where TEntityDto : BaseDto where TEntity : BaseEntity
+    public abstract class ReadOnlyService<TEntityDto, TEntity> : CoreService, IReadOnlyService<TEntityDto, TEntity>
     {
         #region Fields
         /// <summary>
@@ -72,7 +70,6 @@ namespace HCode.Application
         /// </summary>
         /// <param name="id">Id đối tượng</param>
         /// <returns>Dto đối tượng được tìm thấy</returns>
-        /// <exception cref="NotFoundException">Không tìm thấy đối tượng</exception>
         /// Created by: nlnhat (18/07/2023)
         public virtual async Task<TEntityDto> GetAsync(Guid id)
         {

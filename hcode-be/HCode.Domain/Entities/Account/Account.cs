@@ -30,7 +30,7 @@ namespace HCode.Domain
         /// <summary>
         /// Ảnh đại diện
         /// </summary>
-        public string? Avatar { get; set; }
+        public byte[]? Avatar { get; set; }
         /// <summary>
         /// Họ tên đầy đủ
         /// </summary>

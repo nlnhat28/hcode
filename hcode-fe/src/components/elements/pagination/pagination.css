@@ -31,7 +31,7 @@
 
 /* combobox  */
 .pagination__property .p-dropdown {
-    background-color: #000;
+    background-color: var(--editor-color);
 }
 .pagination__property .p-dropdown .p-inputtext {
     color: #fff

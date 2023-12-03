@@ -25,6 +25,7 @@
 .router-link-active,
 .router-link-exact-active {
     background-color: var(--tpr-300);
+    color: #fff;
 }
 
 .router-link-active .v-nav-item--active,

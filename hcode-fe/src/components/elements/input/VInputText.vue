@@ -29,7 +29,8 @@
                 :disabled="isDisabled"
                 :readonly="isReadOnly"
                 :title="tooltip || innerValue"
-                :style="`text-align: ${textAlign};`"
+                :style="`text-align: ${innerTextAlign};`"
+                @blur="$emit('blur')"
             />
             <div
                 v-if="innerAction"
@@ -112,7 +113,7 @@ export default {
         customOnChangeValue() {
             // Config nếu có copy
             if (this.hasCopy) {
-                if (this.$cf.isNullString(this.innerValue)) {
+                if (this.$cf.isEmptyString(this.innerValue)) {
                     this.innerAction = null;
                 }
                 else {
@@ -128,7 +129,7 @@ export default {
             }
             // Config nếu có clear
             else if (this.hasClear) {
-                if (this.$cf.isNullString(this.innerValue)) {
+                if (this.$cf.isEmptyString(this.innerValue)) {
                     this.innerAction = null;
                 }
                 else {

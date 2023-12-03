@@ -18,30 +18,25 @@ export default {
             default: 12,
         },
         /**
-         * Hướng column?
+         * Hướng
          */
-        isColumn: {
-            type: Boolean,
-            default: false
+        direction: {
+            type: String,
+            default: 'row'
         },
         /**
          * Flex-end 
          */
         flexEnd: {
             type: Boolean,
-            default: false  
-        }
+            default: false
+        },
     },
     computed: {
         styleComputed() {
-            let style = ''
-            if (!this.isColumn) {
-                style = `column-gap: ${this.gap}px; `;
-            }
-            else {
-                style = `flex-direction: column; row-gap: ${this.gap}px; `;
-            };
+            let style = `flex-direction: ${this.direction}; column-gap: ${this.gap}px; row-gap: ${this.gap}px;`;
 
+            // Flex end
             if (this.flexEnd) {
                 style += 'justify-content: flex-end;'
             };

@@ -1,0 +1,57 @@
+
+.problem-detail-container {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg-color);
+}
+.problem-detail__header {
+    height: 56px;    
+    background-color: var(--header-color);
+    width: 100%;
+}
+.problem-detail__body {
+    height: calc(100vh - 56px * 2);
+}
+.problem-detail__footer {
+    height: 56px;
+    background-color: var(--footer-color);
+    width: 100%;
+}
+
+/* parameter */
+.parameter-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    height: fit-content;
+    max-height: 100%;
+    padding: 4px;
+}
+.parameter__list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    height: 100%;
+    overflow: auto;
+}
+
+/* code editor */
+.code-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 16px;
+}
+.code__header {
+    width: 100%;
+    height: 40px;
+}
+.code__body {
+    width: 100%;
+    flex: 1;
+}
+.code__footer {
+    width: 100%;
+    height: 40px;
+}

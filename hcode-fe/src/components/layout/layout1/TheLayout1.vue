@@ -1,7 +1,11 @@
 <template>
     <div class="layout1">
-        <TheHeader />
-        <router-view name="view1"></router-view>
+        <div class="layout1__header">
+            <TheHeader />
+        </div>
+        <div class="layout1__body">
+            <router-view name="view1"></router-view>
+        </div>
     </div>
 </template>
 <script>

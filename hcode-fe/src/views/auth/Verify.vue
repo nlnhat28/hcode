@@ -159,7 +159,7 @@ export default {
                 Password: this.instance.Password
             };
             const response = await this.accountService.login(data);
-            if (this.$cf.onSuccess(response)) {
+            if (this.$cf.isSuccess(response)) {
                 return true;
             } else {
                 this.handleError(response);
@@ -179,7 +179,7 @@ export default {
                 VerifyMode: this.instance.VerifyMode
             };
             const response = await this.instanceService.sendVerifyCode(data);
-            if (this.$cf.onSuccess(response)) {
+            if (this.$cf.isSuccess(response)) {
                 this.sendCodeState.isSuccess = true;
             }
             else {

@@ -9,10 +9,11 @@
 .p-inputtext {
     font-family: var(--font-primary) !important;
     font-size: 18px !important;
-    /* color: #000; */
-    caret-color: auto;
     width: 100%;
     border-color: var(--border-color);
+}
+input {
+    caret-color: auto !important;
 }
 .p-inputtext::placeholder {
     color: var(--color-placeholder);
@@ -26,6 +27,10 @@
 }
 .p-inputtext.transparent .icon {
     color: #fff;
+}
+.dark .p-inputtext {
+    background: var(--editor-color);
+    color: var(--color-text);
 }
 
 /* input icon */
@@ -71,8 +76,8 @@
 .p-input-icon-right > .p-inputtext {
     padding-right: 0.75rem;
 }
-.input-wrapper:focus-within > .p-inputtext,
-.input-wrapper:hover > .p-inputtext {
+.input-wrapper:has(.input-icon-right):focus-within > .p-inputtext,
+.input-wrapper:has(.input-icon-right):hover > .p-inputtext {
     padding-right: 2.5rem;
 }
 

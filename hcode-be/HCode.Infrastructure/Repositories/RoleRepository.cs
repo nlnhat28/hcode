@@ -1,15 +1,10 @@
-﻿using Dapper;
-using HCode.Domain;
-using System.Data;
-using System.Text.Json;
-using static Dapper.SqlMapper;
+﻿using HCode.Domain;
 
 namespace HCode.Infrastructure
 {
     /// <summary>
-    /// Repository auth
+    /// Repository role
     /// </summary>
-    /// <typeparam name="Role">Vai trò</typeparam>
     /// Created by: nlnhat (17/08/2023)
     public class RoleRepository : BaseCodeRepository<Role>, IRoleRepository
     {

@@ -83,7 +83,10 @@ export default {
         document.title = this.$cf.documentTitle(this.documentTitle);
         await this.initOnCreated();
         await this.loadingEffect(async () => {
-            await this.handleInstanceOnCreate();
+            await Promise.all([
+                this.handleInstanceOnCreated(),
+                this.loadDataOnCreated(),
+            ]);
         });
     },
     mounted() {
@@ -135,11 +138,16 @@ export default {
         async initOnCreated() {
         },
         /**
+         * Load data
+         */
+        async loadDataOnCreated() {
+        },
+        /**
          * Handle instance on created()
          *
          * Author: nlnhat (05/07/2023)
          */
-        async handleInstanceOnCreate() {
+        async handleInstanceOnCreated() {
             switch (this.mode) {
                 case this.$enums.formMode.create:
                     this.storeOriginalInstance();
@@ -171,7 +179,7 @@ export default {
         async getInstance(id) {
             if (this.instanceService) {
                 const response = await instanceService.get(id);
-                if (this.$cf.onSuccess(response)) {
+                if (this.$cf.isSuccess(response)) {
                     this.instance = this.$cf.cloneDeep(response.Data);
                     this.processResponseGetData(response.Data);
                     this.storeOriginalInstance();
@@ -195,7 +203,7 @@ export default {
         async createInstance() {
             try {
                 const response = await instanceService.post(this.reformatInstance);
-                if (this.$cf.onSuccess(response)) {
+                if (this.$cf.isSuccess(response)) {
                     this.instance.InstanceId = response.Data;
                     this.isSuccessResponseFlag = true;
                 } else {
@@ -218,7 +226,7 @@ export default {
                     this.instance.InstanceId,
                     this.reformatInstance
                 );
-                if (this.$cf.onSuccess(response)) {
+                if (this.$cf.isSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.handleError(response);

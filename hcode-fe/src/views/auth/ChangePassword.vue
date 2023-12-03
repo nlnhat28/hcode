@@ -124,7 +124,7 @@ export default {
         async changePassword(data) {
             try {
                 const response = await this.accountService.changePassword(data);
-                if (this.$cf.onSuccess(response)) {
+                if (this.$cf.isSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                     this.messageOnToast = this.$t("auth.successfullyChangePassword");
                 } else {

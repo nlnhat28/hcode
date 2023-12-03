@@ -356,7 +356,7 @@ export default {
         async filterItems() {
             try {
                 const response = await this.itemService.filter(this.filterComputed);
-                if (this.$cf.onSuccess(response)) {
+                if (this.$cf.isSuccess(response)) {
                     this.items = response.Data.Data;
                     this.totalRecord = response.Data.TotalRecord;
                     this.allRecord = response.Data.AllRecord;
@@ -979,15 +979,10 @@ export default {
             this.isShowItemImport = false;
         },
         /**
-         * Imported methods
+         * Click vào nút tạo mới
          */
-        // formatDate,
-        // formatStringByDot,
-        // formatStringBySpace,
-        // formatDecimal,
-        // sortByName,
-        // download,
-        // openUrl,
+        clickCreate() {
+        }
     }
 }
 </script>

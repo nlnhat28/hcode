@@ -1,5 +1,5 @@
 <template>
-    <div class="search-box">
+    <div class="search-box dark">
         <v-input-text
             v-model="innerValue"
             ref="refInput"

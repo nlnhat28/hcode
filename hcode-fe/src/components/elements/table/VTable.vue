@@ -1,6 +1,6 @@
 <template>
     <div class="table-container">
-        <div class="table-container__top d-flex-column flex-1">
+        <div class="table-container__top flex-column flex-1">
             <!-- table toolbar -->
             <div class="table-toolbar">
                 <div class="table-toolbar__left">

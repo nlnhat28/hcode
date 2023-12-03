@@ -34,7 +34,7 @@ export default {
                                 if (refFocus == null) {
                                     refFocus = ref;
                                 }
-                                if (this.$cf.isNullString(userMsg)) {
+                                if (this.$cf.isEmptyString(userMsg)) {
                                     userMsg = msg;
                                 }
                                 callback = () => {
@@ -46,7 +46,7 @@ export default {
                             break;
                     }
 
-                    if (this.$cf.isNullString(userMsg)) {
+                    if (this.$cf.isEmptyString(userMsg)) {
                         userMsg = this.$t("msg.clientError");
                     }
 
@@ -78,7 +78,7 @@ export default {
         /**
          * Response success
          */
-        onSuccess(res) {
+        isSuccess(res) {
             return res && res.Success;
         }
     },

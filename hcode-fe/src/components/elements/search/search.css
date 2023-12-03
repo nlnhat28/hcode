@@ -1,14 +1,10 @@
 /* search-box */
 .search-box {
-    width: 300px;
+    width: 380px;
 }
 
 .search-box .p-inputtext {
-    background-color: #000;
-    color: #fff;
-    /* padding-top: 0.5rem;
-    padding-bottom: 0.5rem; */
-    /* background-color: transparent; */
+
 }
 
 /* search-result */

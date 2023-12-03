@@ -8,7 +8,7 @@
                 'th__sort',
                 { 'cursor-pointer': sortConfig.sortType != $enums.sortType.disabled },
                 { 'flex-start': textAlign == 'left' },
-                { 'flex-center': textAlign == 'center' },
+                { 'justify-center': textAlign == 'center' },
                 { 'flex-start': textAlign == 'right' },
             ]"
             @click="onClickSortType()"

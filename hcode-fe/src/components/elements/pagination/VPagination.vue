@@ -36,7 +36,7 @@
             </div>
             <div class="pagination__switch">
                 <div
-                    class="d-flex"
+                    class="flex"
                     :class="{ 'disabled': page.pageNumber <= 1 }"
                 >
                     <v-icon
@@ -88,7 +88,7 @@
                     </v-page-number>
                 </div>
                 <div
-                    class="d-flex"
+                    class="flex"
                     :class="{ 'disabled': pageNumbers.length <= page.pageNumber }"
                 >
                     <v-icon

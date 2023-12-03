@@ -10,7 +10,7 @@ namespace HCode.Api
     /// Created by: nlnhat (17/08/2023)
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class ReadOnlyController<TEntityDto, TEntity> : ControllerBase where TEntityDto : BaseDto where TEntity : BaseEntity
+    public class ReadOnlyController<TEntityDto, TEntity> : ControllerBase
     {
         #region Fields
         /// <summary>
@@ -26,7 +26,7 @@ namespace HCode.Api
         /// </summary>
         /// <param name="service">Service chỉ đọc</param>
         /// Created by: nlnhat (17/08/2023)
-        public ReadOnlyController(IReadOnlyService<TEntityDto, TEntity> service, IWebHostEnvironment webHostEnvironment)
+        public ReadOnlyController(IReadOnlyService<TEntityDto, TEntity> service)
         {
             _service = service;
         }

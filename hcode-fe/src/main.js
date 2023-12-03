@@ -28,9 +28,16 @@ import Dialog from "primevue/dialog";
  */
 import VButton from "@/components/elements/button/VButton.vue";
 import VButtonContainer from "@/components/elements/button/VButtonContainer.vue";
+import VCodeEditor from "@/components/elements/code-editor/VCodeEditor.vue";
 import VCombobox from "@/components/elements/combobox/VCombobox.vue";
 import VDialog from "@/components/elements/dialog/VDialog.vue";
+import VEditor from "@/components/elements/editor/VEditor.vue";
 import VFilter from "@/components/elements/filter/VFilter.vue";
+import VFormBody from "@/components/elements/form/VFormBody.vue";
+import VFormColumn from "@/components/elements/form/VFormColumn.vue";
+import VFormGroup from "@/components/elements/form/VFormGroup.vue";
+import VFormItem from "@/components/elements/form/VFormItem.vue";
+import VFormRow from "@/components/elements/form/VFormRow.vue";
 import VIcon from "@/components/elements/icon/VIcon.vue";
 import VInputText from "@/components/elements/input/VInputText.vue";
 import VInputGroup from "@/components/elements/input/VInputGroup.vue";
@@ -49,9 +56,15 @@ import VSearchBox from "@/components/elements/search/VSearchBox.vue";
 import VSearchResult from "@/components/elements/search/VSearchResult.vue";
 import VSkeleton from "@/components/elements/skeleton/VSkeleton.vue";
 import VSpinner from "@/components/elements/loader/VSpinner.vue";
+// import VSplitter from "@/components/elements/splitter/VSplitter.vue";
+// import VSplitterPanel from "@/components/elements/splitter/VSplitterPanel.vue";
+import VSplitter from "primevue/splitter";
+import VSplitterPanel from "primevue/splitterpanel";
 import VTooltip from "@/components/elements/tooltip/VTooltip.vue";
 import VRating from "@/components/elements/rating/VRating.vue";
 import VReaction from "@/components/elements/reaction/VReaction.vue";
+import VTabView from "primevue/tabview";
+import VTabPanel from "primevue/tabpanel";
 import VTable from "@/components/elements/table/VTable.vue";
 import VTag from "@/components/elements/tag/VTag.vue";
 import VTh from "@/components/elements/table/VTh.vue";
@@ -60,17 +73,21 @@ import VTr from "@/components/elements/table/VTr.vue";
 /**
  * Others
  */
-import CodeEditor from "simple-code-editor";
-import "simple-code-editor/themes/themes.css";
 import CountDown from "keep-countdown";
 // import 'keep-countdown/index.css'
 
 app.component("v-button", VButton);
 app.component("v-button-container", VButtonContainer);
-app.component("v-code-editor", CodeEditor);
+app.component("v-code-editor", VCodeEditor);
 app.component("v-combobox", VCombobox);
 app.component("v-countdown-simple", CountDown);
 app.component("v-dialog", Dialog);
+app.component("v-editor", VEditor);
+app.component("v-form-body", VFormBody);
+app.component("v-form-column", VFormColumn);
+app.component("v-form-group", VFormGroup);
+app.component("v-form-item", VFormItem);
+app.component("v-form-row", VFormRow);
 app.component("v-filter", VFilter);
 app.component("v-icon", VIcon);
 app.component("v-input-group", VInputGroup);
@@ -87,17 +104,21 @@ app.component("v-loader-lock", VLoaderLock);
 app.component("v-pagination", VPagination);
 app.component("v-page-number", VPageNumber);
 app.component("v-spinner", VSpinner);
+app.component("v-splitter", VSplitter);
+app.component("v-splitter-panel", VSplitterPanel);
 app.component("v-search-box", VSearchBox);
 app.component("v-search-result", VSearchResult);
 app.component("v-skeleton", VSkeleton);
 app.component("v-rating", VRating);
 app.component("v-reaction", VReaction);
-app.component("v-tooltip", VTooltip);
+app.component("v-tab-view", VTabView);
+app.component("v-tab-panel", VTabPanel);
 app.component("v-tag", VTag);
 app.component("v-table", VTable);
 app.component("v-th", VTh);
 app.component("v-td", VTd);
 app.component("v-tr", VTr);
+app.component("v-tooltip", VTooltip);
 /**
  * Global
  */

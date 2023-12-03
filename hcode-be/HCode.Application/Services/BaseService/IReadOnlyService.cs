@@ -7,7 +7,7 @@ namespace HCode.Application
     /// </summary>
     /// <typeparam name="TEntityDto">Dto thực thể</typeparam>
     /// Created by: nlnhat (18/07/2023)
-    public interface IReadOnlyService<TEntityDto, TEntity> : ICoreService where TEntityDto : BaseDto where TEntity : BaseEntity
+    public interface IReadOnlyService<TEntityDto, TEntity> : ICoreService
     {
         /// <summary>
         /// Lấy danh sách đối tượng

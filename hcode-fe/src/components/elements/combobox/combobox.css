@@ -1,18 +1,35 @@
 /* input */
 .p-dropdown {
     border-color: var(--border-color);
+    width: 100%;
+}
+.dark .p-dropdown {
+    background-color: var(--editor-color);
+}
+.dark .p-dropdown .p-inputtext {
+    color: var(--color-text);
 }
 .p-dropdown .p-inputtext {
     font-size: 18px;
 }
 
+.transparent.p-dropdown {
+    background-color: transparent;
+    color: var(--color-text);
+}
+.transparent.p-dropdown .p-inputtext {
+    color: var(--color-text);
+}
+.no-border.p-dropdown {
+    border: none;
+}
 /* items */
 .p-dropdown-items-wrapper {
     max-height: 300px !important;
 }
 .p-dropdown-panel {
     padding-bottom: -10px;
-    background-color: #000;
+    background-color: var(--editor-color);
 }
 .p-dropdown-panel .p-dropdown-items {
     padding: 0.5rem 0;

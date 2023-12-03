@@ -97,7 +97,7 @@ export default {
     justify-content: space-between;
     column-gap: 16px;
     padding: 0 16px;
-    background-color: rgba(0, 0, 0, 0.274);
+    background-color: var(--header-color);
     /* border-bottom: 1px solid #646464; */
 }
 
