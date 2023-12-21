@@ -35,11 +35,19 @@ const problem = {
     generalInfo: "Thông tin chung",
     testcase: "Kiểm thử",
     parameter: "Tham số",
+    inputParameter: "Tham số đầu vào",
+    outputType: "Kiểu dữ liệu trả về",
+    parameterName: "Tên tham số",
+    deleteAllParam: "Xoá tham số",
+    deleteAllParamConfirm: "Bạn có chắc chắn xoá hết tham số?",
+    deleteAllTestcase: "Xoá testcase",
+    deleteAllTestcaseConfirm: "Bạn có chắc chắn xoá hết testcase?",
+    usedParameterName: "Tên tham số <{name}> đã được sử dụng",
+    dataType: "Kiểu dữ liệu",
     hint: "Gợi ý",
     quantity: "Số lượng",
     detail: "Chi tiết",
-    deleteAllParamConfirm: "Bạn có chắc chắn xoá hết tham số?",
-    deleteAllParam: "Xoá tham số"
+    expectedOutput: "Kết quả mong đợi",
 };
 
 export default problem;
