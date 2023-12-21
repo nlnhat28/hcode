@@ -15,8 +15,11 @@
 input {
     caret-color: auto !important;
 }
-.p-inputtext::placeholder {
+.dark .p-inputtext::placeholder {
     color: var(--color-placeholder);
+}
+.p-inputtext::placeholder {
+    color: var(--color-placeholder-light);
 }
 .p-inputtext:enabled:focus {
     box-shadow: 0 0 0 0.15rem #c7d2fe;

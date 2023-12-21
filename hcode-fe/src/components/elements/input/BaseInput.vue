@@ -374,6 +374,48 @@ export default {
                 return this.errorMessage
             }
             return this.warnMessage;
+        },
+        /**
+         * Tuỳ chỉnh cho tooltip
+         */
+        tooltipConfig() {
+            const me = this;
+            const errorConfig = {
+                value: me.errorMessage,
+                pt: {
+                    arrow: {
+                        style: {
+                            borderTopColor: 'var(--red-500)'
+                        }
+                    },
+                    text: {
+                        style: {
+                            backgroundColor: 'var(--red-500)'
+                        }
+                    },
+                }
+            };
+            const warnConfig = {
+                value: me.warnMessage,
+                pt: {
+                    arrow: {
+                        style: {
+                            borderTopColor: 'var(--orange-500)'
+                        }
+                    },
+                    text: {
+                        style: {
+                            backgroundColor: 'var(--orange-500)'
+                        }
+                    },
+                }
+            };
+            if (this.errorMessage) {
+                return errorConfig
+            }
+            if (this.warnMessage) {
+                return warnConfig;
+            }
         }
     },
     methods: {

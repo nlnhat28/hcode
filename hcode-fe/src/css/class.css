@@ -15,6 +15,10 @@
     display: flex;
     align-items: center;
 }
+.align-center {
+    align-items: center;
+}
+
 .flex-justify-between {
     display: flex;
     justify-content: space-between;
@@ -38,6 +42,12 @@
 
 .col-gap-8 {
     column-gap: 8px;
+}
+.col-gap-12 {
+    column-gap: 12px;
+}
+.col-gap-16 {
+    column-gap: 16px;
 }
 
 /* position */

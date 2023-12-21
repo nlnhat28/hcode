@@ -151,10 +151,12 @@ app.config.globalProperties.$reg = regex;
  * Directives
  */
 import tooltip from "@/directives/tooltip.js";
+import ptooltip from "primevue/tooltip";
 import clickOutside from "@/directives/click-outside.js";
 import contextmenuOutside from "@/directives/contextmenu-outside.js";
 
 app.directive("tooltip", tooltip);
+app.directive("ptooltip", ptooltip);
 app.directive("click-outside", clickOutside);
 app.directive("contextmenu-outside", contextmenuOutside);
 

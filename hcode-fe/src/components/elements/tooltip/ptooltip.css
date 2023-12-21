@@ -1,0 +1,6 @@
+.p-tooltip {
+    max-width: fit-content !important;
+}
+.p-tooltip-text {
+    padding: 0.5rem 0.6rem !important;
+}

@@ -8,7 +8,7 @@
                 { 'tooltip--error': errorMessage != null },
                 { 'tooltip--warn': warnMessage != null && errorMessage == null }
             ]"
-            v-tooltip:top="tooltipComputed"
+            v-ptooltip.top="tooltipConfig"
         >
             <div class="input-icon-left">
                 <v-icon

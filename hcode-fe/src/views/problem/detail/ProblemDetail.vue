@@ -28,7 +28,10 @@
                                                 isRequired
                                                 :label="$t('problem.field.problemName')"
                                             >
-                                                <v-input-text>
+                                                <v-input-text
+                                                    hasClear
+                                                    :label="$t('problem.field.problemName')"
+                                                >
                                                 </v-input-text>
                                             </v-form-item>
                                         </v-form-group>
@@ -102,24 +105,13 @@
                             <!-- Tham số-->
                             <v-tab-panel :header="$t('problem.parameter')">
                                 <div class="parameter-container dark">
-                                    <div
-                                        class="parameter__list"
-                                        v-if="!$cf.isEmptyArray(instance.Parameters)"
-                                    >
-                                        <VParameterItem
-                                            v-for="(param, index) in instance.Parameters"
-                                            :key="param.ParameterId"
-                                            :parameter="param"
-                                            @onDelete="deleteParameter"
-                                            ></VParameterItem>
-                                        </div>
-                                        <v-button-container class="w-full flex-end">
-                                            <v-button
+                                    <v-button-container class="w-full justify-between">
+                                        <v-button
                                             icon="far fa-plus"
                                             :label="$t('com.add')"
                                             @click="clickAddParameter"
-                                            ></v-button>
-                                            <v-button
+                                        ></v-button>
+                                        <v-button
                                             v-if="!$cf.isEmptyArray(instance.Parameters)"
                                             severity="danger"
                                             icon="far fa-trash-can"
@@ -128,10 +120,53 @@
                                             @click="clickDeleteAllParameter"
                                         ></v-button>
                                     </v-button-container>
+                                    <div
+                                        class="parameter__list"
+                                        v-if="!$cf.isEmptyArray(instance.Parameters)"
+                                    >
+                                        <ParameterItem
+                                            v-for="(param, index) in instance.Parameters"
+                                            :key="param.ParameterId"
+                                            :index="index"
+                                            :parameter="param"
+                                            :parameters="instance.Parameters"
+                                            @onDelete="deleteParameter"
+                                        ></ParameterItem>
+                                    </div>
                                 </div>
                             </v-tab-panel>
                             <!-- Test -->
                             <v-tab-panel :header="$t('problem.testcase')">
+                                <div class="parameter-container dark">
+                                    <v-button-container class="w-full justify-between">
+                                        <v-button
+                                            icon="far fa-plus"
+                                            :label="$t('com.add')"
+                                            @click="clickAddParameter"
+                                        ></v-button>
+                                        <v-button
+                                            v-if="!$cf.isEmptyArray(instance.Parameters)"
+                                            severity="danger"
+                                            icon="far fa-trash-can"
+                                            outlined
+                                            :label="$t('com.deleteAll')"
+                                            @click="clickDeleteAllParameter"
+                                        ></v-button>
+                                    </v-button-container>
+                                    <div
+                                        class="parameter__list"
+                                        v-if="!$cf.isEmptyArray(instance.Parameters)"
+                                    >
+                                        <TestcaseItem
+                                            v-for="(param, index) in instance.Parameters"
+                                            :key="param.ParameterId"
+                                            :index="index"
+                                            :parameter="param"
+                                            :parameters="instance.Parameters"
+                                            @onDelete="deleteParameter"
+                                        ></TestcaseItem>
+                                    </div>
+                                </div>
                             </v-tab-panel>
                         </v-tab-view>
                     </div>
@@ -140,7 +175,7 @@
                 <v-splitter-panel class="flex-center">
                     <div class="wh-full p-20 flex-column code-container">
                         <div class="code__header">
-                            <div class="flex-justify-between">
+                            <div class="flex-align-center w-fit">
                                 <v-combobox
                                     class="transparent no-border"
                                     v-model="selectedLanguage"
@@ -174,13 +209,15 @@ import { useLanguageStore } from "@/stores/stores";
 import { mapStores, mapState } from 'pinia';
 import problemEnum from "@/enums/problem-enum";
 import problemConst from "@/consts/problem-const.js";
-import VParameterItem from "./VParameterItem.vue";
+import ParameterItem from "./ParameterItem.vue";
+import TestcaseItem from "./TestcaseItem.vue";
 
 export default {
     name: "ProblemDetail",
     extends: BaseForm,
     components: {
-        VParameterItem,
+        ParameterItem,
+        TestcaseItem,
     },
     data() {
         return {
@@ -239,11 +276,16 @@ export default {
             const param = {
                 ParameterId: this.$cf.uuid.new(),
             }
-            
+
             this.instance.Parameters.push(param);
         },
-        deleteParameter() {
-
+        /**
+         * Xoá 1 parameter
+         * 
+         * @param {*} parameter 
+         */
+        deleteParameter(parameter) {
+            this.instance.Parameters = this.instance.Parameters.filter(item => item.ParameterId != parameter.ParameterId)
         },
         /**
          * Click xoá tham số
@@ -261,6 +303,7 @@ export default {
                 },
                 {
                     // Gửi
+                    severity: "danger",
                     label: this.$t("com.delete"),
                     icon: "far fa-trash-can",
                     autofocus: true,
@@ -278,4 +321,6 @@ export default {
     }
 }
 </script>
-<style scoped>@import './problem-detail.css';</style>
+<style scoped>
+@import './problem-detail.css';
+</style>
