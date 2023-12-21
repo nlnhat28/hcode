@@ -60,3 +60,9 @@ body {
 ::-webkit-scrollbar-track {
     background: var(--tpr-300);
 }
+
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  display: none;
+}

@@ -45,7 +45,7 @@ namespace HCode.Api
         {
             var result = new ServerResponse();
 
-            result.Data = await _service.CreateAsync(entityDto);
+            await _service.CreateAsync(entityDto, result);
             
             return StatusCode(StatusCodes.Status201Created, result);
         }
@@ -61,7 +61,7 @@ namespace HCode.Api
         {
             var result = new ServerResponse();
 
-            result.Data = await _service.UpdateAsync(id, entityDto);
+            await _service.UpdateAsync(id, entityDto, result);
 
             return StatusCode(StatusCodes.Status200OK, result);
         }

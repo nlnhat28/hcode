@@ -170,11 +170,11 @@ const enums = {
      */
     timeUnit: {
         millisecond: {
-            value: 1,
+            value: 3,
             label: "millisecond",
         },
         second: {
-            value: 2,
+            value: 4,
             label: "second",
         },
     },
@@ -186,11 +186,11 @@ const enums = {
             value: 1,
             label: "byte",
         },
-        kb: {
+        kilobyte: {
             value: 2,
             label: "kb",
         },
-        mb: {
+        megebyte: {
             value: 2,
             label: "mb",
         },
@@ -209,14 +209,14 @@ const enums = {
             label: "string[]",
         },
         // Ký tự
-        char: {
-            value: 3,
-            label: "char",
-        },
-        chars: {
-            value: 4,
-            label: "char[]",
-        },
+        // char: {
+        //     value: 3,
+        //     label: "char",
+        // },
+        // chars: {
+        //     value: 4,
+        //     label: "char[]",
+        // },
         // Số nguyên
         int: {
             value: 5,
@@ -235,6 +235,25 @@ const enums = {
             value: 8,
             label: "decimal[]",
         },
+        /**
+         * Bool
+         */
+        bool: {
+            value: 9,
+            label: "bool",
+        },
     },
+    /**
+     * Loại language
+     */
+    language: {
+        c: 49,
+        csharp: 51,
+        cpp: 53,
+        java: 91,
+        js: 63,
+        php: 68,
+        python: 92,
+    }
 };
 export default enums;

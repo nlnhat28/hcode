@@ -1,35 +1,56 @@
 <template>
-    <div class="parameter-item">
-        <div class="parameter__order flex-center">
-            {{ index + 1 }}
-        </div>
-        <div class="flex align-center justify-between col-gap-12 flex-1">
-            <div class="parameter__data-type flex-center dark">
-                <v-combobox
-                    v-model="selectedDataType"
-                    optionLabel="name"
-                    :placeholder="$t('problem.dataType')"
-                    :options="$cv.enumToSelects($enums.dataType)"
-                ></v-combobox>
+    <div class="testcase-item">
+        <div
+            class="testcase__panel"
+            @click="clickPanel"
+        >
+            <div class="testcase__label flex-center">
+                {{ index + 1 }}. Testcase {{ index + 1 }}
             </div>
-            <div class="parameter__name flex-center dark">
-                <v-input-text
-                    ref="refParameterName"
-                    v-model="instance.ParameterName"
-                    isRequired
-                    hasClear
-                    :validate="validateParameterName"
-                    :label="$t('problem.parameterName')"
-                ></v-input-text>
+            <div class="testcase__function flex-align-center col-gap-12">
+                <v-icon
+                    applyPointer
+                    :icon="this.instance.AllowView ? 'far fa-lock-keyhole-open' : 'far fa-lock-keyhole'"
+                    :color="this.instance.AllowView ? 'light' : 'warn'"
+                    @click="clickLock"
+                />
+                <v-icon
+                    icon="far fa-circle-xmark"
+                    color="danger"
+                    applyPointer
+                    @click="clickDelete"
+                />
             </div>
         </div>
-        <div class="parameter__function flex-center">
-            <v-icon
-                icon="far fa-circle-xmark"
-                color="danger"
-                applyPointer
-                @click="clickDelete"
-            />
+        <div
+            class="testcase__detail flex-column row-gap-20"
+            v-if="isShowDetail"
+        >
+            <div class="flex-column row-gap-12">
+                <div
+                    class="testcase__input"
+                    v-for="(param, index) in parameters"
+                    :key="index"
+                >
+                    <div class="testcase__parameter-name">
+                        {{ param.ParameterName || `${$t('problem.parameter')} ${param.ParameterOrder}` }}
+                    </div>
+                    <div class="testcase__parameter-input">
+                        <v-input-text hasClear v-model="instance.Inputs[index]"></v-input-text>
+                    </div>
+                </div>
+            </div>
+            <div class="testcase__input">
+                <div class="testcase__parameter-name">
+                    {{ $t('problem.expectedOutput') }}
+                </div>
+                <div class="testcase__parameter-input">
+                    <v-input-text
+                        hasClear
+                        v-model="instance.ExpectedOutput"
+                    ></v-input-text>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -47,14 +68,21 @@ export default {
             type: Number,
         },
         /**
-         * Thông tin parameter
+         * Thông tin testcase
          */
-        parameter: {
+        testcase: {
             type: Object,
             default: {}
         },
         /**
-         * Danh sách parameter khác
+         * Danh sách testcase khác
+         */
+        testcases: {
+            type: Array,
+            default: []
+        },
+        /**
+         * Danh sách parameters
          */
         parameters: {
             type: Array,
@@ -63,105 +91,114 @@ export default {
     },
     data() {
         return {
-            selectedDataType: this.$cv.enumToSelects(this.$enums.dataType)[0],
             instance: {},
+            isShowDetail: false,
         }
     },
     emits: ['onDelete'],
     created() {
-        this.instance = this.parameter;
+        this.instance = this.testcase;
+
+        this.instance.AllowView ??= true;
+
+        this.instance.Inputs ??= [];
+        
     },
     mounted() {
-        this.refs = [this.$refs['refParameterName']];
+        this.refs = [this.$refs['refTestcaseName']];
     },
     watch: {
-        parameter() {
-            this.instance = this.parameter;
+        testcase() {
+            this.instance = this.testcase;
         },
-        parameters: {
+        testcases: {
             handler() {
-                if (!this.$cf.isEmptyString(this.instance.ParameterName)) {
+                if (!this.$cf.isEmptyString(this.instance.TestcaseName)) {
                     this.checkValidate();
                 }
             },
             deep: true,
-        }
+        },
     },
     computed: {
-        /**
-         * Các tên parameter
-         */
-        parameterNames() {
-            if (this.parameters) {
-                const names = this.parameters.map(param => param.ParameterName);
-                return names;
-            }
-            return [];
-        }
     },
     methods: {
+        /**
+         * Đổi allow view
+         */
+        clickLock(e) {
+            e.stopPropagation();
+            this.instance.AllowView = !this.instance.AllowView;
+        },
+        /**
+         * Đóng mở detail
+         */
+        clickPanel() {
+            this.isShowDetail = !this.isShowDetail;
+        },
         /**
          * Click xoá
          */
         clickDelete() {
-            this.$emit('onDelete', this.parameter);
+            this.$emit('onDelete', this.testcase);
         },
-        /**
-         * Hàm validate refParameterName
-         */
-        validateParameterName(label, value) {
-            if (!this.$cf.isEmptyString(this.instance.ParameterName)
-                && this.parameterNames.filter(item => item == value).length > 1) {
-                const errorMessage = this.$t('problem.usedParameterName', { name: value });
-                return errorMessage;
-            };
-            return null;
-        },
-        /**
-         * Tạo tên tham số tự động
-         */
-        generateParameterName() {
-            if (this.$cf.isEmptyString(this.instance.ParameterName)) {
-
-            }
-        }
     }
 }
 </script>
 <style scoped>
-.parameter-item {
+.testcase-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.testcase__panel {
     width: 100%;
     height: 60px;
     min-height: 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--tpr-300);
+    padding: 0 20px;
+    background-color: var(--dark-400);
+    cursor: pointer;
     border-radius: 8px;
     transition: background-color 0.2s;
 }
 
-.parameter-item:focus-within {
-    background-color: var(--tpr-200);
+.testcase__panel:focus-within {
+    background-color: var(--dark-300);
 }
 
-.parameter-item:hover {
-    background-color: var(--tpr-100);
+.testcase__panel:hover {
+    background-color: var(--dark-200);
 }
 
-.parameter__order,
-.parameter__function {
-    width: 56px;
-    height: 100%;
+.testcase-item:has(.testcase__detail) .testcase__panel {
+    border-radius: 8px 8px 0 0;
 }
 
-.parameter__order {
+.testcase__label {
     font-weight: 700;
 }
 
-.parameter__data-type,
-.parameter__name {
-    flex: 1;
+.testcase__function {
     height: 100%;
 }
-</style>
+
+.testcase__detail {
+    width: 100%;
+    height: fit-content;
+    background-color: var(--dark-500);
+    border-radius: 0 0 8px 8px;
+    padding: 20px;
+}
+
+.testcase__input {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+}</style>

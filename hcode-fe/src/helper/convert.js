@@ -104,13 +104,60 @@ const convert = {
      * @param {*} enumObj
      */
     enumToSelects(enumObj) {
-        const enumArray = Object.entries(enumObj).map(
-            ([key, value]) => ({
-                key: value.value,
-                name: value.label,
-            })
-        ); 
+        const enumArray = Object.entries(enumObj).map(([key, value]) => ({
+            key: value.value,
+            name: value.label,
+        }));
         return enumArray;
+    },
+    /**
+     * Chuyển selected object sang enum key
+     *
+     * @param {*} selected
+     */
+    selectedToEnumKey(selected, valueIfFail) {
+        if (selected) {
+            const value = selected.key;
+            return value;
+        }
+        if (valueIfFail) {
+            return valueIfFail;
+        }
+        return null;
+    },
+    /**
+     * Chuyển enum key sang selected object
+     *
+     * @param {*} enumKey
+     * @param {array} selects
+     */
+    enumKeyToSelected(enumKey, selects, indexIfNull) {
+        if (selects) {
+            if (enumKey != null) {
+                const values = selects.filter(item => item.key == enumKey);
+
+                if (values) {
+                    return values[0];
+                }
+                return null;
+            }
+            else if (indexIfNull != null && indexIfNull >= 0 && indexIfNull < selects.length) {
+                const value = selects[indexIfNull];
+                return value;
+            }
+            return null;
+        };
+        return null;
+    },
+    /**
+     * Convert sang json string
+     * @param {*} any
+     * @param {*} valueIfFail
+     * @returns
+     */
+    toJson(any, valueIfFail) {
+        let result = JSON.stringify(any);
+        return result;
     },
 };
 export default convert;

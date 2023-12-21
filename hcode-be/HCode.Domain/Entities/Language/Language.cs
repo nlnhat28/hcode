@@ -19,7 +19,7 @@ namespace HCode.Domain
         /// <summary>
         /// Tên ngôn ngữ
         /// </summary>
-        public string LanguageName { get; set; }
+        public string? LanguageName { get; set; }
         /// <summary>
         /// Id gửi đến judge0
         /// </summary>
@@ -27,11 +27,14 @@ namespace HCode.Domain
         /// <summary>
         /// Mô tả
         /// </summary>
-        public string Description { get; set;}
+        public string Description { get; set; }
         /// <summary>
         /// Kích hoạt hay không
         /// </summary>
         public bool IsActivated { get; set; }
+        #endregion
+
+        #region Constructor
         #endregion
     }
 }

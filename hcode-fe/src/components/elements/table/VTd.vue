@@ -13,7 +13,7 @@
         <div :class="[
             'td__content',
             { 'flex-start': style.textAlign == 'left' },
-            { 'justif-center': style.textAlign == 'center' },
+            { 'justify-center': style.textAlign == 'center' },
             { 'flex-start': style.textAlign == 'right' },
         ]">
             <div

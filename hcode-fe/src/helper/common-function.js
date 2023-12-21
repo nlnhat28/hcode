@@ -109,6 +109,19 @@ const commonFuction = {
         },
         empty: "00000000-0000-0000-0000-000000000000",
     },
-    
-};
+    /**
+     * Capitalize first char
+     *
+     * Author: nlnhat (28/07/2023)
+     *
+     * @param {string} text String to format
+     * @returns {string} String format: test vƯƯalue => Test value
+     */
+    upperFirstChar(text) {
+        if (text && typeof text == "string") {
+            return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+        }
+        return text;
+    }
+}
 export default commonFuction;

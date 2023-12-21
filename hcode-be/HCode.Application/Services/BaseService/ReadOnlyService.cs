@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Localization;
 using HCode.Domain;
+using System.Reflection;
+using AutoMapper.Configuration.Annotations;
 
 namespace HCode.Application
 {

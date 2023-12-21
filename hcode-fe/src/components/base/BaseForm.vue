@@ -105,14 +105,6 @@ export default {
     },
     computed: {
         /**
-         * Reformat instance trước khi so sánh
-         *
-         * Author: nlnhat (02/07/2023)
-         */
-        reformatInstance() {
-            return this.instance;
-        },
-        /**
          * Change title when change mode
          *
          * Author: nlnhat (02/07/2023)
@@ -133,7 +125,7 @@ export default {
     },
     methods: {
         /**
-         * Khởi tại dữ liệu data
+         * Khởi tạo dữ liệu data
          */
         async initOnCreated() {
         },
@@ -141,6 +133,14 @@ export default {
          * Load data
          */
         async loadDataOnCreated() {
+        },
+        /**
+         * Reformat instance trước khi lưu
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        reformatInstance() {
+            return this.instance;
         },
         /**
          * Handle instance on created()
@@ -327,6 +327,7 @@ export default {
         async onClickSave() {
             try {
                 if (await this.isValidForm()) {
+                    await this.customBeforeSave();
                     this.isSuccessResponseFlag = false;
                     await this.onSave();
                     if (this.isSuccessResponseFlag == true) {
@@ -382,17 +383,17 @@ export default {
                 console.error(error);
             }
         },
+        customBeforeSave() {
+        },
         /**
          * Xử lý sau khi lưu thành công
          */
         afterSaveSuccess() {
-
         },
         /**
          * Xử lý sau khi lưu thất bại
          */
         afterSaveError() {
-
         },
         /**
          * Reset form 

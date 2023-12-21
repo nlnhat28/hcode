@@ -65,7 +65,7 @@
                                 ></v-tag>
                             </v-td>
                             <!-- Chủ đề -->
-                            <v-td :content="item.TopicNames">
+                            <v-td :content="item.Topic">
                             </v-td>
                             <!-- Độ khó-->
                             <v-td
@@ -152,7 +152,7 @@ export default {
                     title: this.$t("problem.field.topic"),
                     textAlign: 'left',
                     widthCell: 140,
-                    name: "TopicNames",
+                    name: "Topic",
                     filterConfig: {
                         filterType: this.$enums.filterType.text,
                     }

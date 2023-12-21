@@ -20,7 +20,14 @@
                                                 isRequired
                                                 :label="$t('problem.field.problemCode')"
                                             >
-                                                <v-input-text>
+                                                <v-input-text
+                                                    ref="refProblemCode"
+                                                    isRequired
+                                                    v-model="instance.ProblemCode"
+                                                    :maxLength="20"
+                                                    :label="$t('problem.field.code')"
+                                                    :applyPlaceholder="false"
+                                                >
                                                 </v-input-text>
                                             </v-form-item>
                                             <!-- Tên -->
@@ -29,8 +36,13 @@
                                                 :label="$t('problem.field.problemName')"
                                             >
                                                 <v-input-text
+                                                    ref="refProblemName"
+                                                    isRequired
+                                                    v-model="instance.ProblemName"
                                                     hasClear
+                                                    :maxLength="255"
                                                     :label="$t('problem.field.problemName')"
+                                                    :applyPlaceholder="false"
                                                 >
                                                 </v-input-text>
                                             </v-form-item>
@@ -43,15 +55,22 @@
                                                 :label="$t('problem.field.difficulty')"
                                             >
                                                 <v-combobox
-                                                    v-model="instance.difficulty"
+                                                    v-model="selectedDifficulty"
                                                     optionLabel="name"
-                                                    :options="$cv.enumToSelects($enums.difficulty)"
+                                                    :options="difficulties"
                                                 >
                                                 </v-combobox>
                                             </v-form-item>
                                             <!-- Chủ đề -->
                                             <v-form-item :label="$t('problem.field.topic')">
-                                                <v-input-text>
+                                                <v-input-text
+                                                    ref="refTopic"
+                                                    v-model="instance.Topic"
+                                                    hasClear
+                                                    :maxLength="255"
+                                                    :label="$t('problem.field.topic')"
+                                                    :applyPlaceholder="false"
+                                                >
                                                 </v-input-text>
                                             </v-form-item>
                                         </v-form-group>
@@ -62,20 +81,48 @@
                                                 <div class="flex-align-center col-gap-8">
                                                     <v-input-text
                                                         v-model="instance.LimitTime"
-                                                        :dataInput="$enums.dataInput.integer"
+                                                        type='number'
+                                                        hasClear
+                                                        :dataInput="$enums.dataInput.decimal"
+                                                        :minValue="0"
+                                                        :maxValue="10"
+                                                        :label="$t('problem.field.limitTime')"
+                                                        :applyPlaceholder="false"
                                                     >
                                                     </v-input-text>
-                                                    <v-combobox
+                                                    <!-- <v-combobox
                                                         style="width: 60%;"
                                                         v-model="selectedTimeUnit"
                                                         optionLabel="name"
                                                         :options="$cv.enumToSelects($enums.timeUnit)"
                                                     >
-                                                    </v-combobox>
+                                                    </v-combobox> -->
                                                 </div>
                                             </v-form-item>
                                             <!-- Bộ nhớ -->
                                             <v-form-item :label="$t('problem.field.limitMemory')">
+                                                <div class="flex-align-center col-gap-8">
+                                                    <v-input-text
+                                                        v-model="instance.LimitMemory"
+                                                        type='number'
+                                                        hasClear
+                                                        :dataInput="$enums.dataInput.decimal"
+                                                        :minValue="0"
+                                                        :maxValue="51200"
+                                                        :label="$t('problem.field.limitMemory')"
+                                                        :applyPlaceholder="false"
+                                                    >
+                                                    </v-input-text>
+                                                    <!-- <v-combobox
+                                                        style="width: 60%;"
+                                                        v-model="selectedMemoryUnit"
+                                                        optionLabel="name"
+                                                        :options="$cv.enumToSelects($enums.memoryUnit)"
+                                                    ></v-combobox> -->
+                                                </div>
+                                            </v-form-item>
+                                            <!-- Trạng thái lưu -->
+                                            <!-- <v-form-item :label="$t('problem.field.limitMemory')">
                                                 <div class="flex-align-center col-gap-8">
                                                     <v-input-text
                                                         v-model="instance.LimitMemory"
@@ -89,7 +136,7 @@
                                                         :options="$cv.enumToSelects($enums.memoryUnit)"
                                                     ></v-combobox>
                                                 </div>
-                                            </v-form-item>
+                                            </v-form-item> -->
                                         </v-form-group>
                                     </v-form-column>
                                 </v-form-body>
@@ -105,65 +152,83 @@
                             <!-- Tham số-->
                             <v-tab-panel :header="$t('problem.parameter')">
                                 <div class="parameter-container dark">
-                                    <v-button-container class="w-full justify-between">
-                                        <v-button
-                                            icon="far fa-plus"
-                                            :label="$t('com.add')"
-                                            @click="clickAddParameter"
-                                        ></v-button>
-                                        <v-button
-                                            v-if="!$cf.isEmptyArray(instance.Parameters)"
-                                            severity="danger"
-                                            icon="far fa-trash-can"
-                                            outlined
-                                            :label="$t('com.deleteAll')"
-                                            @click="clickDeleteAllParameter"
-                                        ></v-button>
-                                    </v-button-container>
-                                    <div
-                                        class="parameter__list"
-                                        v-if="!$cf.isEmptyArray(instance.Parameters)"
-                                    >
-                                        <ParameterItem
-                                            v-for="(param, index) in instance.Parameters"
-                                            :key="param.ParameterId"
-                                            :index="index"
-                                            :parameter="param"
-                                            :parameters="instance.Parameters"
-                                            @onDelete="deleteParameter"
-                                        ></ParameterItem>
-                                    </div>
+                                    <v-form-column :rowGap="24">
+                                        <!-- Kiểu dữ liệu trả về-->
+                                        <v-form-item
+                                            style="width: 20%;"
+                                            :label="$t('problem.outputType')"
+                                        >
+                                            <v-combobox
+                                                v-model="selectedOutputType"
+                                                optionLabel="name"
+                                                :options="dataTypes"
+                                            >
+                                            </v-combobox>
+                                        </v-form-item>
+                                        <!-- Tham số đầu vào-->
+                                        <v-form-item :label="$t('problem.inputParameter')">
+                                            <v-button-container class="w-full justify-between">
+                                                <v-button
+                                                    icon="far fa-plus"
+                                                    :label="$t('com.add')"
+                                                    @click="clickAddParameter"
+                                                ></v-button>
+                                                <v-button
+                                                    v-if="!$cf.isEmptyArray(instance.Parameters)"
+                                                    severity="danger"
+                                                    icon="far fa-trash-can"
+                                                    outlined
+                                                    :label="$t('com.deleteAll')"
+                                                    @click="clickDeleteAllParameter"
+                                                ></v-button>
+                                            </v-button-container>
+                                            <div
+                                                class="parameter__list"
+                                                v-if="!$cf.isEmptyArray(instance.Parameters)"
+                                            >
+                                                <ParameterItem
+                                                    v-for="(param, index) in instance.Parameters"
+                                                    :key="param.ParameterId"
+                                                    :index="index"
+                                                    :parameter="param"
+                                                    :parameters="instance.Parameters"
+                                                    @onDelete="deleteParameter"
+                                                ></ParameterItem>
+                                            </div>
+                                        </v-form-item>
+                                    </v-form-column>
                                 </div>
                             </v-tab-panel>
                             <!-- Test -->
                             <v-tab-panel :header="$t('problem.testcase')">
-                                <div class="parameter-container dark">
+                                <div class="testcase-container dark">
                                     <v-button-container class="w-full justify-between">
                                         <v-button
                                             icon="far fa-plus"
                                             :label="$t('com.add')"
-                                            @click="clickAddParameter"
+                                            @click="clickAddTestcase"
                                         ></v-button>
                                         <v-button
-                                            v-if="!$cf.isEmptyArray(instance.Parameters)"
+                                            v-if="!$cf.isEmptyArray(instance.Testcases)"
                                             severity="danger"
                                             icon="far fa-trash-can"
                                             outlined
                                             :label="$t('com.deleteAll')"
-                                            @click="clickDeleteAllParameter"
+                                            @click="clickDeleteAllTestcase"
                                         ></v-button>
                                     </v-button-container>
                                     <div
-                                        class="parameter__list"
-                                        v-if="!$cf.isEmptyArray(instance.Parameters)"
+                                        class="testcase__list"
+                                        v-if="!$cf.isEmptyArray(instance.Testcases)"
                                     >
                                         <TestcaseItem
-                                            v-for="(param, index) in instance.Parameters"
-                                            :key="param.ParameterId"
+                                            v-for="(testcase, index) in instance.Testcases"
+                                            :key="testcase.TestcaseId"
                                             :index="index"
-                                            :parameter="param"
+                                            :testcase="testcase"
+                                            :testcases="instance.Testcases"
                                             :parameters="instance.Parameters"
-                                            @onDelete="deleteParameter"
+                                            @onDelete="deleteTestcase"
                                         ></TestcaseItem>
                                     </div>
                                 </div>
@@ -178,7 +243,7 @@
                             <div class="flex-align-center w-fit">
                                 <v-combobox
                                     class="transparent no-border"
-                                    v-model="selectedLanguage"
+                                    v-model="instance.SolutionLanguage"
                                     optionLabel="LanguageName"
                                     :options="languages"
                                 ></v-combobox>
@@ -187,7 +252,7 @@
                         <div class="code__body">
                             <v-code-editor
                                 class="v-code-editor"
-                                v-model="sourceCode"
+                                v-model="instance.SourceCode"
                             ></v-code-editor>
                         </div>
                         <div class="code__footer">
@@ -198,19 +263,33 @@
             </v-splitter>
         </div>
         <div class="problem-detail__footer">
-
+            <v-button-container direction="row-reverse">
+                <!-- Lưu -->
+                <v-button
+                    :label="$t('com.save')"
+                    @click="onClickSave"
+                />
+                <!-- Lưu nháp -->
+                <v-button
+                    :label="$t('com.saveDraft')"
+                    outlined
+                    @click="onClickSaveDraft"
+                />
+            </v-button-container>
         </div>
     </div>
 </template>
 <script>
 import BaseForm from "@/components/base/BaseForm.vue";
 import { problemService, languageService } from "@/services/services";
-import { useLanguageStore } from "@/stores/stores";
+import { useLanguageStore, useProblemStore } from "@/stores/stores";
 import { mapStores, mapState } from 'pinia';
 import problemEnum from "@/enums/problem-enum";
 import problemConst from "@/consts/problem-const.js";
 import ParameterItem from "./ParameterItem.vue";
 import TestcaseItem from "./TestcaseItem.vue";
+import enums from "@/enums/enums";
+const formMode = enums.formMode;
 
 export default {
     name: "ProblemDetail",
@@ -221,29 +300,85 @@ export default {
     },
     data() {
         return {
-            sourceCode: 'Hello world',
             instanceService: problemService,
             problemConst: problemConst,
             languages: [],
-            selectedLanguage: {},
-            selectedTimeUnit: this.$cv.enumToSelects(this.$enums.timeUnit)[0],
-            selectedMemoryUnit: this.$cv.enumToSelects(this.$enums.memoryUnit)[0],
+            difficulties: [],
+            dataTypes: [],
+            sourceCodes: [],
+            // selectedTimeUnit: null,
+            // selectedMemoryUnit: null,
+            selectedDifficulty: null,
+            selectedOutputType: null,
+        }
+    },
+    watch: {
+        // selectedTimeUnit: {
+        //     handler() {
+        //         this.instance.TimeUnit = this.$cv.selectedToEnumKey(this.selectedTimeUnit);
+        //     },
+        //     deep: true
+        // },
+        // selectedMemoryUnit: {
+        //     handler() {
+        //         this.instance.MemoryUnit = this.$cv.selectedToEnumKey(this.selectedMemoryUnit);
+        //     },
+        //     deep: true
+        // },
+        selectedDifficulty: {
+            handler() {
+                this.instance.Difficulty = this.$cv.selectedToEnumKey(this.selectedDifficulty);
+            },
+            deep: true
+        },
+        selectedOutputType: {
+            handler() {
+                this.instance.OutputType = this.$cv.selectedToEnumKey(this.selectedOutputType);
+            },
+            deep: true
         }
     },
     mounted() {
-        var a = this.$route.params.id;
+        this.refs = [
+            this.$refs.refProblemName,
+            this.$refs.refProblemCode,
+        ]
     },
     computed: {
         ...mapStores(useLanguageStore),
+        ...mapStores(useProblemStore),
     },
     methods: {
+        /**
+         * Khởi tạo dữ liệu data
+         */
+        async initOnCreated() {
+
+            let id = this.$route.params.id;
+
+            if (id == null) {
+                this.mode = formMode.create;
+            }
+
+            this.instance = this.problemStore.problem;
+
+            this.instance.SourceCode ??= '';
+
+            this.difficulties = this.$cv.enumToSelects(enums.difficulty);
+            this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
+
+            this.dataTypes = this.$cv.enumToSelects(enums.dataType);
+            this.selectedOutputType = this.$cv.enumKeyToSelected(this.instance.OutputType, this.dataTypes, 0);
+            // this.selectedTimeUnit = this.$cv.enumToSelects(enums.timeUnit)[0];
+            // this.selectedMemoryUnit = this.$cv.enumToSelects(enums.memoryUnit)[0];
+        },
         /**
          * Lấy dữ liệu
          */
         async loadDataOnCreated() {
             await this.getLanguages();
-            if (this.$cf.isEmptyObject(this.selectedLanguage) && !this.$cf.isEmptyArray(this.languages)) {
-                this.selectedLanguage = this.languages[0];
+            if (this.$cf.isEmptyObject(this.instance.SolutionLanguage) && !this.$cf.isEmptyArray(this.languages)) {
+                this.instance.SolutionLanguage = this.languages[0];
             }
         },
         /**
@@ -263,6 +398,26 @@ export default {
             }
             else {
                 this.languages = this.$cf.cloneDeep(this.languageStore.languages);
+            }
+        },
+        buildSourceCode() {
+
+        },
+        defauftSourceCode() {
+            let sourceCodes = [];
+            
+            if (this.languages) {
+                const lang = enums.language;
+                for (const language of this.languages) {
+                    switch (language.JudgeId) {
+                        case lang.c:
+
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
             }
         },
         /**
@@ -317,6 +472,80 @@ export default {
          */
         deleteAllParameter() {
             this.instance.Parameters = [];
+        },
+        /**
+         * Thêm Testcase
+         */
+        clickAddTestcase() {
+            if (!this.instance.Testcases) {
+                this.instance.Testcases = []
+            };
+
+            const testcase = {
+                TestcaseId: this.$cf.uuid.new(),
+            }
+
+            this.instance.Testcases.push(testcase);
+        },
+        /**
+         * Xoá 1 testcase
+         * 
+         * @param {*} testcase 
+         */
+        deleteTestcase(testcase) {
+            this.instance.Testcases = this.instance.Testcases.filter(item => item.TestcaseId != testcase.TestcaseId)
+        },
+        /**
+         * Click xoá hết testcase
+         */
+        clickDeleteAllTestcase() {
+            const header = this.$t("problem.deleteAllTestcase");
+            const message = this.$t('problem.deleteAllTestcaseConfirm');
+            const buttons = [
+                {
+                    // Huỷ
+                    severity: "secondary",
+                    outlined: true,
+                    label: this.$t("com.cancel"),
+                    icon: "fa fa-xmark",
+                },
+                {
+                    // Gửi
+                    severity: "danger",
+                    label: this.$t("com.delete"),
+                    icon: "far fa-trash-can",
+                    autofocus: true,
+                    click: this.deleteAllTestcase,
+                }
+            ];
+            this.$dl.confirm(message, buttons, header);
+        },
+        /**
+         * Xoá hết testcase
+         */
+        deleteAllTestcase() {
+            this.instance.Testcases = [];
+        },
+        /**
+         * Reformat instance trước khi lưu
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        reformatInstance() {
+            return this.instance;
+        },
+        /**
+         * Click lưu
+         */
+        customBeforeSave() {
+            this.instance.State = problemEnum.problemState.private.value;
+        },
+        /**
+         * Click lưu nháp
+         */
+        onClickSaveDraft() {
+            this.instance.State = problemEnum.problemState.draft.value;
+            console.log(this.instance);
         }
     }
 }

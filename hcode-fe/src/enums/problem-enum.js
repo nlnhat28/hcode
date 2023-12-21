@@ -37,12 +37,35 @@ const problemEnum = {
             value: 4,
             label: t("problem.problemAccountState.solved"),
         },
+    },
+    problemState: {
+        /**
+         * Công khai
+         */
+        public: {
+            value: 1,
+            label: t("problem.problemState.public"),
+        },
+        /**
+         * Công khai nhưng chưa kích hoạt
+         */
+        deactivatedPublic: {
+            value: 2,
+            label: t("problem.problemState.deactivatedPublic"),
+        },
+        /**
+         * Riêng tư
+         */
+        private: {
+            value: 3,
+            label: t("problem.problemState.private"),
+        },
         /**
          * Nháp
          */
         draft: {
-            value: 5,
-            label: t("problem.problemAccountState.draft"),
+            value: 4,
+            label: t("problem.problemState.draft"),
         },
     },
 };

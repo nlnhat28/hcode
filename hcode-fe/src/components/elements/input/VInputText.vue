@@ -30,6 +30,7 @@
                 :readonly="isReadOnly"
                 :title="tooltip || innerValue"
                 :style="`text-align: ${innerTextAlign};`"
+                :type="type"
                 @blur="$emit('blur')"
             />
             <div

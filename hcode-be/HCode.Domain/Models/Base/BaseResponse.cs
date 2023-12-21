@@ -60,5 +60,39 @@ namespace HCode.Domain
             };
         }
         #endregion
+
+        #region Methods
+        /// <summary>
+        /// Kiểm tra success hay không
+        /// </summary>
+        /// <returns></returns>
+        public bool IsSuccess()
+        {
+            return Success == true;
+        }
+        /// <summary>
+        /// Success response
+        /// </summary>
+        /// <param name="devMsg"></param>
+        /// <param name="data"></param>
+        public void OnSuccess(string? devMsg = null, object? data = null)
+        {
+            Success = true;
+            Data = data;
+            DevMsg = devMsg;
+        }
+        /// <summary>
+        /// Error response
+        /// </summary>
+        /// <param name="devMsg"></param>
+        /// <param name="data"></param>
+        public void OnError(string? devMsg = null, object? data = null)
+        {
+            Success = false;
+            Data = data;
+            DevMsg = devMsg;
+        }
+        #endregion
+
     }
 }

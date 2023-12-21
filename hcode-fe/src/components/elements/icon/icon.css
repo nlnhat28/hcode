@@ -60,3 +60,9 @@
 .warn .icon {
     color: var(--orange-400);
 }
+.warn:hover > .icon.cursor-pointer {
+    color: var(--orange-300);
+}
+.warn:active > .icon.cursor-pointer {
+    color: var(--orange-500);
+}

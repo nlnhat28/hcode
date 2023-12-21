@@ -7,14 +7,14 @@ using static Dapper.SqlMapper;
 namespace HCode.Infrastructure
 {
     /// <summary>
-    /// Repository auth
+    /// Repository problem
     /// </summary>
     /// Created by: nlnhat (17/08/2023)
     public class ProblemRepository : BaseCodeRepository<Problem>, IProblemRepository
     {
         #region Constructors
         /// <summary>
-        /// Hàm tạo repository tài khoản
+        /// Hàm tạo repository problem
         /// </summary>
         /// <param name="unitOfWork">Đối tượng unit of work được inject</param>
         /// Created by: nlnhat (17/08/2023)
@@ -24,33 +24,52 @@ namespace HCode.Infrastructure
         #endregion
 
         #region Methods
-        //
-        public override async Task<IEnumerable<Problem>> GetDataFilterAsync(string proc, object? param)
+        //public override async Task<IEnumerable<Problem>> GetDataFilterAsync(string proc, object? param)
+        //{
+        //    var data = new List<Problem>();
+        //    var dictionary = new Dictionary<Guid, Problem>();
+        //    var problems = await _unitOfWork.Connection.QueryAsync<Problem, Topic, Problem>(proc, (problem, topic) =>
+        //    {
+        //        if (!dictionary.TryGetValue(problem.ProblemId, out var currentProblem))
+        //        {
+        //            currentProblem = problem;
+        //            dictionary.Add(currentProblem.ProblemId, currentProblem);
+        //        }
+        //        currentProblem.Topics ??= new List<Topic>();
+        //        if (topic != null)
+        //            currentProblem.Topics.Add(topic);
+
+        //        return currentProblem;
+        //    },
+        //    param: param,
+        //    transaction: _unitOfWork.Transaction,
+        //    splitOn: "TopicId",
+        //    commandType: CommandType.StoredProcedure);
+
+        //    var result = dictionary.Values.ToList();
+        //    return result;
+        //}
+        public override async Task<Problem?> GetAsync(Guid problemId) 
         {
-            var data = new List<Problem>();
-            var dictionary = new Dictionary<Guid, Problem>();
-            var problems = await _unitOfWork.Connection.QueryAsync<Problem, Topic, Problem>(proc, (problem, topic) =>
+            var proc = $"{Procedure}Get";
+
+            var param = new DynamicParameters();
+            param.Add($"p_{TableId}", problemId);
+
+            using var multi = await _unitOfWork.Connection.QueryMultipleAsync(
+                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+            var problem = await multi.ReadFirstOrDefaultAsync<Problem>();
+
+            if (problem != null)
             {
-                if (!dictionary.TryGetValue(problem.ProblemId, out var currentProblem))
-                {
-                    currentProblem = problem;
-                    dictionary.Add(currentProblem.ProblemId, currentProblem);
-                }
-                currentProblem.Topics ??= new List<Topic>();
-                if (topic != null)
-                    currentProblem.Topics.Add(topic);
+                problem.Parameters = (await multi.ReadAsync<Parameter>()).ToList();
+                problem.Testcases = (await multi.ReadAsync<Testcase>()).ToList();
+            }
 
-                return currentProblem;
-            },
-            param: param,
-            transaction: _unitOfWork.Transaction,
-            splitOn: "TopicId",
-            commandType: CommandType.StoredProcedure);
+            return problem;
 
-            var result = dictionary.Values.ToList();
-            return result;
         }
-
         #endregion
     }
 }

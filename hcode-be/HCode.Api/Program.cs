@@ -34,6 +34,7 @@ namespace HCode.Api
             // Config
             builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailConfig"));
             builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("AuthConfig"));
+            builder.Services.Configure<CEConfig>(builder.Configuration.GetSection("CEConfig"));
 
             // Add dbconnection
             builder.Services.AddTransient<DbConnection>(options =>
@@ -48,12 +49,15 @@ namespace HCode.Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IProblemService, ProblemService>();
             builder.Services.AddScoped<ILanguageService, LanguageService>();
+            builder.Services.AddScoped<ICEService, CEService>();
 
             // Add repositories
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<IProblemRepository, ProblemRepository>();
             builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
+            builder.Services.AddScoped<IParameterRepository, ParameterRepository>();
+            builder.Services.AddScoped<ITestcaseRepository, TestcaseRepository>();
 
             // Add mapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

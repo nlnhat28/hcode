@@ -190,6 +190,13 @@ export default {
          */
         maxValue: {
             type: Number,
+        },
+        /**
+         * Type input
+         */
+        type: {
+            type: String,
+            default: 'text'
         }
     },
     data() {
@@ -281,18 +288,21 @@ export default {
 
                 // Validate số 
                 if (this.innerValue) {
-                    const integerValue = this.$rfm.cleanFormatInteger(this.innerValue);
-                    if (this.minValue && this.maxValue) {
+                    let integerValue = this.innerValue;
+                    if (this.dataInput == this.$enums.dataInput.integer) {
+                        integerValue = this.$rfm.cleanFormatInteger(this.innerValue); 
+                    }
+                    if (this.minValue != null && this.maxValue != null) {
                         if (integerValue < this.minValue || integerValue > this.maxValue) {
                             return `${this.label} ${this.$t('msg.mustBetween', { minValue: this.minValue, maxValue: this.maxValue })}`;
                         }
                     }
-                    else if (this.minValue) {
+                    else if (this.minValue != null) {
                         if (integerValue < this.minValue) {
                             return `${this.label} ${this.$t('msg.mustMoreEqual', { minValue: this.minValue })}`;
                         }
                     }
-                    else if (this.maxValue) {
+                    else if (this.maxValue != null) {
                         if (integerValue > this.maxValue) {
                             return `${this.label} ${this.$t('msg.mustLessEqual', { maxValue: this.maxValue })}`;
                         }

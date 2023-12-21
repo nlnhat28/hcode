@@ -42,13 +42,13 @@ namespace HCode.Domain
         /// </summary>
         public ProblemState? State { get; set; }
         /// <summary>
-        /// Giới hạn thời gian (millisecond)
+        /// Giới hạn thời gian (giây)
         /// </summary>
-        public int? LimitTime { get; set; }
+        public decimal? LimitTime { get; set; }
         /// <summary>
-        /// Giới hạn bộ nhớ (byte)
+        /// Giới hạn bộ nhớ (kb)
         /// </summary>
-        public int? LimitMemory { get; set; }
+        public decimal? LimitMemory { get; set; }
         /// <summary>
         /// Gợi ý
         /// </summary>
@@ -56,7 +56,21 @@ namespace HCode.Domain
         /// <summary>
         /// Source code giải
         /// </summary>
-        public string? Solution { get; set; } 
+        public string? Solution { get; set; }
+        /// <summary>
+        /// Id language giải
+        /// </summary>
+        public Guid? SolutionLanguageId { get; set; }
+        /// <summary>
+        /// Tên language giải
+        /// </summary>
+        [NotMapped]
+        public string? LanguageName { get; set; }
+        /// <summary>
+        /// Id language giải
+        /// </summary>
+        [NotMapped]
+        public int? JudgeId { get; set; }
         /// <summary>
         /// Id tài khoản tạo
         /// </summary>
@@ -64,8 +78,21 @@ namespace HCode.Domain
         /// <summary>
         /// Chủ đề
         /// </summary>
-        public List<Topic>? Topics { get; set; }
-
+        public string? Topic { get; set; }
+        /// <summary>
+        /// Kiểu trả về
+        /// </summary>
+        public DataType? OutputType { get; set; }
+        /// <summary>
+        /// Danh sách testcases
+        /// </summary>
+        [NotMapped]
+        public List<Testcase>? Testcases { get; set; }
+        /// <summary>
+        /// Danh sách param
+        /// </summary>
+        [NotMapped]
+        public List<Parameter>? Parameters{ get; set; }
         /// <summary>
         /// Đánh giá
         /// </summary>
@@ -87,15 +114,10 @@ namespace HCode.Domain
         [NotMapped]
         public decimal? ReactionScore { get; set; }
         /// <summary>
-        /// Tên các chủ đề
-        /// </summary>
-        [NotMapped]
-        public string? TopicNames { get; set; }
-        /// <summary>
         /// Trạng thái của người dùng
         /// </summary>
         [NotMapped]
-        public ProblemAccountState ProblemAccountState { get; set; }
+        public ProblemAccountState? ProblemAccountState { get; set; }
         #endregion
     }
 }

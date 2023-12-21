@@ -85,10 +85,32 @@ const format = {
         try {
             let newNumber = rfm.cleanNotDigitChar(value);
             if (cf.isEmptyString(newNumber)) return null;
-            if (!isNaN(newNumber))
-                return new Intl.NumberFormat("en")
+            if (!isNaN(newNumber)) {
+                let intValue = new Intl.NumberFormat("en")
                     .format(newNumber)
                     .replace(/[,]/g, " ");
+                intValue = parseInt(intValue);
+                return intValue;
+            }
+        } catch (error) {
+            console.error(error);
+            return value;
+        }
+    },
+    /**
+     * Format decimal
+     */
+    formatDecimal(value) {
+        try {
+            let newNumber = rfm.cleanNotDigitChar(value);
+            if (cf.isEmptyString(newNumber)) return null;
+            if (!isNaN(newNumber)) {
+                let intValue = new Intl.NumberFormat("en")
+                    .format(newNumber)
+                    .replace(/[,]/g, " ");
+                intValue = parseInt(intValue);
+                return intValue;
+            }
         } catch (error) {
             console.error(error);
             return value;

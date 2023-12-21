@@ -56,7 +56,7 @@ namespace HCode.Application
         /// </summary>
         /// <param name="entity">Thực thể</param>
         /// Created by: nlnhat (18/07/2023)
-        public virtual async Task ValidateAsync(TEntity entity)
+        public virtual async Task ValidateAsync(TEntity entity, ServerResponse res)
         {
             await Task.Yield();
         }
@@ -93,14 +93,16 @@ namespace HCode.Application
         /// <param name="entityDto">Dto tạo mới đối tượng</param>
         /// <returns>Id của bản ghi mới</returns>
         /// Created by: nlnhat (18/07/2023)
-        public virtual async Task<Guid> CreateAsync(TEntityDto entityDto)
+        public virtual async Task CreateAsync(TEntityDto entityDto, ServerResponse res)
         {
             var entity = MapCreateDtoToEntity(entityDto);
 
-            await ValidateAsync(entity);
+            await ValidateAsync(entity, res);
 
-            var result = await _repository.InsertAsync(entity);
-            return result;
+            if (res.Success)
+            {
+                res.Data = await _repository.InsertAsync(entity);
+            }
         }
         /// <summary>
         /// Cập nhật đối tượng theo id
@@ -108,25 +110,26 @@ namespace HCode.Application
         /// <param name="id">Id đối tượng</param>
         /// <param name="entityDto">Dto cập nhật đối tượng</param>
         /// <returns>Số bản ghi bị ảnh hưởng</returns>
-        /// <exception cref="NotFoundException">Không tìm thấy bản ghi</exception>
         /// Created by: nlnhat (18/07/2023)
-        public virtual async Task<int> UpdateAsync(Guid id, TEntityDto entityDto)
+        public virtual async Task UpdateAsync(Guid id, TEntityDto entityDto, ServerResponse res)
         {
             _ = await _repository.GetAsync(id);
 
             var entity = MapUpdateDtoToEntity(entityDto);
 
-            await ValidateAsync(entity);
+            await ValidateAsync(entity, res);
 
-            var result = await _repository.UpdateAsync(entity);
-            return result;
+            if (res.Success)
+            {
+                res.Data = await _repository.UpdateAsync(entity);
+            }
+
         }
         /// <summary>
         /// Xoá đối tượng theo id
         /// </summary>
         /// <param name="id">Id đối tượng</param>
         /// <returns>Số bản ghi bị ảnh hưởng</returns>
-        /// <exception cref="NotFoundException">Không tìm thấy bản ghi</exception>
         /// Created by: nlnhat (18/07/2023)
         public virtual async Task<int> DeleteAsync(Guid id)
         {

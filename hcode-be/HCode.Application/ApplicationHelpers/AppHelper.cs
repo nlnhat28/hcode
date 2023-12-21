@@ -1,8 +1,12 @@
-﻿using HCode.Domain;
+﻿using AutoMapper.Configuration.Annotations;
+using HCode.Domain;
 using Microsoft.Extensions.Localization;
 using OfficeOpenXml.Drawing.Chart;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace HCode.Application
@@ -177,7 +181,7 @@ namespace HCode.Application
             var chars = normalized.Where(
                 character => CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark);
 
-            var result = new string (chars.ToArray());
+            var result = new string(chars.ToArray());
             return result;
         }
         /// <summary>
@@ -235,6 +239,76 @@ namespace HCode.Application
             };
 
             return difficultyName;
+        }
+        /// <summary>
+        /// Convert json string to list object
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static List<object>? ConvertToObjects(string? json)
+        {
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                var objs = JsonSerializer.Deserialize<List<object>>(json);
+                return objs;
+            }
+            return new List<object>();
+        }
+        /// <summary>
+        /// Convert string to object
+        /// </summary>
+        /// <param name="any"></param>
+        /// <returns></returns>
+        public static object? ConvertToObject(string? any)
+        {
+            if (!string.IsNullOrWhiteSpace(any))
+            {
+                var obj = JsonSerializer.Deserialize<object>(any);
+                return obj;
+            }
+            return any;
+        }
+
+
+        /// <summary>
+        /// Lấy tất cả các properties nối thành chuỗi ngăn cách bởi dấu ,
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="allowIgnore">Lấy cả các property có [IgnoreAttribute]</param>
+        /// <param name="allowNotMapped">Lấy cả các property có [NotMappedAttribute]</param>
+        /// <returns>Chuỗi các properties ngăn cách bởi dấu ,</returns>
+        public static string? GetFieldsToString<T>(bool? allowIgnore = false, bool? allowNotMapped = false)
+        {
+            var type = typeof(T);
+            var properties = type.GetProperties();
+            var fields = new List<string>();
+
+            foreach (var property in properties)
+            {
+                if (allowIgnore != null)
+                {
+                    var ignore = property.GetCustomAttribute<IgnoreAttribute>();
+                    // Không lấy những [IgnoreAttribute] thì bỏ qua property có
+                    if (allowIgnore == false && ignore != null)
+                    {
+                        continue;
+                    }
+                }
+                if (allowNotMapped != null)
+                {
+                    var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
+                    // Không lấy những [NotMappedAttribute] thì bỏ qua property có
+                    if (allowNotMapped == true && notMapped != null)
+                    {
+                        continue;
+                    }
+                }
+
+                fields.Add(property.Name);
+            }
+
+            var result = string.Join(",", fields);
+            return result;
         }
         #endregion
     }

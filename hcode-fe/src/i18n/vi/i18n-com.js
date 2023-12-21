@@ -1,5 +1,6 @@
 const com = {
     save: "Lưu",
+    saveDraft: "Lưu nháp",
     send: "Gửi",
     close: "Đóng",
     cancel: "Huỷ",
