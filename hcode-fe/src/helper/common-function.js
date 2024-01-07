@@ -9,7 +9,14 @@ const commonFuction = {
      * Check giá trị null hoặc undefined
      */
     isNullValue(value) {
-        return value == undefined || value == null;
+        // try catch đề phòng reference null object thì return true luôn
+        try {
+            let result = (value == undefined || value == null);
+            return result;
+        } catch (error) {
+            console.error(error);            
+            return true;
+        }
     },
     /**
      * Check string null hoặc undefined hoặc ""
@@ -122,6 +129,17 @@ const commonFuction = {
             return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
         }
         return text;
+    },
+    /**
+     * Bỏ những item null hoặc bằng ''
+     * @param {*} array 
+     */
+    removeNullOrEmpty(array) {
+        if (array) {
+            const result = array.filter(item => item != null && item !== '');
+            return result;
+        }
+        return array;
     }
 }
 export default commonFuction;

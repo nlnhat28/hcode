@@ -37,9 +37,9 @@
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
     padding: 0.4rem 0.75rem;
     /* border-radius: 6px; */
-    color: #fff;
+    color: var(--color-text-2);
 }
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
-    color: #fff;
+    color: var(--color-text);
     background: var(--primary-500) !important;
 }

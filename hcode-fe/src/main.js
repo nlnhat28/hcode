@@ -28,7 +28,10 @@ import Dialog from "primevue/dialog";
  */
 import VButton from "@/components/elements/button/VButton.vue";
 import VButtonContainer from "@/components/elements/button/VButtonContainer.vue";
+import VCheckbox from "@/components/elements/checkbox/VCheckbox.vue";
 import VCodeEditor from "@/components/elements/code-editor/VCodeEditor.vue";
+import VCodeMirror from "@/components/elements/code-editor/VCodeMirror.vue";
+// import VAceEditor from "@/components/elements/code-editor/VAceEditor.vue";
 import VCombobox from "@/components/elements/combobox/VCombobox.vue";
 import VDialog from "@/components/elements/dialog/VDialog.vue";
 import VEditor from "@/components/elements/editor/VEditor.vue";
@@ -79,7 +82,10 @@ import CountDown from "keep-countdown";
 
 app.component("v-button", VButton);
 app.component("v-button-container", VButtonContainer);
+app.component("v-checkbox", VCheckbox);
 app.component("v-code-editor", VCodeEditor);
+app.component("v-code-mirror", VCodeMirror);
+// app.component("v-ace-editor", VAceEditor);
 app.component("v-combobox", VCombobox);
 app.component("v-countdown-simple", CountDown);
 app.component("v-dialog", Dialog);
@@ -131,6 +137,7 @@ import convert from "@/helper/convert.js";
 import format from "@/helper/format.js";
 import reformat from "@/helper/reformat.js";
 import enums from "@/enums/enums.js";
+import errorCode from "@/enums/error-code.js";
 import toast from "@/components/overlay/toast/toast.js";
 import dialog from "@/components/overlay/dialog/dialog.js";
 import validate from "@/helper/validate.js";
@@ -139,6 +146,7 @@ import lodash from "lodash";
 
 app.config.globalProperties.$emitter = emitter;
 app.config.globalProperties.$enums = enums;
+app.config.globalProperties.$errorCode = errorCode;
 app.config.globalProperties.$path = path;
 app.config.globalProperties.$cf = commonFunction;
 app.config.globalProperties.$cv = convert;

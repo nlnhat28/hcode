@@ -56,6 +56,9 @@
 .col-gap-20 {
     column-gap: 20px;
 }
+.col-gap-24 {
+    column-gap: 24px;
+}
 .row-gap-8 {
     row-gap: 8px;
 }
@@ -100,6 +103,38 @@
     padding: 64px;
 }
 
+/* margin */
+.m-4 {
+    margin: 4px;
+}
+.m-8 {
+    margin: 8px;
+}
+.m-12 {
+    margin: 12px;
+}
+.m-16 {
+    margin: 16px;
+}
+.m-20 {
+    margin: 20px;
+}
+.m-32 {
+    margin: 32px;
+}
+.m-56 {
+    margin: 64px;
+}
+.m-64 {
+    margin: 64px;
+}
+
+.mr-4 {
+    margin-right: 4px
+}
+
+
+
 /* distance */
 .w-full {
     width: 100%;
@@ -140,6 +175,15 @@
 .color-placeholder {
     color: var(--color-placeholder);
 }
+.color-text {
+    color: var(--color-text)
+}
+.yellow-300 {
+    color: var(--yellow-300);
+}
+.yellow-500 {
+    color: var(--yellow-500);
+}
 .yellow-400 {
     color: var(--yellow-400);
 }
@@ -172,4 +216,25 @@
 .title-big {
     font-size: 60px;
     font-weight: bolder;
+}
+
+/* font */
+.font-bold {
+    font-weight: bold;
+}
+.font-18 {
+    font-size: 18px;
+}
+.font-20 {
+    font-size: 20px;
+}
+
+.label {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+/* wrap */
+.space-nowrap {
+    white-space: nowrap;
 }

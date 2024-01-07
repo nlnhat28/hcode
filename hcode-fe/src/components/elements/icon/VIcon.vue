@@ -6,6 +6,7 @@
             color
         ]"
         :style="`width: ${size}px; height: ${size}px;`"
+        :title="title"
     >
         <i :class="[
             icon,
@@ -56,6 +57,13 @@ export default {
                     'info'
                 ].includes(value)
             }
+        },
+        /**
+         * Title
+         */
+        title: {
+            type: [Number, String],
+            default: null,
         }
     },
 }

@@ -28,6 +28,7 @@
                 icon="far fa-circle-xmark"
                 color="danger"
                 applyPointer
+                :title="$t('com.delete')"
                 @click="clickDelete"
             />
         </div>
@@ -35,6 +36,7 @@
 </template>
 <script>
 import { validate } from "@/mixins/mixins";
+import problemEnum from "@/enums/problem-enum";
 
 export default {
     name: 'ParameterItem',
@@ -71,12 +73,14 @@ export default {
     emits: ['onDelete'],
     created() {
         this.assignInstance();
-        this.dataTypes = this.$cv.enumToSelects(this.$enums.dataType);
+        this.dataTypes = this.$cv.enumToSelects(problemEnum.dataType);
         this.selectedDataType = this.$cv.enumKeyToSelected(this.instance.DataType, this.dataTypes, 0);
     },
     mounted() {
         this.refs = [this.$refs['refParameterName']];
-        this.generateParameterName();
+        if (this.$cf.isEmptyString(this.instance.ParameterName)) {
+            this.generateParameterName();
+        };
     },
     watch: {
         parameter() {
@@ -94,14 +98,18 @@ export default {
             this.instance.ParameterOrder = this.index + 1;
         },
         selectedDataType: {
-            handler() {
+            handler(newVal, oldVal) {
                 this.instance.DataType = this.$cv.selectedToEnumKey(this.selectedDataType);
+
+                if (!this.$cf.isEmptyObject(oldVal)) {
+                    this.generateParameterName();
+                }
             },
             deep: true,
         },
-        "instance.ParameterName"() {
-            this.generateParameterName();
-        }
+        // "instance.ParameterName"() {
+        //     this.generateParameterName();
+        // }
     },
     computed: {
         /**
@@ -144,37 +152,52 @@ export default {
          * Tạo tên tham số tự động
          */
         generateParameterName() {
-            if (this.$cf.isEmptyString(this.instance.ParameterName)) {
-                let baseName = '';
-                let dataTypeEnum = this.$enums.dataType;
+            this.instance.ParameterName = this.getParameterName();
+        },
+        /**
+         * Tạo tên tham số theo kiểu dữ liệu
+         * @param {*} dataType 
+         */
+        getParameterName(dataType) {
 
-                switch (this.instance.DataType) {
-                    case dataTypeEnum.string.value:
-                    case dataTypeEnum.int.value:
-                    case dataTypeEnum.decimal.value:
-                    case dataTypeEnum.bool.value:
-                        baseName = this.selectedDataType.name;
-                        break;
+            let innerDataType = this.selectedDataType;
 
-                    case dataTypeEnum.strings.value:
-                    case dataTypeEnum.ints.value:
-                    case dataTypeEnum.decimals.value:
-                        baseName = `list${this.$cf.upperFirstChar(this.selectedDataType.name).replace('[]','')}`;
-                        break;
-                };
+            if (!this.$cf.isEmptyObject(dataType)) {
+                innerDataType = dataType;
+            };
 
-                let i = 1;
-                while (i < 10) {
-                    let name = `${baseName}${i}`;
+            let baseName = '';
+            let dataTypeEnum = problemEnum.dataType;
 
-                    if (this.parameterNames && !this.parameterNames.includes(name)) {
-                        this.instance.ParameterName = name;
-                        break;
-                    }
-                    i++;
+            switch (innerDataType.key) {
+                case dataTypeEnum.string.value:
+                case dataTypeEnum.int.value:
+                case dataTypeEnum.decimal.value:
+                case dataTypeEnum.bool.value:
+                    baseName = innerDataType.name;
+                    break;
+
+                case dataTypeEnum.strings.value:
+                case dataTypeEnum.ints.value:
+                case dataTypeEnum.decimals.value:
+                    baseName = `list${this.$cf.upperFirstChar(innerDataType.name).replace('[]', '')}`;
+                    break;
+            };
+
+            let i = 1;
+            while (i < 10) {
+                let name = `${baseName}${i}`;
+
+                if (this.parameterNames && !this.parameterNames.includes(name)) {
+                    return name;
                 }
-            }
-        }
+                i++;
+            };
+        },
+        /**
+         * 
+         */
+
     }
 }
 </script>

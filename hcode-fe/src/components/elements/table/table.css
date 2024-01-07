@@ -74,6 +74,10 @@
     flex: 1px;
     z-index: 2;
 }
+.table-content .mask.mask--no-content {
+    z-index: -1;
+}
+
 .table-toolbar ~ .table-content {
     /* border-top: 1px solid var(--border-table); */
 }

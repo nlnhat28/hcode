@@ -57,12 +57,12 @@ export default {
          * Focus
          */
         focus() {
-            if (this.$refs.refInput) {
+            if (this.$refs.refInput && typeof (this.$refs.refInput.focus) == 'function') {
                 this.$refs.refInput.focus();
             }
         },
         blur() {
-            if (this.$refs.refInput) {
+            if (this.$refs.refInput && typeof(this.$refs.refInput.blur) == 'function') {
                 this.$refs.refInput.blur();
             }
         },

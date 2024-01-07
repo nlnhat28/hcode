@@ -5,8 +5,8 @@
     --bg-dark: #333336;
     --bg-darker: #222224;
 
-    --header-color: #00000046;
-    --footer-color: #00000046;
+    --header-color: #00000080;
+    --footer-color: #00000080;
 
     --editor-color: #0f1016;
 
@@ -14,6 +14,8 @@
     --ske-color-2: #333336;
 
     --color-text: #e0e0e0;
+    --color-text-2: #b6b6b6;
+    
     --color-label: #1f1f1f;
     
     --color-placeholder: #61626d;

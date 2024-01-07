@@ -19,5 +19,8 @@ export default {
 }
 </script>
 <style scoped>
-@import './code-editor.css';
+.v-code-editor.code-editor {
+    width: 100% !important;
+    height: 100% !important;
+}
 </style>

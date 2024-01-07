@@ -1,14 +1,32 @@
 <template>
     <div class="problem-detail-container">
+        <!-- Loading -->
+        <v-mask-loading v-if="isLoading" />
         <div class="problem-detail__header">
+            <div class="problem-detail__header--left flex-align-center">
+                <v-button
+                    text
+                    severity="secondary"
+                    icon="far fa-angle-left"
+                    :label="$t('problem.problemList')"
+                    @click="$router.push($path.problems)"
+                ></v-button>
+            </div>
+            <div class="problem-detail__header--center flex-center">
+                <div class="font-bold font-20 yellow-300">
+                    {{ centerTitle }}
+                </div>
+            </div>
+            <div class="problem-detail__header--right">
 
+            </div>
         </div>
         <div class="problem-detail__body">
             <v-splitter>
                 <v-splitter-panel class="flex-center">
                     <div class="wh-full p-32">
-                        <!-- Thông tin chung -->
-                        <v-tab-view>
+                        <v-tab-view :activeIndex="activeTab">
+                            <!-- Thông tin chung -->
                             <v-tab-panel :header="$t('problem.generalInfo')">
                                 <v-form-body class="dark">
                                     <v-form-column :rowGap="32">
@@ -75,69 +93,64 @@
                                             </v-form-item>
                                         </v-form-group>
                                         <!-- Giới hạn -->
-                                        <v-form-group :columnGap="12">
-                                            <!-- Thời gian -->
-                                            <v-form-item :label="$t('problem.field.limitTime')">
-                                                <div class="flex-align-center col-gap-8">
-                                                    <v-input-text
-                                                        v-model="instance.LimitTime"
-                                                        type='number'
-                                                        hasClear
-                                                        :dataInput="$enums.dataInput.decimal"
-                                                        :minValue="0"
-                                                        :maxValue="10"
-                                                        :label="$t('problem.field.limitTime')"
-                                                        :applyPlaceholder="false"
-                                                    >
-                                                    </v-input-text>
-                                                    <!-- <v-combobox
-                                                        style="width: 60%;"
-                                                        v-model="selectedTimeUnit"
-                                                        optionLabel="name"
-                                                        :options="$cv.enumToSelects($enums.timeUnit)"
-                                                    >
-                                                    </v-combobox> -->
+                                        <v-form-column :columnGap="12">
+                                            <v-form-group>
+                                                <!-- Thời gian -->
+                                                <v-form-item :label="$t('problem.field.limitTime')">
+                                                    <div class="flex-align-center col-gap-8">
+                                                        <v-input-text
+                                                            v-model="instance.LimitTime"
+                                                            type='number'
+                                                            :dataInput="$enums.dataInput.decimal"
+                                                            :minValue="0"
+                                                            :maxValue="10"
+                                                            :label="$t('problem.field.limitTime')"
+                                                            :applyPlaceholder="false"
+                                                        >
+                                                        </v-input-text>
+                                                    </div>
+                                                </v-form-item>
+                                                <!-- Bộ nhớ -->
+                                                <v-form-item :label="$t('problem.field.limitMemory')">
+                                                    <div class="flex-align-center col-gap-8">
+                                                        <v-input-text
+                                                            v-model="instance.LimitMemory"
+                                                            type='number'
+                                                            :dataInput="$enums.dataInput.decimal"
+                                                            :minValue="2048"
+                                                            :maxValue="51200"
+                                                            :label="$t('problem.field.limitMemory')"
+                                                            :applyPlaceholder="false"
+                                                        >
+                                                        </v-input-text>
+                                                    </div>
+                                                </v-form-item>
+                                            </v-form-group>
+                                        </v-form-column>
+                                        <div class="flex col-gap-24">
+                                            <div class="checkbox-item">
+                                                <!-- Trạng thái lưu -->
+                                                <div class="label cursor-pointer">
+                                                    {{ $t('problem.problemState.public') }}
                                                 </div>
-                                            </v-form-item>
-                                            <!-- Bộ nhớ -->
-                                            <v-form-item :label="$t('problem.field.limitMemory')">
-                                                <div class="flex-align-center col-gap-8">
-                                                    <v-input-text
-                                                        v-model="instance.LimitMemory"
-                                                        type='number'
-                                                        hasClear
-                                                        :dataInput="$enums.dataInput.decimal"
-                                                        :minValue="0"
-                                                        :maxValue="51200"
-                                                        :label="$t('problem.field.limitMemory')"
-                                                        :applyPlaceholder="false"
-                                                    >
-                                                    </v-input-text>
-                                                    <!-- <v-combobox
-                                                        style="width: 60%;"
-                                                        v-model="selectedMemoryUnit"
-                                                        optionLabel="name"
-                                                        :options="$cv.enumToSelects($enums.memoryUnit)"
-                                                    ></v-combobox> -->
+                                                <v-checkbox
+                                                    v-model="instance.IsPublicState"
+                                                    binary
+                                                >
+                                                </v-checkbox>
+                                            </div>
+                                            <div class="checkbox-item">
+                                                <!-- Trạng thái lưu -->
+                                                <div class="label cursor-pointer">
+                                                    {{ $t('problem.problemState.private') }}
                                                 </div>
-                                            </v-form-item>
-                                            <!-- Trạng thái lưu -->
-                                            <!-- <v-form-item :label="$t('problem.field.limitMemory')">
-                                                <div class="flex-align-center col-gap-8">
-                                                    <v-input-text
-                                                        v-model="instance.LimitMemory"
-                                                        :dataInput="$enums.dataInput.integer"
-                                                    >
-                                                    </v-input-text>
-                                                    <v-combobox
-                                                        style="width: 60%;"
-                                                        v-model="selectedMemoryUnit"
-                                                        optionLabel="name"
-                                                        :options="$cv.enumToSelects($enums.memoryUnit)"
-                                                    ></v-combobox>
-                                                </div>
-                                            </v-form-item> -->
-                                        </v-form-group>
+                                                <v-checkbox
+                                                    v-model="instance.IsPrivateState"
+                                                    binary
+                                                >
+                                                </v-checkbox>
+                                            </div>
+                                        </div>
                                     </v-form-column>
                                 </v-form-body>
                             </v-tab-panel>
@@ -233,13 +246,24 @@
                                     </div>
                                 </div>
                             </v-tab-panel>
+                            <!-- Thông báo kết quả chạy -->
+                            <v-tab-panel :header="$t('problem.result')">
+                                <v-editor
+                                    class='no-toolbar'
+                                    v-model="result"
+                                    readonly
+                                ></v-editor>
+                            </v-tab-panel>
                         </v-tab-view>
                     </div>
                 </v-splitter-panel>
                 <!-- Code Editor -->
                 <v-splitter-panel class="flex-center">
                     <div class="wh-full p-20 flex-column code-container">
-                        <div class="code__header">
+                        <div class="code__header flex justify-between">
+                            <div class="font-bold color-text flex-center">
+                                {{ $t('problem.field.solution') }}
+                            </div>
                             <div class="flex-align-center w-fit">
                                 <v-combobox
                                     class="transparent no-border"
@@ -250,10 +274,7 @@
                             </div>
                         </div>
                         <div class="code__body">
-                            <v-code-editor
-                                class="v-code-editor"
-                                v-model="instance.SourceCode"
-                            ></v-code-editor>
+                            <v-code-mirror v-model="instance.Solution"></v-code-mirror>
                         </div>
                         <div class="code__footer">
 
@@ -271,8 +292,8 @@
                 />
                 <!-- Lưu nháp -->
                 <v-button
-                    :label="$t('com.saveDraft')"
                     outlined
+                    :label="$t('com.saveDraft')"
                     @click="onClickSaveDraft"
                 />
             </v-button-container>
@@ -289,6 +310,7 @@ import problemConst from "@/consts/problem-const.js";
 import ParameterItem from "./ParameterItem.vue";
 import TestcaseItem from "./TestcaseItem.vue";
 import enums from "@/enums/enums";
+
 const formMode = enums.formMode;
 
 export default {
@@ -306,36 +328,60 @@ export default {
             difficulties: [],
             dataTypes: [],
             sourceCodes: [],
-            // selectedTimeUnit: null,
-            // selectedMemoryUnit: null,
             selectedDifficulty: null,
             selectedOutputType: null,
+            tabView: {
+                info: 0,
+                parameter: 3,
+                test: 4
+            },
+            activeTab: 0,
+            result: null,
         }
     },
     watch: {
-        // selectedTimeUnit: {
-        //     handler() {
-        //         this.instance.TimeUnit = this.$cv.selectedToEnumKey(this.selectedTimeUnit);
-        //     },
-        //     deep: true
-        // },
-        // selectedMemoryUnit: {
-        //     handler() {
-        //         this.instance.MemoryUnit = this.$cv.selectedToEnumKey(this.selectedMemoryUnit);
-        //     },
-        //     deep: true
-        // },
+        // Gán độ khó
         selectedDifficulty: {
             handler() {
                 this.instance.Difficulty = this.$cv.selectedToEnumKey(this.selectedDifficulty);
             },
             deep: true
         },
+        // Gán kiểu trả về
         selectedOutputType: {
             handler() {
                 this.instance.OutputType = this.$cv.selectedToEnumKey(this.selectedOutputType);
             },
             deep: true
+        },
+        // Build source code khi những thứ này thay đổi
+        "instance.SolutionLanguage": {
+            handler() {
+                this.buildSourceCode();
+            },
+            deep: true
+        },
+        "instance.Parameters": {
+            handler() {
+                this.buildSourceCode();
+            },
+            deep: true
+        },
+        "instance.OutputType": {
+            handler() {
+                this.buildSourceCode();
+            },
+            deep: true
+        },
+        "instance.IsPublicState"(newVal, oldVal) {
+            if (!this.instance.IsPrivateState && !newVal) {
+                this.instance.IsPublicState = oldVal;
+            }
+        },
+        "instance.IsPrivateState"(newVal, oldVal) {
+            if (!this.instance.IsPublicState && !newVal) {
+                this.instance.IsPrivateState = oldVal;
+            }
         }
     },
     mounted() {
@@ -347,6 +393,100 @@ export default {
     computed: {
         ...mapStores(useLanguageStore),
         ...mapStores(useProblemStore),
+        /**
+         * Source code mặc định theo kiểu dữ liệu trả về, parameter, ngôn ngữ
+         */
+        defaultSourceCode() {
+            let funcName = problemConst.solutionFunction;
+
+            const outputType = this.instance.OutputType;
+            const params = this.instance.Parameters;
+            const lang = problemEnum.language;
+
+            if (this.languages) {
+                // for (const language of this.languages) {
+
+                let paramItems = [];
+                let outputCode = '';
+                let paramCode = '';
+                let sourceCode = '';
+
+                // const judgeId = language.JudgeId;
+                const judgeId = this.instance.SolutionLanguage?.JudgeId;
+
+                // Build output
+                outputCode = this.dataTypeByLanguage(outputType, judgeId) ?? '';
+
+                // Build parameter
+                if (params) {
+                    for (const param of params) {
+
+                        if (!this.$cf.isEmptyString(param.ParameterName)) {
+
+                            let paramItem = this.dataTypeByLanguage(param.DataType, judgeId);
+
+                            if (!this.$cf.isEmptyString(paramItem)) {
+                                paramItem += ' ';
+                            };
+
+                            if (judgeId == problemEnum.language.php) {
+                                paramItem += '$'
+                            }
+
+                            paramItem += param.ParameterName;
+
+                            paramItems.push(paramItem);
+                        }
+                    };
+
+                    paramItems = this.$cf.removeNullOrEmpty(paramItems);
+
+                    paramCode = paramItems.join(', ');
+                }
+
+                switch (judgeId) {
+                    case lang.c:
+                        sourceCode = `${outputCode} ${funcName}(${paramCode}) {\n    \n}`;
+                        break;
+                    case lang.cpp:
+                        sourceCode = `public:\n    ${outputCode} ${funcName}(${paramCode}) {\n        \n}`;
+                        break;
+                    case lang.csharp:
+                    case lang.java:
+                        sourceCode = `public ${outputCode} ${funcName}(${paramCode}) {\n    \n}`;
+                        break;
+                    case lang.js:
+                        sourceCode = `const ${funcName} = function(${paramCode}) {\n    \n}`;
+                        break;
+                    case lang.php:
+                        sourceCode = `function ${funcName}(${paramCode}) {\n    \n}`;
+                        break;
+                    case lang.python:
+                        sourceCode = `def ${funcName}(self, ${paramCode}) {\n    \n}`;
+                        break;
+                    default:
+                        break;
+                }
+                // }
+
+                return sourceCode;
+            }
+            return ''
+        },
+        /**
+         * Tạo tiêu đề problem
+         */
+        centerTitle() {
+            let title = '';
+            if (!this.$cf.isEmptyString(this.instance.ProblemCode)) {
+                title = `${this.instance.ProblemCode}. `;
+            };
+            if (!this.$cf.isEmptyString(this.instance.ProblemName)) {
+                title += this.instance.ProblemName;
+            }
+
+            return title;
+        },
     },
     methods: {
         /**
@@ -354,23 +494,31 @@ export default {
          */
         async initOnCreated() {
 
+            this.difficulties = this.$cv.enumToSelects(enums.difficulty);
+            this.dataTypes = this.$cv.enumToSelects(problemEnum.dataType);
+
             let id = this.$route.params.id;
 
             if (id == null) {
                 this.mode = formMode.create;
+                this.instance = this.problemStore.problem;
             }
 
-            this.instance = this.problemStore.problem;
+        },
+        /**
+         * Khởi tạo problem khi thêm mới
+         * @override
+         */
+        initCreateInstance() {
+            this.documentTitle = this.$t("problem.createProblem");
+            document.title = this.$cf.documentTitle(this.documentTitle);
 
-            this.instance.SourceCode ??= '';
-
-            this.difficulties = this.$cv.enumToSelects(enums.difficulty);
             this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
-
-            this.dataTypes = this.$cv.enumToSelects(enums.dataType);
             this.selectedOutputType = this.$cv.enumKeyToSelected(this.instance.OutputType, this.dataTypes, 0);
-            // this.selectedTimeUnit = this.$cv.enumToSelects(enums.timeUnit)[0];
-            // this.selectedMemoryUnit = this.$cv.enumToSelects(enums.memoryUnit)[0];
+            this.instance.Solution ??= '';
+            this.instance.IsPrivateState = true;
+            this.instance.TimeUnit = this.$enums.timeUnit.second.value;
+            this.instance.MemoryUnit = this.$enums.memoryUnit.kilobyte.value;
         },
         /**
          * Lấy dữ liệu
@@ -400,25 +548,21 @@ export default {
                 this.languages = this.$cf.cloneDeep(this.languageStore.languages);
             }
         },
+        /**
+         * Build source code theo ngôn ngữ
+         */
         buildSourceCode() {
-
+            this.instance.Solution = this.defaultSourceCode;
         },
-        defauftSourceCode() {
-            let sourceCodes = [];
-            
-            if (this.languages) {
-                const lang = enums.language;
-                for (const language of this.languages) {
-                    switch (language.JudgeId) {
-                        case lang.c:
-
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            }
+        /**
+         * Lấy kiểu dữ liệu theo language
+         * 
+         * @param {*} dataType DataType enum
+         * @param {*} langId JugdeId
+         */
+        dataTypeByLanguage(dataType, judgeId) {
+            const value = problemEnum.mapDataTypeByLanguage(dataType, judgeId);
+            return value;
         },
         /**
          * Thêm param
@@ -527,29 +671,76 @@ export default {
             this.instance.Testcases = [];
         },
         /**
-         * Reformat instance trước khi lưu
-         *
-         * Author: nlnhat (02/07/2023)
-         */
-        reformatInstance() {
-            return this.instance;
-        },
-        /**
-         * Click lưu
+         * Custom trước khi save
+         * @override
          */
         customBeforeSave() {
-            this.instance.State = problemEnum.problemState.private.value;
         },
         /**
          * Click lưu nháp
          */
         onClickSaveDraft() {
             this.instance.State = problemEnum.problemState.draft.value;
-            console.log(this.instance);
-        }
+            console.log("Saving...:", this.instance);
+            // this.onClickSave();
+        },
+        /**
+         * Xử lý thêm validate tại đây
+         * 
+         * Author: nlnhat1 (01/11/2023)
+         */
+        customValidate() {
+            // Validate testcase
+            if (this.messageValidate == null) {
+
+                if (this.$cf.isEmptyArray(this.instance.Testcases)) {
+                    this.messageValidate = this.$t("problem.mustHasTestcase");
+                    this.focusTabView(this.tabView.test);
+                }
+                // this.refError = this.$refs["refConfirmPassword"];
+                // this.$refs["refConfirmPassword"].setErrorMessage(this.messageValidate);
+            };
+        },
+        /**
+         * Focus vào tab view
+         * 
+         * @param {*} tabViewIndex Index tab
+         */
+        focusTabView(tabViewIndex) {
+            this.activeTab = tabViewIndex;
+        },
+        /**
+         * 
+         */
+        processSubmissionResponse(submissionResponse) {
+
+        },
+        /**
+         * Xử lý response createInstance
+         * @override
+         */
+        processResponseCreate(response) {
+            if (!this.$cf.isSuccess(response)) {
+
+            }
+        },
+        /**
+         * Hiển thị submission response lên tab kết quả
+         */
+        showSubmissionResponse(statusName, content, isSuccess) {
+            let title = statusName;
+            let body = content;
+            let divide = '<p><hr></p>';
+            let color = isSuccess == true ? '#00ff00' : '#ff0000';
+
+            title = `<p><strong style=\"color: ${color};\">${title}</strong></p>`;
+            body = `<p><span style=\"color: rgb(187, 187, 187);\">${body}</span></p>`;
+
+            let fullContent = title + divide + body;
+
+            this.result.log = fullContent;
+        },
     }
 }
 </script>
-<style scoped>
-@import './problem-detail.css';
-</style>
+<style scoped>@import './problem-detail.css';</style>

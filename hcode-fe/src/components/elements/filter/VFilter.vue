@@ -98,7 +98,7 @@ const compareType = enums.compareType;
 const filterType = enums.filterType;
 
 export default {
-    name: 'MISAFilter',
+    name: 'VFilter',
     props: {
         /**
          * Display name

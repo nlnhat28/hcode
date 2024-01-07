@@ -263,10 +263,9 @@ export default {
          * Data filter models truyền đến server
          * 
          * Author: nlnhat (25/08/2023)
-         * @return Câu truy vấn sort
          */
         filterModelsComputed() {
-            const filterModelsDto = this.filterModelsClean.map(item => ({
+            let filterModelsDto = this.filterModelsClean.map(item => ({
                 columnName: item.column,
                 logicType: item.logicType,
                 logicName: item.logicName,
@@ -274,7 +273,20 @@ export default {
                 compareName: item.compareName,
                 filterValue: item.values[0].key,
             }));
+
+            if (!this.$cf.isEmptyArray(this.addFilterModelsComputed)) {
+                filterModelsDto.push(...this.addFilterModelsComputed);
+            }
+
             return filterModelsDto;
+        },
+        /**
+         * Thêm vào filter
+         * 
+         * @virtual
+         */
+        addFilterModelsComputed() {
+            return [];
         },
         /**
          * Filter count object

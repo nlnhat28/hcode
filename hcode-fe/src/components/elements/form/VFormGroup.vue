@@ -10,7 +10,7 @@ export default {
         columnGap: {
             type: Number,
             default: 8
-        }
+        },
     }
 }
 </script>

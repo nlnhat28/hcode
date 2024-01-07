@@ -10,6 +10,16 @@
                 :sortModels="sortModels"
                 :filterModels="filterModels"
             >
+                <template #toolbarLeft>
+                    <div class="dark" style="width: 160px;">
+                        <v-combobox
+                            v-model="selectedProblemState"
+                            optionLabel="name"
+                            :options="problemStates"
+                            @change="onSelectedProblemState"
+                        />
+                    </div>
+                </template>
                 <template #toolbarRight>
                     <v-search-box
                         v-model="keySearch"
@@ -119,20 +129,21 @@ export default {
     extends: BaseList,
     data() {
         return {
-            documentTitle: this.$t("problem.documentTitle"),
-            problemEnum: problemEnum,
+            documentTitle: this.$t("problem.problemList"),
             itemIdKey: "ProblemId",
+            problemEnum: problemEnum,
             /**
              * Các cột
              */
             columns: [
                 {
                     title: this.$t("problem.field.status"),
-                    textAlign: 'center',
+                    textAlign: 'left',
                     widthCell: 60,
                     name: "ProblemAccountState",
                     filterConfig: {
-                        filterType: this.$enums.filterType.text,
+                        filterType: this.$enums.filterType.selectKey,
+                        selects: this.$cv.enumToSelects(problemEnum.problemAccountState),
                     }
                 },
                 {
@@ -181,9 +192,29 @@ export default {
                     }
                 }
             ],
+            problemStates: [],
+            selectedProblemState: null,
         }
     },
     computed: {
+        /**
+         * Thêm lọc theo State
+         */
+        addFilterModelsComputed() {
+            let filters = [];
+
+            // Lọc thêm State
+            filters.push({
+                columnName: 'State',
+                logicType: this.$enums.logicType.and,
+                logicName: 'and',
+                compareType: this.$enums.compareType.equal,
+                compareName: '=',
+                filterValue: this.selectedProblemState?.key
+            });
+
+            return filters;
+        },
     },
     mounted() {
     },
@@ -193,13 +224,39 @@ export default {
          */
         initOnCreated() {
             this.itemService = problemService;
+            this.problemStates = this.$cv.enumToSelects(problemEnum.problemState);
+            this.selectedProblemState = this.problemStates[0];
         },
         /**
          * Click vào nút tạo mới
          */
         clickCreate() {
             this.$router.push(this.$path.problem)
-        }
+        },
+        /**
+         * Chọn problem state
+         */
+        onSelectedProblemState() {
+            this.reloadItems();
+        },
+        // addFilterProblemState() {
+
+        //     if (!this.$cf.isEmptyArray(this.filterModels)) {
+        //         let filterProblemState = this.filterModels.find(item => item.column == 'State')
+        //         if (filterProblemState) {
+        //             filterProblemState.values = [this.selectedProblemState];
+        //             return;
+        //         }
+        //     }
+        //     this.filterModels.push({
+        //         column: 'State',
+        //         logicType: this.$enums.logicType.and,
+        //         logicName: 'and',
+        //         compareType: this.$enums.compareType.equal,
+        //         compareName: '=',
+        //         values: [this.selectedProblemState]
+        //     });
+        // }
     }
 
 

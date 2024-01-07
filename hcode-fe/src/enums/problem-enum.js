@@ -49,10 +49,10 @@ const problemEnum = {
         /**
          * Công khai nhưng chưa kích hoạt
          */
-        deactivatedPublic: {
-            value: 2,
-            label: t("problem.problemState.deactivatedPublic"),
-        },
+        // deactivatedPublic: {
+        //     value: 2,
+        //     label: t("problem.problemState.deactivatedPublic"),
+        // },
         /**
          * Riêng tư
          */
@@ -68,6 +68,200 @@ const problemEnum = {
             label: t("problem.problemState.draft"),
         },
     },
+    /**
+     * Language id
+     */
+    language: {
+        c: 49,
+        csharp: 51,
+        cpp: 53,
+        js: 63,
+        php: 68,
+        java: 91,
+        python: 92,
+    },
+    /**
+     * Kiểu dữ liệu
+     */
+    dataType: {
+        // Chuỗi
+        string: {
+            value: 1,
+            label: "string",
+        },
+        strings: {
+            value: 2,
+            label: "string[]",
+        },
+        // Ký tự
+        // char: {
+        //     value: 3,
+        //     label: "char",
+        // },
+        // chars: {
+        //     value: 4,
+        //     label: "char[]",
+        // },
+
+        // Số nguyên
+        int: {
+            value: 5,
+            label: "int",
+        },
+        ints: {
+            value: 6,
+            label: "int[]",
+        },
+        // Số thực
+        decimal: {
+            value: 7,
+            label: "decimal",
+        },
+        decimals: {
+            value: 8,
+            label: "decimal[]",
+        },
+        /**
+         * Bool
+         */
+        bool: {
+            value: 9,
+            label: "bool",
+        },
+        bools: {
+            value: 10,
+            label: "bool[]",
+        },
+    },
+    /**
+     * Map kiểu dữ liệu theo ngôn ngữ
+     * @param {*} dataType Enum data type
+     * @param {*} judgeId Id ngôn ngữ
+     * @returns
+     */
+    mapDataTypeByLanguage(dataType, judgeId) {
+        switch (dataType) {
+            // Kiểu string
+            case this.dataType.string.value:
+                switch (judgeId) {
+                    case this.language.c:
+                        return "char*";
+                    case this.language.cpp:
+                    case this.language.csharp:
+                        return "string";
+                    case this.language.java:
+                        return "String";
+                    default:
+                        return "";
+                }
+            // Kiểu string[]
+            case this.dataType.strings.value:
+                switch (judgeId) {
+                    case this.language.c:
+                        return "char**";
+                    case this.language.cpp:
+                        return "vector<string>";
+                    case this.language.csharp:
+                        return "string[]";
+                    case this.language.java:
+                        return "String[]";
+                    default:
+                        return "";
+                }
+            // Kiểu int
+            case this.dataType.int.value:
+                switch (judgeId) {
+                    case this.language.c:
+                    case this.language.cpp:
+                    case this.language.csharp:
+                    case this.language.java:
+                        return "int";
+                    default:
+                        return "";
+                }
+            // Kiểu int[]
+            case this.dataType.ints.value:
+                switch (judgeId) {
+                    case this.language.cpp:
+                        return "vector<int>";
+                    case this.language.c:
+                    case this.language.csharp:
+                    case this.language.java:
+                        return "int[]";
+                    default:
+                        return "";
+                }
+            // Kiểu decimal
+            case this.dataType.decimal.value:
+                switch (judgeId) {
+                    case this.language.c:
+                    case this.language.cpp:
+                    case this.language.csharp:
+                    case this.language.java:
+                        return "double";
+                    default:
+                        return "";
+                }
+            // Kiểu decimal[]
+            case this.dataType.decimals.value:
+                switch (judgeId) {
+                    case this.language.cpp:
+                        return "vector<double>";
+                    case this.language.c:
+                    case this.language.csharp:
+                    case this.language.java:
+                        return "double[]";
+                    default:
+                        return "";
+                }
+            // Kiểu bool
+            case this.dataType.bool.value:
+                switch (judgeId) {
+                    case this.language.c:
+                    case this.language.cpp:
+                    case this.language.csharp:
+                        return "bool";
+                    case this.language.java:
+                        return "boolean";
+                    default:
+                        return "";
+                }
+            // Kiểu bool[]
+            case this.dataType.bools.value:
+                switch (judgeId) {
+                    case this.language.cpp:
+                        return "vector<bool>";
+                    case this.language.c:
+                    case this.language.csharp:
+                        return "bool[]";
+                    case this.language.java:
+                        return "boolean[]";
+                    default:
+                        return "";
+                }
+            default:
+                return "";
+        }
+    },
+    statusJudge0: {
+        Error: 0,
+        InQueue: 1,
+        Processing: 2,
+        Accepted: 3,
+        WrongAnswer: 4,
+        TimeLimitExceeded: 5,
+        CompilationError: 6,
+        RuntimeErrorSIGSEGV: 7,
+        RuntimeErrorSIGXFSZ: 8,
+        RuntimeErrorSIGFPE: 9,
+        RuntimeErrorSIGABRT: 10,
+        RuntimeErrorNZEC: 11,
+        RuntimeErrorOther: 12,
+        InternalError: 13,
+        ExecFormatError: 14,
+        OverLimit: 50,
+    }
+
 };
 
 export default problemEnum;

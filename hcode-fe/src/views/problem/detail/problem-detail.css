@@ -9,7 +9,36 @@
     height: 56px;    
     background-color: var(--header-color);
     width: 100%;
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    position: relative;
+    z-index: 4;
 }
+
+.problem-detail__header--left {
+    padding: 0 24px;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.problem-detail__header--left .p-button {
+    padding: 4px;
+    height: 30px;
+}
+
+.problem-detail__header--center {
+    /* position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); */
+}
+.problem-detail__header--right {
+    padding: 0 16px;
+    width: 300px;
+}
+
 .problem-detail__body {
     height: calc(100vh - 56px - 78px);
 }

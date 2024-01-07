@@ -4,29 +4,46 @@
             class="testcase__panel"
             @click="clickPanel"
         >
-            <div class="testcase__label flex-center">
-                {{ index + 1 }}. Testcase {{ index + 1 }}
+            <div class="flex-align-center col-gap-16">
+                <div class="testcase__label flex-center">
+                    {{ index + 1 }}. Testcase {{ index + 1 }}
+                </div>
+                <!-- Status -->
+                <v-button
+                    v-if="isShowStatusButton"
+                    style="padding: 0.25rem 0.5rem"
+                    text
+                    :severity="severityStatusButton"
+                    :label="instance.Status.status_name"
+                    @click="clickStatus"
+                ></v-button>
             </div>
             <div class="testcase__function flex-align-center col-gap-12">
                 <v-icon
                     applyPointer
                     :icon="this.instance.AllowView ? 'far fa-lock-keyhole-open' : 'far fa-lock-keyhole'"
                     :color="this.instance.AllowView ? 'light' : 'warn'"
+                    :title="$t('problem.showOrHideTestcase')"
                     @click="clickLock"
                 />
                 <v-icon
                     icon="far fa-circle-xmark"
                     color="danger"
                     applyPointer
+                    :title="$t('com.delete')"
                     @click="clickDelete"
                 />
             </div>
         </div>
+        <!-- Chi tiết -->
         <div
             class="testcase__detail flex-column row-gap-20"
             v-if="isShowDetail"
         >
-            <div class="flex-column row-gap-12">
+            <div
+                class="flex-column row-gap-12"
+                v-if="!$cf.isEmptyArray(parameters)"
+            >
                 <div
                     class="testcase__input"
                     v-for="(param, index) in parameters"
@@ -36,7 +53,10 @@
                         {{ param.ParameterName || `${$t('problem.parameter')} ${param.ParameterOrder}` }}
                     </div>
                     <div class="testcase__parameter-input">
-                        <v-input-text hasClear v-model="instance.Inputs[index]"></v-input-text>
+                        <v-input-text
+                            hasClear
+                            v-model="instance.Inputs[index]"
+                        ></v-input-text>
                     </div>
                 </div>
             </div>
@@ -51,11 +71,33 @@
                     ></v-input-text>
                 </div>
             </div>
+            <div class="flex-center">
+                <v-button
+                    icon="far fa-circle-chevron-up"
+                    severity="warning"
+                    text
+                    raised
+                    rounded
+                    @click="this.isShowDetail = false"
+                />
+            </div>
+        </div>
+        <div
+            class="testcase__detail flex-column row-gap-20"
+            v-if="isShowStatus"
+        >
+            <!-- Status -->
+            <v-editor
+                class='no-toolbar'
+                v-model="result"
+                readonly
+            ></v-editor>
         </div>
     </div>
 </template>
 <script>
 import { validate } from "@/mixins/mixins";
+import problemEnum from "@/enums/problem-enum";
 
 export default {
     name: 'TestcaseItem',
@@ -92,7 +134,15 @@ export default {
     data() {
         return {
             instance: {},
+            /**
+             * Hiện chi tiết
+             */
             isShowDetail: false,
+            /**
+             * Hiện log
+             */
+            isShowStatus: false,
+            problemEnum: problemEnum,
         }
     },
     emits: ['onDelete'],
@@ -102,7 +152,7 @@ export default {
         this.instance.AllowView ??= true;
 
         this.instance.Inputs ??= [];
-        
+
     },
     mounted() {
         this.refs = [this.$refs['refTestcaseName']];
@@ -121,6 +171,21 @@ export default {
         },
     },
     computed: {
+        isShowStatusButton() {
+            if (this.$cf.isNullValue(this.instance.Status.status_name)) {
+                return false
+            };
+            if (this.$cf.isEmptyString(this.instance.Status.status_name)) {
+                return false
+            };
+            return true;
+        },
+        severityStatusButton() {
+            if (this.$cf.isNullValue(this.instance.Status.status_name)) {
+                return null
+            };
+
+        }
     },
     methods: {
         /**
@@ -135,6 +200,13 @@ export default {
          */
         clickPanel() {
             this.isShowDetail = !this.isShowDetail;
+        },
+        /**
+         * Đóng mở status detail
+         */
+        clickStatus(e) {
+            e.stopPropagation();
+            this.isShowStatus = !this.isShowStatus;
         },
         /**
          * Click xoá
@@ -195,10 +267,12 @@ export default {
     background-color: var(--dark-500);
     border-radius: 0 0 8px 8px;
     padding: 20px;
+    padding-bottom: 10px;
 }
 
 .testcase__input {
     display: flex;
     flex-direction: column;
     row-gap: 8px;
-}</style>
+}
+</style>

@@ -13,7 +13,9 @@
             v-if="totalRecord"
         >
             <div class="pagination__property">
-                {{ $t("com.recordsPerPage") }}:
+                <div class="space-nowrap">
+                    {{ $t("com.recordsPerPage") }}:
+                </div>
                 <v-combobox
                     ref="refPageSize"
                     v-model="pageSize"

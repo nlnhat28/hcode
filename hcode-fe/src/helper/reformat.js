@@ -21,7 +21,7 @@ const reformat = {
      */
     cleanNotDigitChar(value) {
         try {
-            if (value) return value.replace(/\D/g, "");
+            if (value && typeof(value) == 'string') return value.replace(/\D/g, "");
         } catch (error) {
             console.log(error);
         }

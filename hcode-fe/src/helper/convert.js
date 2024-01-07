@@ -37,8 +37,8 @@ const convert = {
                 return "far fa-circle-xmark";
             case problemEnum.problemAccountState.solved.value:
                 return "far fa-circle-check";
-            case problemEnum.problemAccountState.draft.value:
-                return "far fa-file";
+            // case problemEnum.problemAccountState.draft.value:
+            //     return "far fa-file";
             default:
                 return null;
         }

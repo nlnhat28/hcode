@@ -7,7 +7,6 @@ const axiosRequest = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
-    timeout: window.config.server.timeout,
 });
 /**
  * Add a response interceptor

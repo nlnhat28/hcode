@@ -122,6 +122,14 @@ export default {
                     return this.$resources["vn"].createInstance;
             }
         },
+        /**
+         * Reformat instance trước khi lưu
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        reformatInstance() {
+            return this.instance;
+        },
     },
     methods: {
         /**
@@ -135,14 +143,6 @@ export default {
         async loadDataOnCreated() {
         },
         /**
-         * Reformat instance trước khi lưu
-         *
-         * Author: nlnhat (02/07/2023)
-         */
-        reformatInstance() {
-            return this.instance;
-        },
-        /**
          * Handle instance on created()
          *
          * Author: nlnhat (05/07/2023)
@@ -150,6 +150,7 @@ export default {
         async handleInstanceOnCreated() {
             switch (this.mode) {
                 case this.$enums.formMode.create:
+                    this.initCreateInstance();
                     this.storeOriginalInstance();
                     break;
                 case this.$enums.formMode.update:
@@ -162,6 +163,12 @@ export default {
                     this.storeOriginalInstance();
                     break;
             }
+        },
+        /**
+         * Khởi tạo instance nếu là form tạo mới
+         * @virtual
+         */
+        initCreateInstance() {
         },
         /**
          * Lưu đối tượng gốc
@@ -178,7 +185,7 @@ export default {
          */
         async getInstance(id) {
             if (this.instanceService) {
-                const response = await instanceService.get(id);
+                const response = await this.instanceService.get(id);
                 if (this.$cf.isSuccess(response)) {
                     this.instance = this.$cf.cloneDeep(response.Data);
                     this.processResponseGetData(response.Data);
@@ -202,7 +209,7 @@ export default {
          */
         async createInstance() {
             try {
-                const response = await instanceService.post(this.reformatInstance);
+                const response = await this.instanceService.post(this.reformatInstance);
                 if (this.$cf.isSuccess(response)) {
                     this.instance.InstanceId = response.Data;
                     this.isSuccessResponseFlag = true;
@@ -210,6 +217,8 @@ export default {
                     this.isSuccessResponseFlag = false;
                     this.handleError(response);
                 }
+                me.processResponseCreate(response);
+
             } catch (error) {
                 console.error(error);
                 this.isSuccessResponseFlag = false;
@@ -222,7 +231,7 @@ export default {
          */
         async updateInstance() {
             try {
-                const response = await instanceService.put(
+                const response = await this.instanceService.put(
                     this.instance.InstanceId,
                     this.reformatInstance
                 );
@@ -232,6 +241,7 @@ export default {
                     this.handleError(response);
                     this.isSuccessResponseFlag = false;
                 }
+                me.processResponseUpdate(response);
             } catch (error) {
                 console.error(error);
                 this.isSuccessResponseFlag = false;
@@ -383,17 +393,29 @@ export default {
                 console.error(error);
             }
         },
-        customBeforeSave() {
+        /**
+         * Response sau khi call api createInstance
+         * @virtual
+         */
+        processResponseCreate(response) {
+        },
+        /**
+         * Response sau khi call api updateInstance
+         * @virtual
+         */
+        processResponseUpdate(response) {
+        },
+        async customBeforeSave() {
         },
         /**
          * Xử lý sau khi lưu thành công
          */
-        afterSaveSuccess() {
+        async afterSaveSuccess() {
         },
         /**
          * Xử lý sau khi lưu thất bại
          */
-        afterSaveError() {
+        async afterSaveError() {
         },
         /**
          * Reset form 

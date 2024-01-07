@@ -2,7 +2,10 @@
  * Problem
  */
 const problem = {
+    problem: "Bài toán",
+    createProblem: "Tạo mới bài toán",
     documentTitle: "Bài toán",
+    problemList: "Danh sách bài toán",
     field: {
         problemCode: "Mã bài toán",
         code: "Mã",
@@ -16,6 +19,7 @@ const problem = {
         limitTimeLabel: "Giới hạn thời gian",
         limitMemory: "Giới hạn bộ nhớ (kilobyte)",
         limitMemoryLabel: "Giới hạn bộ nhớ",
+        solution: "Lời giải"
     },
     problemAccountState: {
         none: "Chưa xem",
@@ -33,7 +37,7 @@ const problem = {
     },
     content: "Nội dung",
     generalInfo: "Thông tin chung",
-    testcase: "Kiểm thử",
+    testcase: "Test",
     parameter: "Tham số",
     inputParameter: "Tham số đầu vào",
     outputType: "Kiểu dữ liệu trả về",
@@ -48,6 +52,12 @@ const problem = {
     quantity: "Số lượng",
     detail: "Chi tiết",
     expectedOutput: "Kết quả mong đợi",
+    mustHasTestcase: "Phải có ít nhất 1 testcase",
+    mine: "Của tôi",
+    savePublic: "Lưu công khai",
+    savePrivate: "Lưu riêng tư",
+    showOrHideTestcase: "Ẩn/Hiện testcase",
+    result: "Kết quả",
 };
 
 export default problem;
