@@ -4,8 +4,8 @@ namespace HCode.Domain
     /// <summary>
     /// Lớp bài toán
     /// </summary>
-    [CanSearch("ProblemCode, ProblemName, TopicNames")]
-    public class Problem : BaseEntity
+    [CanSearch("ProblemCode, ProblemName, Topic")]
+    public class Problem : BaseEntity, IHasEntityId
     {
         #region Properties
         /// <summary>

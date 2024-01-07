@@ -20,6 +20,10 @@ namespace HCode.Application
         /// </summary>
         private readonly CEConfig _ceConfig;
         /// <summary>
+        /// Encode base64 không
+        /// </summary>
+        private readonly bool _isEncode;
+        /// <summary>
         /// Uri base encode. Vd: base64_encoded=true
         /// </summary>
         private readonly string _base64Encoded;
@@ -31,8 +35,8 @@ namespace HCode.Application
         {
             _ceConfig = ceConfig.Value;
 
-            var isEncode = _ceConfig.IsBase64Encode ?? true;
-            _base64Encoded = $"base64_encoded={isEncode.ToString().ToLower()}";
+            _isEncode = _ceConfig.IsBase64Encode ?? true;
+            _base64Encoded = $"base64_encoded={_isEncode.ToString().ToLower()}";
         }
         #endregion
 
@@ -92,6 +96,11 @@ namespace HCode.Application
             var fields = AppHelper.GetFieldsToString<SubmissionResponse>() ?? "*";
             var uri = $"{_ceConfig.BaseUrl}/submissions?{_base64Encoded}&fields={fields}&wait=true";
 
+            if (_isEncode)
+            {
+                param.Encode();
+            }
+
             var content = JsonSerializer.Serialize(param);
 
             var response = await SendAsync(uri, method, content);
@@ -100,6 +109,14 @@ namespace HCode.Application
             {
                 var jsonData = (string)(response.Data ?? string.Empty);
                 var data = JsonSerializer.Deserialize<SubmissionResponse>(jsonData);
+
+                if (_isEncode)
+                {
+                    data?.Decode();
+                }
+
+                data?.GenStatusName();
+
                 response.Data = data;
             }
 
@@ -111,6 +128,11 @@ namespace HCode.Application
         {
             var method = HttpMethod.Post;
             var uri = $"{_ceConfig.BaseUrl}/submissions/batch?{_base64Encoded}";
+
+            if (_isEncode)
+            {
+                param.ForEach(item => item.Encode());
+            }
 
             var obj = new
             {
@@ -139,7 +161,6 @@ namespace HCode.Application
             var tokensString = string.Join(",", tokens);
             var uri = $"{_ceConfig.BaseUrl}/submissions/batch?tokens={tokensString}&{_base64Encoded}&fields={fields}";
 
-
             var response = await SendAsync(uri, method);
 
             if (response.Success)
@@ -147,6 +168,20 @@ namespace HCode.Application
                 var jsonData = (string)(response.Data ?? string.Empty);
                 var submissions = JsonSerializer.Deserialize<Submissions>(jsonData) ?? new Submissions();
                 var data = submissions.submissions;
+
+                if (_isEncode)
+                {
+                    data?.ForEach(item =>
+                    {
+                        item.Decode();
+                        item.GenStatusName();
+                    });
+                }
+                else
+                {
+                    data?.ForEach(item => item.GenStatusName());
+                }
+
                 response.Data = data;
             }
 

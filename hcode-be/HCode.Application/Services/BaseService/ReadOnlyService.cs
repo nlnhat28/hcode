@@ -23,7 +23,7 @@ namespace HCode.Application
         /// <summary>
         /// Service auth
         /// </summary>
-        private readonly IAuthService _authService;
+        protected readonly IAuthService _authService;
         #endregion
 
         #region Properties
@@ -105,7 +105,7 @@ namespace HCode.Application
                 pagingModel.PageNumber = 1;
             }
 
-            var accountId = await _authService.GetAccountId();
+            var accountId = _authService.GetAccountId();
 
             var res = await _repository.FilterAsync(keySearch, pagingModel, sortModels, filterModels, accountId);
 

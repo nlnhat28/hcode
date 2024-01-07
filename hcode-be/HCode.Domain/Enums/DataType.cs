@@ -42,5 +42,9 @@ namespace HCode.Domain
         /// Boolean
         /// </summary>
         Bool = 9,
+        /// <summary>
+        /// List Boolean
+        /// </summary>
+        Bools = 10,
     }
 }

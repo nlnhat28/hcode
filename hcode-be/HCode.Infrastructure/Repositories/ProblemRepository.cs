@@ -70,6 +70,27 @@ namespace HCode.Infrastructure
             return problem;
 
         }
+
+        //
+        /// <summary>
+        /// Lấy mã lớn nhất
+        /// </summary>
+        /// <param name="state">Công khai hay riêng tư</param>
+        /// <param name="AccountId"></param>
+        /// <returns></returns>
+        public async Task<int> GetMaxCodeAsync(ProblemState state, Guid AccountId)
+        {
+            var proc = $"{Procedure}GetMaxCode";
+
+            var param = new DynamicParameters();
+            param.Add($"p_State", state);
+            param.Add($"p_AccountId", AccountId);
+
+            var result = await _unitOfWork.Connection.QueryFirstOrDefault(
+                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure) ?? 0;
+
+            return result;
+        }
         #endregion
     }
 }

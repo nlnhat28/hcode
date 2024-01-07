@@ -37,6 +37,11 @@ namespace HCode.Application
         /// Lấy AccountId hiện tại
         /// </summary>
         /// <returns></returns>
-        Task<Guid> GetAccountId();
+        Guid GetAccountId();
+        /// <summary>
+        /// Lấy AccountId.ToString() hiện tại
+        /// </summary>
+        /// <returns></returns>
+        string GetAccountIdToString();
     }
 }

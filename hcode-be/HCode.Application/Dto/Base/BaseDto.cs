@@ -7,13 +7,9 @@ namespace HCode.Application
     /// Lớp Dto cơ sở
     /// </summary>
     /// Created by: nlnhat (11/07/2023)
-    public class BaseDto : IHasEntityId
+    public class BaseDto
     {
         #region Properties
-        /// <summary>
-        /// Id
-        /// </summary>
-        public Guid Id { get; set; }
         /// <summary>
         /// STT
         /// </summary>

@@ -304,10 +304,16 @@ namespace HCode.Application
         }
 
         // Lấy AccountId
-        public async Task<Guid> GetAccountId()
+        public Guid GetAccountId()
         {
             var accountId = "1bf8a43c-47fb-4d6c-1863-eeb1d8ed8cef";
             return Guid.Parse(accountId);
+        }
+
+        public string GetAccountIdToString()
+        {
+            var accountId = "1bf8a43c-47fb-4d6c-1863-eeb1d8ed8cef";
+            return accountId.ToString();
         }
         #endregion
     }

@@ -75,23 +75,21 @@ namespace HCode.Application
             return result;
         }
 
+
         // Tạo problem mới
         public override async Task CreateAsync(ProblemDto problemDto, ServerResponse res)
         {
-            // Lưu nháp
-            if (problemDto.State == ProblemState.Draft)
+            var (problem, parameters, testcases) = MapCreateProblemDtoToEntity(problemDto);
+
+            await ValidateAsync(problem, res);
+
+            if (!res.Success)
             {
-                var problem = MapCreateDtoToEntity(problemDto);
-
-                await ValidateAsync(problem, res);
-
-                if (res.Success)
-                {
-                    res.Data = await _repository.InsertAsync(problem);
-                }
+                return;
             }
+
             // Lưu thật
-            else
+            if (problemDto.State == ProblemState.Public || problemDto.State == ProblemState.Private)
             {
                 var parames = BuildSubmissionParams(problemDto, problemDto.SolutionLanguage?.JudgeId);
 
@@ -104,22 +102,150 @@ namespace HCode.Application
 
                     var resGetBatch = await _ceService.GetBatchAsync(tokens);
 
-                    var data = resGetBatch.Data as List<SubmissionResponse>;
-                    res.OnSuccess(data);
+                    res.Data = resGetBatch;
 
-                    var problem = MapCreateDtoToEntity(problemDto);
-
-                    await ValidateAsync(problem, res);
-
-                    if (res.Success)
+                    if (resGetBatch.Data is List<SubmissionResponse> data && data.Count > 0)
                     {
-                        await _repository.InsertAsync(problem);
+                        foreach (var subRes in data)
+                        {
+                            var index = data.IndexOf(subRes);
+
+                            if (index >= 0 && index < testcases.Count && testcases[index] != null)
+                            {
+                                subRes.testcase_id = testcases[index].TestcaseId;
+                            }
+
+                            switch (subRes.status_id)
+                            {
+                                case StatusJudge0.Accepted:
+                                    break;
+                                case StatusJudge0.Error:
+                                case StatusJudge0.InQueue:
+                                case StatusJudge0.Processing:
+                                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemTryAgain"], data);
+                                    break;
+                                case StatusJudge0.WrongAnswer:
+                                    // Lỗi quá tài nguyên
+                                    var time = Convert.ToDecimal(subRes.time);
+                                    var memory = subRes.memory;
+                                    var errors = new List<string>();
+
+                                    if (problem.LimitTime != null && problem.LimitTime > 0 && time > problem.LimitTime)
+                                    {
+                                        var msg = string.Format(_resource["ProblemOverLimitTime"], time + "s");
+                                        errors.Add(msg);
+                                    }
+                                    if (problem.LimitMemory != null && problem.LimitMemory > 0 && memory > problem.LimitMemory)
+                                    {
+                                        var msg = string.Format(_resource["ProblemOverLimitMemory"], memory + "kb");
+                                        errors.Add(msg);
+                                    }
+
+                                    if (errors?.Count > 0)
+                                    {
+                                        var userMsg = string.Join(" ", errors);
+                                        subRes.status_id = StatusJudge0.OverLimit;
+                                        subRes.user_msg = userMsg;
+                                    }
+
+                                    res.OnError(ErrorCode.ProblemTestcaseCreate, _resource["ProblemTestcaseCreateError"], data);
+                                    break;
+                                case StatusJudge0.TimeLimitExceeded:
+                                    res.OnError(ErrorCode.ProblemTimeLimitExceeded, _resource["ProblemTimeLimitExceeded"], data);
+                                    break;
+                                default:
+                                    res.OnError(ErrorCode.ProblemSourceCode, _resource["ProblemSourceCodeError"], data);
+                                    break;
+                            }
+                        };
+
+                        if (res.Success)
+                        {
+                            var submissionData = new SubmissionResponseData()
+                            {
+                                Submissions = data
+                            };
+                            submissionData.CalculateAverage();
+
+                            res.Data = submissionData;
+                        }
+                    }
+                    else
+                    {
+                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resGetBatch);
+                    }
+                }
+                else
+                {
+                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resCreateBatch);
+                }
+            }
+
+            // Nếu thành công thì lưu vào db
+            if (res.Success)
+            {
+                // Nếu mà lưu ở 2 chế độ công khai và riêng tư
+                if (problemDto.IsPrivateState == true && problemDto.IsPublicState == true)
+                {
+                    problem.State = ProblemState.Private;
+
+                    var (problemPublic, paramPublic, testcasePublic) = MapCreateProblemDtoToEntity(problemDto);
+                    problemPublic.State = ProblemState.Public;
+
+                    try
+                    {
+                        await _unitOfWork.BeginTransactionAsync();
+
+                        var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
+                        newCode++;
+                        problemPublic.ProblemCode = newCode;
+                        await _repository.InsertAsync(problemPublic);
+                        await _parameterRepo.InsertManyAsync(paramPublic);
+                        await _testcaseRepo.InsertManyAsync(testcasePublic);
+
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch (Exception exception)
+                    {
+                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], exception);
+                    }
+                    finally
+                    {
+                        await _unitOfWork.RollbackAsync();
                     }
                 }
 
+                if (!res.Success)
+                {
+                    return;
+                }
+
+                // Không thì lưu đúng chế độ
+                try
+                {
+                    await _unitOfWork.BeginTransactionAsync();
+
+                    var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
+                    newCode++;
+                    problem.ProblemCode = newCode; await _repository.InsertAsync(problem);
+                    await _parameterRepo.InsertManyAsync(parameters);
+                    await _testcaseRepo.InsertManyAsync(testcases);
+
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception exception)
+                {
+                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], exception);
+                }
+                finally
+                {
+                    await _unitOfWork.RollbackAsync();
+                }
             }
         }
-        private List<SubmissionParam> BuildSubmissionParams(ProblemDto problemDto, int? judgeId)
+
+        // Build submission params 
+        private static List<SubmissionParam> BuildSubmissionParams(ProblemDto problemDto, int? judgeId)
         {
             var parames = new List<SubmissionParam>();
 
@@ -136,7 +262,7 @@ namespace HCode.Application
             {
                 for (int i = 0; i < testcases.Count; i++)
                 {
-                    var stdin = JsonSerializer.Serialize(testcases[i].Inputs);
+                    var stdin = testcases[i].SerializeInputs();
                     var expectedOutput = testcases[i].ExpectedOutput?.ToString();
 
                     var submissison = new SubmissionParam()
@@ -154,6 +280,64 @@ namespace HCode.Application
 
             }
             return parames;
+        }
+
+        // Clone 
+        public (Problem problem, List<Parameter> parameters, List<Testcase> testcases) MapCreateProblemDtoToEntity(
+            ProblemDto problemDto, bool? isClone = false)
+        {
+            var clone = isClone ?? false;
+
+            var problem = MapCreateDtoToEntity(problemDto);
+            problem.AccountId = _authService.GetAccountId();
+
+            var problemId = problem.ProblemId;
+
+            var parameters = new List<Parameter>();
+            var testcases = new List<Testcase>();
+
+            // Parameters
+            var parametersDto = problemDto.Parameters;
+
+            if (parametersDto != null && parametersDto.Count > 0)
+            {
+                parametersDto.ForEach(param =>
+                {
+                    if (clone)
+                    {
+                        param.ParameterId = Guid.NewGuid();
+                    }
+                    else
+                    {
+                        param.ParameterId = param.ParameterId != Guid.Empty ? param.ParameterId : Guid.NewGuid();
+                    }
+
+                    param.ProblemId = problemId;
+                });
+                parameters = _mapper.Map<List<Parameter>>(parametersDto);
+            }
+
+            // Testcases
+            var testcasesDto = problemDto.Testcases;
+            if (testcasesDto != null && testcasesDto.Count > 0)
+            {
+                testcasesDto.ForEach(test =>
+                {
+                    if (clone)
+                    {
+                        test.TestcaseId = Guid.NewGuid();
+                    }
+                    else
+                    {
+                        test.TestcaseId = test.TestcaseId != Guid.Empty ? test.TestcaseId : Guid.NewGuid();
+                    }
+
+                    test.ProblemId = problemId;
+                });
+                testcases = _mapper.Map<List<Testcase>>(testcasesDto);
+            }
+
+            return (problem, parameters, testcases);
         }
         #endregion
     }

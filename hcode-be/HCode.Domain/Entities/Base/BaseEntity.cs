@@ -6,13 +6,13 @@ namespace HCode.Domain
     /// Lớp thực thể cơ sở
     /// </summary>
     /// Created by: nlnhat (11/07/2023)
-    public class BaseEntity : IHasEntityId
+    public class BaseEntity
     {
         #region Properties
         /// <summary>
         /// Id
         /// </summary>
-        public Guid Id { get; set; }
+        //public Guid Id { get; set; }
         /// <summary>
         /// Số thứ tự
         /// </summary>

@@ -13,7 +13,7 @@ namespace HCode.Application
     /// Created by: nlnhat (18/07/2023)
     public abstract class BaseService<TEntityDto, TEntity>
                         : ReadOnlyService<TEntityDto, TEntity>, IBaseService<TEntityDto, TEntity> 
-                        where TEntityDto : BaseDto where TEntity : BaseEntity
+                        where TEntityDto : BaseDto, IHasEntityId where TEntity : BaseEntity, IHasEntityId
     {
         #region Fields
         /// <summary>
@@ -70,6 +70,7 @@ namespace HCode.Application
         {
             entityDto.Id = Guid.NewGuid();
             entityDto.CreatedTime ??= DateTime.UtcNow;
+            entityDto.CreatedBy = _authService.GetAccountIdToString();
 
             var result = _mapper.Map<TEntity>(entityDto);
             return result;
@@ -83,6 +84,7 @@ namespace HCode.Application
         public virtual TEntity MapUpdateDtoToEntity(TEntityDto entityDto)
         {
             entityDto.ModifiedTime = DateTime.UtcNow;
+            entityDto.ModifiedBy = _authService.GetAccountIdToString();
 
             var result = _mapper.Map<TEntity>(entityDto);
             return result;

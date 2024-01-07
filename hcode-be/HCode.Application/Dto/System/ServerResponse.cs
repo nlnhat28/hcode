@@ -45,7 +45,7 @@ namespace HCode.Application
         /// <summary>
         /// Thành công
         /// </summary>
-        public void OnSuccess() 
+        public void OnSuccess()
         {
             Success = true;
         }
@@ -68,13 +68,52 @@ namespace HCode.Application
         /// <summary>
         /// Lỗi
         /// </summary>
+        /// <param name="exception"></param>
+        public void OnError(Exception exception)
+        {
+            Success = false;
+            Data = ExceptionToData(exception);
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
         /// <param name="errorCode"></param>
         /// <param name="userMsg"></param>
-        public void OnError(ErrorCode errorCode, string? userMsg)
+        public void OnError(ErrorCode errorCode, string? userMsg = null)
         {
             Success = false;
             ErrorCode = errorCode;
             UserMsg = userMsg;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <param name="userMsg"></param>
+        /// <param name="data"></param>
+        public void OnError(ErrorCode errorCode, string? userMsg = null, object? data = null)
+        {
+            Success = false;
+            ErrorCode = errorCode;
+            UserMsg = userMsg;
+            Data = data;
+        }
+        /// <summary>
+        /// Lỗi
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <param name="userMsg"></param>
+        /// <param name="exception"></param>
+        public void OnError(ErrorCode errorCode, string? userMsg = null, Exception? exception = null)
+        {
+            Success = false;
+            ErrorCode = errorCode;
+            UserMsg = userMsg;
+
+            if (exception != null)
+            {
+                Data = ExceptionToData(exception);
+            }
         }
         /// <summary>
         /// Lỗi
@@ -155,6 +194,19 @@ namespace HCode.Application
             UserMsg = errorItems?.FirstOrDefault()?.ErrorMessage;
             Data = errorItems;
             ErrorKey = Domain.ErrorKey.FormItem;
+        }
+
+        private object ExceptionToData(Exception exception)
+        {
+            var data = new
+            {
+                exception.Source,
+                exception.Data,
+                exception.StackTrace,
+                TargetSite = exception.TargetSite?.ToString(),
+            };
+
+            return data;
         }
         #endregion
     }

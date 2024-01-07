@@ -21,5 +21,6 @@ namespace HCode.Domain
         RuntimeErrorOther = 12,
         InternalError = 13,
         ExecFormatError = 14,
+        OverLimit = 50,
     }
 }

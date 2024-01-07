@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace HCode.Application
@@ -268,16 +269,27 @@ namespace HCode.Application
             }
             return any;
         }
-
-
+        /// <summary>
+        /// Serialize anything
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static string Serialize(object? data)
+        {
+            var result = JsonSerializer.Serialize(data);
+            return result;
+        }
         /// <summary>
         /// Lấy tất cả các properties nối thành chuỗi ngăn cách bởi dấu ,
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="ignores">Ignore các properties</param>
+        /// <param name="seperator">Ký tự ngăn cách</param>
         /// <param name="allowIgnore">Lấy cả các property có [IgnoreAttribute]</param>
         /// <param name="allowNotMapped">Lấy cả các property có [NotMappedAttribute]</param>
         /// <returns>Chuỗi các properties ngăn cách bởi dấu ,</returns>
-        public static string? GetFieldsToString<T>(bool? allowIgnore = false, bool? allowNotMapped = false)
+        public static string? GetFieldsToString<T>(List<string>? ignores = null, string? seperator = ",",
+            bool? allowIgnore = false, bool? allowNotMapped = false)
         {
             var type = typeof(T);
             var properties = type.GetProperties();
@@ -285,9 +297,13 @@ namespace HCode.Application
 
             foreach (var property in properties)
             {
+                if (ignores != null && ignores.Contains(property.Name))
+                {
+                    continue;
+                }
                 if (allowIgnore != null)
                 {
-                    var ignore = property.GetCustomAttribute<IgnoreAttribute>();
+                    var ignore = property.GetCustomAttribute<Domain.IgnoreAttribute>();
                     // Không lấy những [IgnoreAttribute] thì bỏ qua property có
                     if (allowIgnore == false && ignore != null)
                     {
@@ -307,8 +323,72 @@ namespace HCode.Application
                 fields.Add(property.Name);
             }
 
-            var result = string.Join(",", fields);
+            var result = string.Join(seperator, fields);
             return result;
+        }
+        /// <summary>
+        /// Encode base64
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <returns></returns>
+        public static string EncodeBase64(string? plainText)
+        {
+            var plainTextBytes = Encoding.UTF8.GetBytes(plainText ?? string.Empty);
+            var encodedText = Convert.ToBase64String(plainTextBytes);
+            
+            return encodedText;
+        }
+        /// <summary>
+        /// Decode base64
+        /// </summary>
+        /// <param name="encodedText"></param>
+        /// <returns></returns>
+        public static string DecodeBase64(string? encodedText)
+        {
+            var encodedBytes = Convert.FromBase64String(encodedText ?? string.Empty);
+            var decodedText = Encoding.UTF8.GetString(encodedBytes);
+
+            return decodedText;
+        }
+        /// <summary>
+        /// Encode base64 1 số properties có EncodeBase64Attribute
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
+        public static void EncodeBase64<T>(T instance)
+        {
+            var type = typeof(T);
+            var properties = type.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var isEncodeBase64 = property.GetCustomAttribute<EncodeBase64Attribute>();
+                if (isEncodeBase64 != null)
+                {
+                    var value = EncodeBase64(property.GetValue(instance)?.ToString());
+                    property.SetValue(instance, value);
+                }
+            }
+        }
+        /// <summary>
+        /// Decode base64 1 số properties có EncodeBase64Attribute
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
+        public static void DecodeBase64<T>(T instance)
+        {
+            var type = typeof(SubmissionResponse);
+            var properties = type.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var isEncodeBase64 = property.GetCustomAttribute<EncodeBase64Attribute>();
+                if (isEncodeBase64 != null)
+                {
+                    var value = DecodeBase64(property.GetValue(instance)?.ToString());
+                    property.SetValue(instance, value);
+                }
+            }
         }
         #endregion
     }

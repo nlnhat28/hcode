@@ -8,7 +8,7 @@ namespace HCode.Application
     /// <summary>
     /// Lớp bài toán
     /// </summary>
-    public class ProblemDto : BaseDto
+    public class ProblemDto : BaseDto, IHasEntityId
     {
         #region Properties
         /// <summary>
@@ -105,6 +105,14 @@ namespace HCode.Application
         /// </summary>
         public bool? IsNew { get; set; }
         /// <summary>
+        /// Lưu thành công khai
+        /// </summary>
+        public bool? IsPublicState { get; set; }
+        /// <summary>
+        /// Lưu thành riêng tư
+        /// </summary>
+        public bool? IsPrivateState { get; set; }
+        /// <summary>
         /// Kiểu trả về
         /// </summary>
         public DataType? OutputType { get; set; }
@@ -115,12 +123,12 @@ namespace HCode.Application
         /// <summary>
         /// Danh sách testcases
         /// </summary>
-        [Ignore]
+        [AutoMapper.Configuration.Annotations.Ignore]
         public List<TestcaseDto>? Testcases { get; set; }
         /// <summary>
         /// Danh sách param
         /// </summary>
-        [Ignore] 
+        [AutoMapper.Configuration.Annotations.Ignore] 
         public List<ParameterDto>? Parameters { get; set; }
         #endregion
     }

@@ -1,4 +1,6 @@
 ﻿
+using HCode.Domain;
+using System.Reflection;
 using System.Text.Json;
 
 namespace HCode.Application
@@ -12,6 +14,7 @@ namespace HCode.Application
         /// <summary>
         /// Mã nguồn (base64 encode)
         /// </summary>
+        [EncodeBase64]
         public string? source_code { get; set; }
         /// <summary>
         /// Id ngôn ngữ lập trình
@@ -20,10 +23,12 @@ namespace HCode.Application
         /// <summary>
         /// Đầu vào
         /// </summary>
+        [EncodeBase64]
         public string? stdin { get; set; }
         /// <summary>
         /// Expected output
         /// </summary>
+        [EncodeBase64]
         public string? expected_output { get; set; }
         /// <summary>
         /// Giới hạn thời gian (second)
@@ -36,6 +41,24 @@ namespace HCode.Application
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Encode base64 1 số properties
+        /// </summary>
+        public void Encode()
+        {
+            AppHelper.EncodeBase64(this);
+        }
+        /// <summary>
+        /// Decode base64 1 số properties
+        /// </summary>
+        public void Decode()
+        {
+            AppHelper.DecodeBase64(this);
+        }
+        /// <summary>
+        /// Convert to json
+        /// </summary>
+        /// <returns></returns>
         public string ToJson()
         {
             return JsonSerializer.Serialize(this);

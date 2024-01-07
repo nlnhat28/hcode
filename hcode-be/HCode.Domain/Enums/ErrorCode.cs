@@ -87,5 +87,24 @@
         /// </summary>
         AuthIncorrectPassword = 109,
         #endregion
+
+        #region Problem
+        /// <summary>
+        /// Tạo bài toán bị lỗi
+        /// </summary>
+        ProblemCreate = 200,
+        /// <summary>
+        /// Tạo bài toán bị lỗi test case
+        /// </summary>
+        ProblemTestcaseCreate = 201,
+        /// <summary>
+        /// Lỗi source code
+        /// </summary>
+        ProblemSourceCode = 202,
+        /// <summary>
+        /// Lỗi chạy quá thời gian
+        /// </summary>
+        ProblemTimeLimitExceeded = 203,
+        #endregion
     }
 }

@@ -6,12 +6,17 @@ namespace HCode.Application
     /// <summary>
     /// Tài khoản
     /// </summary>
-    public class AccountDto : BaseDto
+    public class AccountDto : BaseDto, IHasEntityId
     {
         /// <summary>
         /// Khoá chính
         /// </summary>
         public Guid AccountId { get; set; }
+        public Guid Id
+        {
+            get { return AccountId; }
+            set { AccountId = value; }
+        }
         /// <summary>
         /// Tên tài khoản
         /// </summary>

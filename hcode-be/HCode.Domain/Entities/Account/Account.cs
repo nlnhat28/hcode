@@ -5,12 +5,17 @@ namespace HCode.Domain
     /// <summary>
     /// Tài khoản
     /// </summary>
-    public class Account : BaseEntity
+    public class Account : BaseEntity, IHasEntityId
     {
         /// <summary>
         /// Khoá chính
         /// </summary>
         public Guid AccountId { get; set; }
+        public Guid Id
+        {
+            get { return AccountId; }
+            set { AccountId = value; }
+        }
         /// <summary>
         /// Tên tài khoản
         /// </summary>

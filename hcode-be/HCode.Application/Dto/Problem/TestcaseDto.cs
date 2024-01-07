@@ -1,4 +1,6 @@
 ﻿
+using System.Text.Json;
+
 namespace HCode.Application
 {
     /// <summary>
@@ -6,6 +8,7 @@ namespace HCode.Application
     /// </summary>
     public class TestcaseDto
     {
+        #region Properties
         /// <summary>
         /// Id
         /// </summary>
@@ -34,5 +37,14 @@ namespace HCode.Application
         /// Kích hoạt hay không
         /// </summary>
         public bool IsActivated { get; set; } = true;
+        #endregion
+
+        #region Methods
+        public string SerializeInputs()
+        {
+            var json = JsonSerializer.Serialize(Inputs);
+            return json;
+        }
+        #endregion
     }
 }

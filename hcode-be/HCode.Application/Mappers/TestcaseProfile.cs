@@ -26,6 +26,17 @@ namespace HCode.Application
             {   // string to object
                 opt.MapFrom(src => AppHelper.ConvertToObject(src.ExpectedOutput));
             });
+
+            // Dto to Testcase
+            CreateMap<TestcaseDto, Testcase>()
+            .ForMember(dest => dest.Inputs, opt =>
+            {   
+                opt.MapFrom(src => AppHelper.Serialize(src.Inputs));
+            })
+            .ForMember(dest => dest.ExpectedOutput, opt =>
+            { 
+                opt.MapFrom(src => AppHelper.Serialize(src.ExpectedOutput));
+            });
         }
         #endregion
     }
