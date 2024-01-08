@@ -1,0 +1,15 @@
+.p-splitter {
+    height: 100%;
+    background: transparent !important;
+    border: none !important;
+}
+
+.p-splitter .p-splitter-gutter {
+    background: var(--tpr-300) !important;
+    /* width: 8px; */
+}
+
+.p-splitter-gutter-handle {
+    background: var(--grey-600) !important;
+    /* width: 8px !important; */
+}

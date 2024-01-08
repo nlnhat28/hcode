@@ -1,0 +1,9 @@
+.p-checkbox .p-checkbox-box {
+    background: var(--editor-color) ;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+}

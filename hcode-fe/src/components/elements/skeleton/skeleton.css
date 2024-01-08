@@ -1,0 +1,42 @@
+/* td:has(.v-skeleton) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+
+.show-skeleton .v-skeleton {
+    display: block;
+}
+
+.v-skeleton + * {
+    display: none;
+}
+
+.v-skeleton {
+    display: none;
+    width: calc(100% - 12px); /* Set your desired width */
+    height: calc(100% - 18px); /* Set your desired height */
+    background: linear-gradient(
+        90deg,
+        var(--ske-color-1) 25%,
+        var(--ske-color-2) 50%,
+        var(--ske-color-1) 75%
+    );
+    background-size: 400% 100%;
+    animation: v-skeleton-animation 2s ease infinite;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    border-radius: 0.25rem;
+}
+
+@keyframes v-skeleton-animation {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}

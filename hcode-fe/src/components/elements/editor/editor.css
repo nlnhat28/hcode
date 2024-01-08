@@ -1,0 +1,26 @@
+.p-editor-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.p-editor-container .p-editor-toolbar.ql-snow {
+    border: none;
+    background: var(--tpr-300);
+}
+.p-editor-container .p-editor-content .ql-editor {
+    background: var(--editor-color);
+    color: var(--color-text);
+    caret-color: auto;
+}
+.p-editor-container .p-editor-content .ql-editor * {
+    caret-color: auto;
+}
+.p-editor-container .p-editor-content.ql-snow {
+    border: none;
+    flex: 1;
+}
+
+.p-editor-container.no-toolbar .p-editor-toolbar {
+    display: none;
+}

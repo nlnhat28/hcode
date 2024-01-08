@@ -1,0 +1,17 @@
+/* search-box */
+.search-box {
+    width: 380px;
+}
+
+.search-box .p-inputtext {
+
+}
+
+/* search-result */
+.search-result {
+    display: flex;
+    /* color: var(--blue-500) */
+}
+.search-result pre.search-result__key {
+    margin: 0;
+}

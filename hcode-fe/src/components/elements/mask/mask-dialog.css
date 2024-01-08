@@ -1,0 +1,28 @@
+.loader-dialog {
+    min-width: 240px;
+    min-height: 120px;
+    width: fit-content;
+    background-color: #000;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 12px;
+    row-gap: 16px;
+}
+.loader-dialog__icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.loader-dialog__text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: fit-content;
+    color: #fff;
+    font-family: Consolas;
+    font-weight: 700;
+}
