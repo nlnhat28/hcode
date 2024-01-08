@@ -103,6 +103,10 @@
     padding: 64px;
 }
 
+.pb-20 {
+    padding: 20px;
+}
+
 /* margin */
 .m-4 {
     margin: 4px;

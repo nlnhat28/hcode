@@ -52,6 +52,7 @@ const problem = {
     quantity: "Số lượng",
     detail: "Chi tiết",
     expectedOutput: "Kết quả mong đợi",
+    output: "Kết quả",
     mustHasTestcase: "Phải có ít nhất 1 testcase",
     mine: "Của tôi",
     savePublic: "Lưu công khai",

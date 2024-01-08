@@ -106,6 +106,11 @@ namespace HCode.Application
 
                     if (resGetBatch.Data is List<SubmissionResponse> data && data.Count > 0)
                     {
+                        var submissionData = new SubmissionResponseData()
+                        {
+                            Submissions = data
+                        };
+
                         foreach (var subRes in data)
                         {
                             var index = data.IndexOf(subRes);
@@ -122,7 +127,7 @@ namespace HCode.Application
                                 case StatusJudge0.Error:
                                 case StatusJudge0.InQueue:
                                 case StatusJudge0.Processing:
-                                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemTryAgain"], data);
+                                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemTryAgain"], submissionData);
                                     break;
                                 case StatusJudge0.WrongAnswer:
                                     // Lỗi quá tài nguyên
@@ -148,25 +153,20 @@ namespace HCode.Application
                                         subRes.user_msg = userMsg;
                                     }
 
-                                    res.OnError(ErrorCode.ProblemTestcaseCreate, _resource["ProblemTestcaseCreateError"], data);
+                                    res.OnError(ErrorCode.ProblemTestcaseCreate, _resource["ProblemTestcaseCreateError"], submissionData);
                                     break;
                                 case StatusJudge0.TimeLimitExceeded:
-                                    res.OnError(ErrorCode.ProblemTimeLimitExceeded, _resource["ProblemTimeLimitExceeded"], data);
+                                    res.OnError(ErrorCode.ProblemTimeLimitExceeded, _resource["ProblemTimeLimitExceeded"], submissionData);
                                     break;
                                 default:
-                                    res.OnError(ErrorCode.ProblemSourceCode, _resource["ProblemSourceCodeError"], data);
+                                    res.OnError(ErrorCode.ProblemSourceCode, _resource["ProblemSourceCodeError"], submissionData);
                                     break;
                             }
                         };
 
                         if (res.Success)
                         {
-                            var submissionData = new SubmissionResponseData()
-                            {
-                                Submissions = data
-                            };
                             submissionData.CalculateAverage();
-
                             res.Data = submissionData;
                         }
                     }

@@ -217,7 +217,7 @@ export default {
                     this.isSuccessResponseFlag = false;
                     this.handleError(response);
                 }
-                me.processResponseCreate(response);
+                this.processResponseCreate(response);
 
             } catch (error) {
                 console.error(error);
@@ -241,7 +241,7 @@ export default {
                     this.handleError(response);
                     this.isSuccessResponseFlag = false;
                 }
-                me.processResponseUpdate(response);
+                this.processResponseUpdate(response);
             } catch (error) {
                 console.error(error);
                 this.isSuccessResponseFlag = false;
@@ -336,30 +336,37 @@ export default {
          */
         async onClickSave() {
             try {
-                if (await this.isValidForm()) {
-                    await this.customBeforeSave();
-                    this.isSuccessResponseFlag = false;
-                    await this.onSave();
-                    if (this.isSuccessResponseFlag == true) {
-                        this.$emit("emitUpdateFocusedId", this.instance.InstanceId);
-                        this.$emit("emitUpdateFocusedIds", [this.instance.InstanceId]);
-                        this.$emit("emitReloadData");
-
-                        if (this.messageOnToast) {
-                            this.$ts.success(this.messageOnToast);
-                        };
-
-                        await this.afterSaveSuccess();
-
-                        this.closeThis();
-                    }
-                } else {
-                    this.$dl.error(this.messageValidate, this.focusRefError);
-
-                    this.afterSaveError();
-                }
+                await this.beforeDoSave();
+                await this.doSave();
             } catch (error) {
                 console.error(error);
+            }
+        },
+        /**
+         * Hàm xử lý save
+         */
+        async doSave() {
+            if (await this.isValidForm()) {
+                await this.customBeforeSave();
+                this.isSuccessResponseFlag = false;
+                await this.onSave();
+                if (this.isSuccessResponseFlag == true) {
+                    this.$emit("emitUpdateFocusedId", this.instance.InstanceId);
+                    this.$emit("emitUpdateFocusedIds", [this.instance.InstanceId]);
+                    this.$emit("emitReloadData");
+
+                    if (this.messageOnToast) {
+                        this.$ts.success(this.messageOnToast);
+                    };
+
+                    await this.afterSaveSuccess();
+
+                    this.closeThis();
+                }
+            } else {
+                this.$dl.error(this.messageValidate, this.focusRefError);
+
+                this.afterSaveError();
             }
         },
         /**
@@ -392,6 +399,13 @@ export default {
             } catch (error) {
                 console.error(error);
             }
+        },
+        /**
+         * Trước khi doSave()
+         * @virtual
+         */
+        beforeDoSave() {
+
         },
         /**
          * Response sau khi call api createInstance

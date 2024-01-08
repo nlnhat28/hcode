@@ -1,0 +1,9 @@
+.v-log-view {
+    background-color: var(--editor-color);
+    color: var(--color-text);
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    white-space: pre-line;
+    /* height: fit-content; */
+}

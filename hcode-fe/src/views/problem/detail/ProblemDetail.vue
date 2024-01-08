@@ -671,17 +671,23 @@ export default {
             this.instance.Testcases = [];
         },
         /**
-         * Custom trước khi save
-         * @override
+         * Trước khi doSave()
+         * @virtual
          */
-        customBeforeSave() {
+        beforeDoSave() {
+            this.instance.State = problemEnum.problemState.private.value;
         },
         /**
          * Click lưu nháp
          */
         onClickSaveDraft() {
-            this.instance.State = problemEnum.problemState.draft.value;
-            console.log("Saving...:", this.instance);
+            try {
+                this.instance.State = problemEnum.problemState.draft.value;
+                console.log("Saving...:", this.instance);
+                this.doSave();
+            } catch (error) {
+                console.error(error);
+            }
             // this.onClickSave();
         },
         /**
@@ -710,18 +716,28 @@ export default {
             this.activeTab = tabViewIndex;
         },
         /**
-         * 
+         * Map submission vào testcases
          */
-        processSubmissionResponse(submissionResponse) {
-
+        processSubmissionResponse(submissions) {
+            if (!this.$cf.isEmptyArray(submissions) && !this.$cf.isEmptyArray(this.instance.Testcases)) {
+                for (let testcase of this.instance.Testcases) {
+                    let sub = submissions.find(item => item.testcase_id == testcase.TestcaseId)
+                    if (sub) {
+                        testcase.Status = { ...sub };
+                    }
+                }
+            }
         },
         /**
          * Xử lý response createInstance
          * @override
          */
         processResponseCreate(response) {
-            if (!this.$cf.isSuccess(response)) {
-
+            if (response) {
+                if (!this.$cf.isSuccess(response) && response.Data) {
+                    const submissions = this.$cf.cloneDeep(response.Data.Submissions);
+                    this.processSubmissionResponse(submissions)
+                }
             }
         },
         /**

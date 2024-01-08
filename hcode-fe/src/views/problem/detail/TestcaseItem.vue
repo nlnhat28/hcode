@@ -12,7 +12,7 @@
                 <v-button
                     v-if="isShowStatusButton"
                     style="padding: 0.25rem 0.5rem"
-                    text
+                    outlined
                     :severity="severityStatusButton"
                     :label="instance.Status.status_name"
                     @click="clickStatus"
@@ -71,7 +71,7 @@
                     ></v-input-text>
                 </div>
             </div>
-            <div class="flex-center">
+            <div class="flex-center btn-hide-detail">
                 <v-button
                     icon="far fa-circle-chevron-up"
                     severity="warning"
@@ -86,12 +86,40 @@
             class="testcase__detail flex-column row-gap-20"
             v-if="isShowStatus"
         >
+            <div
+                class="flex-column row-gap-12"
+                v-if="isShowWrongAnswerDetail"
+            >
+                <div class="testcase__input">
+                    <div class="testcase__parameter-name">
+                        {{ $t('problem.expectedOutput') }}
+                    </div>
+                    <div class="testcase__parameter-input">
+                        <v-input-text
+                            isReadOnly
+                            v-model="instance.ExpectedOutput"
+                        ></v-input-text>
+                    </div>
+                </div>
+                <div class="testcase__input">
+                    <div class="testcase__parameter-name">
+                        {{ $t('problem.output') }}
+                    </div>
+                    <div class="testcase__parameter-input">
+                        <v-input-text
+                            isReadOnly
+                            hasCopy
+                            v-model="logStatus"
+                        ></v-input-text>
+                    </div>
+                </div>
+            </div>
             <!-- Status -->
-            <v-editor
-                class='no-toolbar'
-                v-model="result"
-                readonly
-            ></v-editor>
+            <v-log-view
+                v-else
+                :content="logStatus"
+            >
+            </v-log-view>
         </div>
     </div>
 </template>
@@ -171,20 +199,62 @@ export default {
         },
     },
     computed: {
+        /**
+         * Show button xem status
+         */
         isShowStatusButton() {
-            if (this.$cf.isNullValue(this.instance.Status.status_name)) {
-                return false
-            };
-            if (this.$cf.isEmptyString(this.instance.Status.status_name)) {
-                return false
-            };
-            return true;
+            if (this.instance && this.instance.Status) {
+                return !this.$cf.isEmptyString(this.instance.Status.status_name);
+            }
+            return false;
         },
+        /**
+         * Show chi tiết kết quả
+         */
+        isShowWrongAnswerDetail() {
+            if (this.instance && this.instance.Status) {
+                return this.instance.Status.status_name == problemEnum.statusJudge0.WrongAnswer;
+            }
+            return false;
+        },
+        /**
+         * Custom màu button theo status
+         */
         severityStatusButton() {
-            if (this.$cf.isNullValue(this.instance.Status.status_name)) {
-                return null
-            };
+            if (this.instance && this.instance.Status) {
+                const statusJudge0 = problemEnum.statusJudge0;
+                switch (this.instance.Status.status_name) {
+                    case statusJudge0.Accepted:
+                        return 'success';
+                    case statusJudge0.OverLimit:
+                        return 'warning;';
+                    default:
+                        return 'danger';
+                }
+            }
+            return null;
+        },
+        logStatus() {
+            let log = '';
+            if (this.instance && this.instance.Status) {
+                let logs = [
+                    this.instance.Status.compile_output,
+                    this.instance.Status.stderr,
+                    this.instance.Status.message,
+                ];
 
+                logs = this.$cf.removeNullOrEmpty(logs);
+
+
+                if (!this.$cf.isEmptyArray(logs)) {
+                    logs.forEach(item => item.replace(/\n/g, "<br>"))
+                    log = logs.join("<br>");
+                }
+
+                return log;
+
+            };
+            return log;
         }
     },
     methods: {
@@ -199,6 +269,7 @@ export default {
          * Đóng mở detail
          */
         clickPanel() {
+            this.isShowStatus = false;
             this.isShowDetail = !this.isShowDetail;
         },
         /**
@@ -206,7 +277,21 @@ export default {
          */
         clickStatus(e) {
             e.stopPropagation();
-            this.isShowStatus = !this.isShowStatus;
+            if (this.instance && this.instance.Status) {
+                const statusJudge0 = problemEnum.statusJudge0;
+                switch (this.instance.Status.status_id) {
+                    case statusJudge0.Accepted:
+                        break;
+                    case statusJudge0.WrongAnswer:
+                        break;
+                    case statusJudge0.OverLimit:
+                        break;
+                    default:
+                        break;
+                };
+                this.isShowDetail = false;
+                this.isShowStatus = !this.isShowStatus;
+            }
         },
         /**
          * Click xoá
@@ -267,6 +352,9 @@ export default {
     background-color: var(--dark-500);
     border-radius: 0 0 8px 8px;
     padding: 20px;
+}
+
+.testcase__detail:has(.btn-hide-detail) {
     padding-bottom: 10px;
 }
 
@@ -274,5 +362,4 @@ export default {
     display: flex;
     flex-direction: column;
     row-gap: 8px;
-}
-</style>
+}</style>
