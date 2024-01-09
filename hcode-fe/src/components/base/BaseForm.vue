@@ -400,6 +400,27 @@ export default {
                 console.error(error);
             }
         },
+        showToastSaveSuccess() {
+            let message = '';
+            switch (this.mode) {
+                case this.$enums.formMode.create:
+                    message = this.$t('msg.createSuccess');
+                    break;
+                case this.$enums.formMode.update:
+                    message = this.$t('msg.updateSuccess');
+                    break;
+                case this.$enums.formMode.duplicate:
+                    message = this.$t('msg.duplicateSuccess');
+                    break;
+                default:
+                    message = this.$t('msg.saveSuccess');
+                    break;
+            };
+
+            if (!this.$cf.isEmptyString(message)) {
+                this.$ts.success(message);
+            }
+        },
         /**
          * Trước khi doSave()
          * @virtual

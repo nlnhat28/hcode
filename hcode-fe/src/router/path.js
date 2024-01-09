@@ -8,6 +8,8 @@ const path = {
     home: "/home/",
     problems: "/problems/",
     problem: "/problem/",
+    contests: "/contests/",
+    contest: "/contest/",
 };
 
 export default path;

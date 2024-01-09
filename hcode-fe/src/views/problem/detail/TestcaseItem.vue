@@ -109,7 +109,7 @@
                         <v-input-text
                             isReadOnly
                             hasCopy
-                            v-model="logStatus"
+                            :modelValue="stdOutput"
                         ></v-input-text>
                     </div>
                 </div>
@@ -255,6 +255,11 @@ export default {
 
             };
             return log;
+        },
+        stdOutput() {
+            if (this.instance && this.instance.Status) {
+                return this.instance.Status.stdout;
+            }
         }
     },
     methods: {
@@ -279,18 +284,19 @@ export default {
             e.stopPropagation();
             if (this.instance && this.instance.Status) {
                 const statusJudge0 = problemEnum.statusJudge0;
+
                 switch (this.instance.Status.status_id) {
+                    case statusJudge0.InQueue:
+                    case statusJudge0.Processing:
+                        break;
                     case statusJudge0.Accepted:
-                        break;
                     case statusJudge0.WrongAnswer:
-                        break;
                     case statusJudge0.OverLimit:
-                        break;
                     default:
+                        this.isShowDetail = false;
+                        this.isShowStatus = !this.isShowStatus;
                         break;
                 };
-                this.isShowDetail = false;
-                this.isShowStatus = !this.isShowStatus;
             }
         },
         /**
@@ -362,4 +368,5 @@ export default {
     display: flex;
     flex-direction: column;
     row-gap: 8px;
-}</style>
+}
+</style>

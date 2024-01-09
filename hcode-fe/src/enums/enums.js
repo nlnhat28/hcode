@@ -129,6 +129,7 @@ const enums = {
         selectName: 4,
         selectMany: 5,
         number: 6,
+        dateTime: 7,
     },
     dataInput: {
         text: 1,

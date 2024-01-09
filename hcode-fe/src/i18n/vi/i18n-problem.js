@@ -32,7 +32,7 @@ const problem = {
     problemState: {
         public: "Công khai",
         deactivatedPublic: "Công khai nhưng chưa kích hoạt",
-        private: "Riêng tư",
+        private: "Cá nhân",
         draft: "Nháp",
     },
     content: "Nội dung",

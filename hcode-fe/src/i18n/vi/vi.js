@@ -5,6 +5,7 @@ import enums from "./i18n-enums.js";
 import com from "./i18n-com.js";
 import filter from "./i18n-filter.js";
 import problem from "./i18n-problem.js";
+import contest from "./i18n-contest.js";
 
 const vi = {
     auth,
@@ -14,6 +15,7 @@ const vi = {
     problem,
     filter,
     enums,
+    contest,
 };
 
 export default vi;

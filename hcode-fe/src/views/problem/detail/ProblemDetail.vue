@@ -33,7 +33,7 @@
                                         <!-- Mã và tên -->
                                         <v-form-group :columnGap="12">
                                             <!-- Mã -->
-                                            <v-form-item
+                                            <!-- <v-form-item
                                                 style="width: 20%;"
                                                 isRequired
                                                 :label="$t('problem.field.problemCode')"
@@ -47,7 +47,7 @@
                                                     :applyPlaceholder="false"
                                                 >
                                                 </v-input-text>
-                                            </v-form-item>
+                                            </v-form-item> -->
                                             <!-- Tên -->
                                             <v-form-item
                                                 isRequired
@@ -739,6 +739,12 @@ export default {
                     this.processSubmissionResponse(submissions)
                 }
             }
+        },
+        /**
+         * Lưu thành công
+         */
+        afterSaveSuccess() {
+            this.$ts.success(this.messageOnToast);
         },
         /**
          * Hiển thị submission response lên tab kết quả

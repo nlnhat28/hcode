@@ -244,6 +244,180 @@ namespace HCode.Application
             }
         }
 
+        // Cập nhật problem
+        public override async Task UpdateAsync(Guid problemId, ProblemDto problemDto, ServerResponse res)
+        {
+            var (problem, parameters, testcases) = MapCreateProblemDtoToEntity(problemDto);
+
+            await ValidateAsync(problem, res);
+
+            if (!res.Success)
+            {
+                return;
+            }
+
+            // Lưu thật
+            if (problemDto.State == ProblemState.Public || problemDto.State == ProblemState.Private)
+            {
+                var parames = BuildSubmissionParams(problemDto, problemDto.SolutionLanguage?.JudgeId);
+
+                var resCreateBatch = await _ceService.CreateBatchAsync(parames);
+
+                if (resCreateBatch.Success)
+                {
+                    var submissionResponses = resCreateBatch.Data as List<SubmissionResponse>;
+                    var tokens = submissionResponses?.Select(r => r.token).ToList() ?? new List<string>();
+
+                    var resGetBatch = await _ceService.GetBatchAsync(tokens);
+
+                    res.Data = resGetBatch;
+
+                    if (resGetBatch.Data is List<SubmissionResponse> data && data.Count > 0)
+                    {
+                        var submissionData = new SubmissionResponseData()
+                        {
+                            Submissions = data
+                        };
+
+                        foreach (var subRes in data)
+                        {
+                            var index = data.IndexOf(subRes);
+
+                            if (index >= 0 && index < testcases.Count && testcases[index] != null)
+                            {
+                                subRes.testcase_id = testcases[index].TestcaseId;
+                            }
+
+                            switch (subRes.status_id)
+                            {
+                                case StatusJudge0.Accepted:
+                                    break;
+                                case StatusJudge0.Error:
+                                case StatusJudge0.InQueue:
+                                case StatusJudge0.Processing:
+                                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemTryAgain"], submissionData);
+                                    break;
+                                case StatusJudge0.WrongAnswer:
+                                    // Lỗi quá tài nguyên
+                                    var time = Convert.ToDecimal(subRes.time);
+                                    var memory = subRes.memory;
+                                    var errors = new List<string>();
+
+                                    if (problem.LimitTime != null && problem.LimitTime > 0 && time > problem.LimitTime)
+                                    {
+                                        var msg = string.Format(_resource["ProblemOverLimitTime"], time + "s");
+                                        errors.Add(msg);
+                                    }
+                                    if (problem.LimitMemory != null && problem.LimitMemory > 0 && memory > problem.LimitMemory)
+                                    {
+                                        var msg = string.Format(_resource["ProblemOverLimitMemory"], memory + "kb");
+                                        errors.Add(msg);
+                                    }
+
+                                    if (errors?.Count > 0)
+                                    {
+                                        var userMsg = string.Join(" ", errors);
+                                        subRes.status_id = StatusJudge0.OverLimit;
+                                        subRes.user_msg = userMsg;
+                                    }
+
+                                    res.OnError(ErrorCode.ProblemTestcaseCreate, _resource["ProblemTestcaseCreateError"], submissionData);
+                                    break;
+                                case StatusJudge0.TimeLimitExceeded:
+                                    res.OnError(ErrorCode.ProblemTimeLimitExceeded, _resource["ProblemTimeLimitExceeded"], submissionData);
+                                    break;
+                                default:
+                                    res.OnError(ErrorCode.ProblemSourceCode, _resource["ProblemSourceCodeError"], submissionData);
+                                    break;
+                            }
+                        };
+
+                        if (res.Success)
+                        {
+                            submissionData.CalculateAverage();
+                            res.Data = submissionData;
+                        }
+                    }
+                    else
+                    {
+                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resGetBatch);
+                    }
+                }
+                else
+                {
+                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resCreateBatch);
+                }
+            }
+
+            // Nếu thành công thì lưu vào db
+            if (res.Success)
+            {
+                // Nếu mà lưu ở 2 chế độ công khai và riêng tư
+                if (problemDto.IsPrivateState == true && problemDto.IsPublicState == true)
+                {
+                    problem.State = ProblemState.Private;
+
+                    var (problemPublic, paramPublic, testcasePublic) = MapCreateProblemDtoToEntity(problemDto);
+                    problemPublic.State = ProblemState.Public;
+
+                    try
+                    {
+                        await _unitOfWork.BeginTransactionAsync();
+
+                        var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
+                        newCode++;
+                        problemPublic.ProblemCode = newCode;
+                        await _repository.InsertAsync(problemPublic);
+                        await _parameterRepo.InsertManyAsync(paramPublic);
+                        await _testcaseRepo.InsertManyAsync(testcasePublic);
+
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch (Exception exception)
+                    {
+                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], exception);
+                    }
+                    finally
+                    {
+                        await _unitOfWork.RollbackAsync();
+                    }
+                }
+
+                if (!res.Success)
+                {
+                    return;
+                }
+
+                // Không thì lưu đúng chế độ
+                try
+                {
+                    await _unitOfWork.BeginTransactionAsync();
+
+                    var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
+                    newCode++;
+                    problem.ProblemCode = newCode; await _repository.InsertAsync(problem);
+                    await _parameterRepo.InsertManyAsync(parameters);
+                    await _testcaseRepo.InsertManyAsync(testcases);
+
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception exception)
+                {
+                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], exception);
+                }
+                finally
+                {
+                    await _unitOfWork.RollbackAsync();
+                }
+            }
+        }
+
+        // Submit
+        public async Task SubmitAsync(ProblemDto problemDto, ServerResponse res)
+        {
+
+        }
+
         // Build submission params 
         private static List<SubmissionParam> BuildSubmissionParams(ProblemDto problemDto, int? judgeId)
         {
@@ -339,6 +513,8 @@ namespace HCode.Application
 
             return (problem, parameters, testcases);
         }
+
+
         #endregion
     }
 }

@@ -8,6 +8,8 @@ import ForgotPassword from "@/views/auth/ForgotPassword.vue";
 import ChangePassword from "@/views/auth/ChangePassword.vue";
 import ProblemsList from "@/views/problem/list/ProblemsList.vue";
 import ProblemDetail from "@/views/problem/detail/ProblemDetail.vue";
+import ContestsList from "@/views/contest/list/ContestList.vue";
+import ContestDetail from "@/views/contest/detail/ContestDetail.vue";
 
 const routes = [
     {
@@ -64,6 +66,20 @@ const routes = [
         name: "problem",
         components: {
             viewApp: ProblemDetail,
+        },
+    },
+    {
+        path: path.contests,
+        name: "contests",
+        components: {
+            view1: ContestsList,
+        },
+    },
+    {
+        path: path.contest,
+        name: "contest",
+        components: {
+            viewApp: ContestDetail,
         },
     },
 ];

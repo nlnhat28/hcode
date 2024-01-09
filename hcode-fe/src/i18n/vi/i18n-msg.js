@@ -16,6 +16,10 @@ const msg = {
     pleaseWait: "Vui lòng chờ",
     noContent: "Không có dữ liệu",
     value: "Giá trị",
+    saveSuccess: "Lưu thành công",
+    createSuccess: "Tạo mới thành công",
+    duplicateSuccess: "Nhân bản thành công",
+    updateSuccess: "Cập nhật thành công",
 };
 
 export default msg;
