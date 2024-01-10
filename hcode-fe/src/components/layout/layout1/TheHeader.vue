@@ -57,7 +57,7 @@ export default {
                 {
                     id: 1,
                     text: this.$t("com.contests"),
-                    to: this.$path.login
+                    to: this.$path.contests
                 },
                 {
                     id: 2,

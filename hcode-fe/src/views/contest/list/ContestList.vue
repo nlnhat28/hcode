@@ -1,6 +1,6 @@
 <template>
     <div class="contests-list-container">
-        <div class="contest-list__left">
+        <div class="contests-list__left">
             <v-table
                 :itemId="itemIdKey"
                 :resizable="false"
@@ -13,13 +13,13 @@
                 <template #toolbarLeft>
                     <div
                         class="dark"
-                        style="width: 160px;"
+                        style="width: 180px;"
                     >
                         <v-combobox
                             v-model="selectedContestFilter"
                             optionLabel="name"
-                            :options="problemStates"
-                            @change="onSelectedProblemState"
+                            :options="contestFilters"
+                            @change="onSelectedContestFilter"
                         />
                     </div>
                 </template>
@@ -53,51 +53,50 @@
                     >
                         <!-- :isSelected="isSelected(item[itemId])" -->
                         <template #content>
-                            <!-- Trạng thái -->
-                            <v-td :style="{
-                                textAlign: 'center'
-                            }">
-                                <v-icon
-                                    :icon="$cv.problemAccountStateToIcon(item.ProblemAccountState)"
-                                    :color="$cv.problemAccountStateToColor(item.ProblemAccountState)"
-                                    :tooltip="$cv.enumToResource(item.ProblemAccountState, problemEnum.problemAccountState)"
-                                />
+                            <!-- Trạng thái thi -->
+                            <v-td
+                                :content="$cv.enumToResource(item.ContestAccountState, contestEnum.contestAccountState)"
+                                :style="{
+                                    color: $cv.contestAccountStateToColor(item.ContestAccountState),
+                                }"
+                            >
                             </v-td>
-                            <!-- Tên -->
+                            <!-- Mã -->
                             <v-td
                                 :style="{
                                     color: $enums.color.yellow,
                                     fontWeight: 700,
                                 }"
-                                :content="item.ProblemName"
+                                :content="item.ContestCode"
                             >
-                                <v-tag
-                                    v-if="item.IsNew"
-                                    value="New"
-                                    severity="danger"
-                                ></v-tag>
                             </v-td>
-                            <!-- Chủ đề -->
-                            <v-td :content="item.Topic">
-                            </v-td>
-                            <!-- Độ khó-->
                             <v-td
-                                :content="$cv.enumToResource(item.Difficulty, $enums.difficulty)"
                                 :style="{
-                                    color: $cv.difficultyToColor(item.Difficulty),
-                                    fontWeight: 700
+                                    color: $enums.color.yellow,
+                                    fontWeight: 700,
+                                }"
+                                :content="item.ContestName"
+                            >
+                            </v-td>
+                            <!-- Trạng thái -->
+                            <v-td
+                                :content="$cv.enumToResource(item.State, contestEnum.contestState)"
+                                :style="{
+                                    color: $cv.contestStateToColor(item.State),
                                 }"
                             >
                             </v-td>
-                            <!-- Tương tấc -->
+                            <!-- Thời gian bắt đầu -->
+                            <v-td :content="item.StartTime"></v-td>
+                            <!-- Thời gian kết thúc -->
+                            <v-td :content="item.EndTime"></v-td>
+                            <!-- Thời gian làm -->
+                            <v-td :content="(item.TimeToDo ? `${item.TimeToDo} ${$t('com.minute')}` : '')"></v-td>
+                            <!-- Đã tham gia -->
                             <v-td :style="{
                                 textAlign: 'center'
                             }">
-                                <v-reaction
-                                    :rate="item.Rate"
-                                    :comment="item.CommentCount"
-                                    :seen="item.SeenCount"
-                                />
+                                {{ $cv.numberToSuffix(item.JoinCount) }}
                             </v-td>
                         </template>
                     </v-tr>
@@ -115,8 +114,8 @@
                 </template>
             </v-table>
         </div>
-        <div class="problems-list__right">
-            <div class="problems-list__stat">
+        <div class="contests-list__right">
+            <div class="contests-list__stat">
 
             </div>
         </div>
@@ -140,13 +139,16 @@ export default {
              */
             columns: [
                 {
-                    title: this.$t("problem.field.status"),
+                    title: this.$t("contest.field.contestAccountState"),
                     textAlign: 'left',
-                    widthCell: 60,
-                    name: "ContestState",
+                    widthCell: 100,
+                    name: "ContestAccountState",
+                    sortConfig: {
+                        sortType: this.$enums.sortType.blur,
+                    },
                     filterConfig: {
                         filterType: this.$enums.filterType.selectKey,
-                        selects: this.$cv.enumToSelects(contestEnum.contestState),
+                        selects: this.$cv.enumToSelects(contestEnum.contestAccountState),
                     }
                 },
                 {
@@ -171,6 +173,16 @@ export default {
                     },
                     filterConfig: {
                         filterType: this.$enums.filterType.text,
+                    }
+                },
+                {
+                    title: this.$t("contest.field.state"),
+                    textAlign: 'left',
+                    widthCell: 60,
+                    name: "State",
+                    filterConfig: {
+                        filterType: this.$enums.filterType.selectKey,
+                        selects: this.$cv.enumToSelects(contestEnum.contestState),
                     }
                 },
                 {
@@ -209,8 +221,21 @@ export default {
                         filterType: this.$enums.filterType.number,
                     }
                 },
+                {
+                    title: this.$t("contest.field.joinCount"),
+                    textAlign: 'left',
+                    widthCell: 100,
+                    name: "JoinCount",
+                    sortConfig: {
+                        sortType: this.$enums.sortType.blur,
+                    },
+                    filterConfig: {
+                        filterType: this.$enums.filterType.number,
+                    }
+                },
             ],
-            problemStates: [],
+            contestStates: [],
+            contestFilters: [],
             selectedContestFilter: null,
         }
     },
@@ -222,14 +247,14 @@ export default {
             let filters = [];
 
             // Lọc thêm State
-            filters.push({
-                columnName: 'State',
-                logicType: this.$enums.logicType.and,
-                logicName: 'and',
-                compareType: this.$enums.compareType.equal,
-                compareName: '=',
-                filterValue: this.selectedContestFilter?.key
-            });
+            // filters.push({
+            //     columnName: 'State',
+            //     logicType: this.$enums.logicType.and,
+            //     logicName: 'and',
+            //     compareType: this.$enums.compareType.equal,
+            //     compareName: '=',
+            //     filterValue: this.selectedContestFilter?.key
+            // });
 
             return filters;
         },
@@ -239,22 +264,23 @@ export default {
     methods: {
         /**
          * Override
+         * 
          */
         initOnCreated() {
-            this.itemService = problemService;
-            this.problemStates = this.$cv.enumToSelects(problemEnum.problemState);
-            this.selectedContestFilter = this.problemStates[0];
+            this.itemService = contestService;
+            this.contestFilters = this.$cv.enumToSelects(contestEnum.contestFilter);
+            this.selectedContestFilter = this.contestFilters[0];
         },
         /**
          * Click vào nút tạo mới
          */
         clickCreate() {
-            this.$router.push(this.$path.problem)
+            this.$router.push(this.$path.contest)
         },
         /**
          * Chọn problem state
          */
-        onSelectedProblemState() {
+        onSelectedContestFilter() {
             this.reloadItems();
         },
         // addFilterProblemState() {
@@ -280,4 +306,6 @@ export default {
 
 }
 </script>
-<style scoped>@import './contests-list.css';</style>
+<style scoped>
+@import './contests-list.css';
+</style>

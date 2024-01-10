@@ -84,6 +84,8 @@ const enums = {
         red: "#ff3232",
         green: "#0ecc57",
         cyan: "#00f2fa",
+        white: "#ffffff",
+        text: "#e0e0e0",
     },
     /**
      * Type of sort

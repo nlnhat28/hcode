@@ -25,8 +25,22 @@ const contestEnum = {
             label: t("contest.contestState.goingOn"),
         },
         finish: {
-            value: 2,
+            value: 3,
             label: t("contest.contestState.finish"),
+        },
+    },
+    contestAccountState: {
+        pending: {
+            value: 1,
+            label: t("contest.contestAccountState.pending"),
+        },
+        doing: {
+            value: 2,
+            label: t("contest.contestAccountState.doing"),
+        },
+        finish: {
+            value: 2,
+            label: t("contest.contestAccountState.finish"),
         },
     },
 };

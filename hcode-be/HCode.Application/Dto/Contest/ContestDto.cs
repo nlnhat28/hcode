@@ -1,11 +1,12 @@
 ﻿
-namespace HCode.Domain
+using HCode.Domain;
+
+namespace HCode.Application
 {
     /// <summary>
     /// Lớp bài thi
     /// </summary>
-    [CanSearch("ContestCode, ContestName")]
-    public class Contest : BaseEntity, IHasEntityId
+    public class ContestDto : BaseDto, IHasEntityId
     {
         #region Properties
         /// <summary>
@@ -34,6 +35,10 @@ namespace HCode.Domain
         /// </summary>
         public string? Password { get; set; }
         /// <summary>
+        /// Trạng thái
+        /// </summary>
+        public ContestState? State { get; set; }
+        /// <summary>
         /// Thời gian bắt đầu
         /// </summary>
         public DateTime? StartTime { get; set; }
@@ -54,24 +59,12 @@ namespace HCode.Domain
         /// </summary>
         public Guid? AccountId { get; set; }
         /// <summary>
-        /// Độ khó
-        /// </summary>
-        [NotMapped]
-        public bool HasPassword { get; set; }
-        /// <summary>
-        /// Trạng thái
-        /// </summary>
-        [NotMapped]
-        public ContestState? State { get; set; }
-        /// <summary>
         /// Trạng thái người dùng với bài thi
         /// </summary>
-        [NotMapped]
         public ContestAccountState? ContestAccountState { get; set; }
         /// <summary>
         /// Số lượng tham gia
         /// </summary>
-        [NotMapped]
         public int? JoinCount { get; set; }
         #endregion
     }

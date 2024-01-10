@@ -1,5 +1,6 @@
 import enums from "@/enums/enums.js"
 import problemEnum from "@/enums/problem-enum.js"
+import contestEnum from "@/enums/contest-enum.js"
 import { t } from "@/i18n/i18n.js";
 
 const convert = {
@@ -16,6 +17,44 @@ const convert = {
             case enums.difficulty.medium.value:
                 return enums.color.orange;
             case enums.difficulty.hard.value:
+                return enums.color.red;
+            default:
+                return "#fff";
+        }
+    },
+    /**
+     * Lấy màu theo trạng thái thi
+     *
+     * @param {*} contestAccountState
+     * @returns
+     */
+    contestAccountStateToColor(contestAccountState) {
+        let state = contestEnum.contestAccountState;
+        switch (contestAccountState) {
+            case state.pending.value:
+                return enums.color.text;
+            case state.doing.value:
+                return enums.color.cyan;
+            case state.finish.value:
+                return enums.color.green;
+            default:
+                return "#fff";
+        }
+    },
+    /**
+     * Lấy màu theo trạng thái contest
+     *
+     * @param {*} contestState
+     * @returns
+     */
+    contestStateToColor(contestState) {
+        let state = contestEnum.contestState;
+        switch (contestState) {
+            case state.pending.value:
+                return enums.color.text;
+            case state.goingOn.value:
+                return enums.color.green;
+            case state.finish.value:
                 return enums.color.red;
             default:
                 return "#fff";
@@ -134,19 +173,22 @@ const convert = {
     enumKeyToSelected(enumKey, selects, indexIfNull) {
         if (selects) {
             if (enumKey != null) {
-                const values = selects.filter(item => item.key == enumKey);
+                const values = selects.filter((item) => item.key == enumKey);
 
                 if (values) {
                     return values[0];
                 }
                 return null;
-            }
-            else if (indexIfNull != null && indexIfNull >= 0 && indexIfNull < selects.length) {
+            } else if (
+                indexIfNull != null &&
+                indexIfNull >= 0 &&
+                indexIfNull < selects.length
+            ) {
                 const value = selects[indexIfNull];
                 return value;
             }
             return null;
-        };
+        }
         return null;
     },
     /**

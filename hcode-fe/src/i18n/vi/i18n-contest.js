@@ -2,7 +2,7 @@ const contest = {
     contest: "Bài thi",
     contestList: "Danh sách bài thi",
     field: {
-        status: "Trạng thái",
+        state: "Trạng thái",
         contestCode: "Mã bài thi",
         code: "Mã",
         contestName: "Tên bài thi",
@@ -10,11 +10,18 @@ const contest = {
         endTime: "Thời gian kết thúc",
         timeToDo: "Thời gian làm bài",
         createdByName: "Người tạo",
+        joinCount: "Đã tham gia",
+        contestAccountState: "Trạng thái thi"
     },
     contestState: {
         pending: "Chưa mở",
-        goingOn: "Đang diễn ra",
-        finish: "Đã kết thúc",
+        goingOn: "Đang mở",
+        finish: "Kết thúc",
+    },
+    contestAccountState: {
+        pending: "Chưa thi",
+        doing: "Đang thi",
+        finish: "Hoàn thành",
     },
     filter: {
         joined: "Đã tham gia",

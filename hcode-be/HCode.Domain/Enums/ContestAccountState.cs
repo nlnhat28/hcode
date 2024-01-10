@@ -2,20 +2,20 @@
 namespace HCode.Domain
 {
     /// <summary>
-    /// Contest state
+    /// Contest account state
     /// </summary>
-    public enum ContestState
+    public enum ContestAccountState
     {
         /// <summary>
-        /// Chưa mở
+        /// Chưa thi
         /// </summary>
         Pending = 1,
         /// <summary>
-        /// Đang diễn ra
+        /// Đang thi
         /// </summary>
-        GoingOn = 2,
+        Doing = 2,
         /// <summary>
-        /// Đã kết thúc
+        /// Đã thi
         /// </summary>
         Finish = 3,
     }

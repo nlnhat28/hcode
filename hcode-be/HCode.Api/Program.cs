@@ -49,6 +49,7 @@ namespace HCode.Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IProblemService, ProblemService>();
             builder.Services.AddScoped<ILanguageService, LanguageService>();
+            builder.Services.AddScoped<IContestService, ContestService>();
             builder.Services.AddScoped<ICEService, CEService>();
 
             // Add repositories
@@ -58,6 +59,7 @@ namespace HCode.Api
             builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
             builder.Services.AddScoped<IParameterRepository, ParameterRepository>();
             builder.Services.AddScoped<ITestcaseRepository, TestcaseRepository>();
+            builder.Services.AddScoped<IContestRepository, ContestRepository>();
 
             // Add mapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

@@ -50,6 +50,7 @@ const com = {
     filterValue: "Giá trị lọc",
     reload: "Làm mới",
     value: "Giá trị",
+    minute: "phút",
 };
 
 export default com;
