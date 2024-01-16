@@ -112,6 +112,11 @@ const enums = {
         lessEqual: 10,
         moreEqual: 11,
         notEqual: 12,
+        null: 13,
+        nullOrEmpty: 14,
+        notNull: 15,
+        notNullOrEmpty: 16,
+        accountId: 17,
     },
     /**
      * Type of logic

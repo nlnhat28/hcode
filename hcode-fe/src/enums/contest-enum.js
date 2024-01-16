@@ -11,7 +11,7 @@ const contestEnum = {
             label: t("contest.filter.private"),
         },
         joined: {
-            value: 2,
+            value: 3,
             label: t("contest.filter.joined"),
         },
     },
@@ -39,7 +39,7 @@ const contestEnum = {
             label: t("contest.contestAccountState.doing"),
         },
         finish: {
-            value: 2,
+            value: 3,
             label: t("contest.contestAccountState.finish"),
         },
     },

@@ -58,6 +58,7 @@
                                 :content="$cv.enumToResource(item.ContestAccountState, contestEnum.contestAccountState)"
                                 :style="{
                                     color: $cv.contestAccountStateToColor(item.ContestAccountState),
+                                    fontWeight: 700,
                                 }"
                             >
                             </v-td>
@@ -70,6 +71,7 @@
                                 :content="item.ContestCode"
                             >
                             </v-td>
+                            <!-- Tên -->
                             <v-td
                                 :style="{
                                     color: $enums.color.yellow,
@@ -83,20 +85,34 @@
                                 :content="$cv.enumToResource(item.State, contestEnum.contestState)"
                                 :style="{
                                     color: $cv.contestStateToColor(item.State),
+                                    fontWeight: 700,
                                 }"
                             >
                             </v-td>
                             <!-- Thời gian bắt đầu -->
-                            <v-td :content="item.StartTime"></v-td>
+                            <v-td
+                                :content="$fm.formatDateTime(item.StartTime, dateTimePattern)"
+                                :style="{ textAlign: 'center' }"
+                            ></v-td>
                             <!-- Thời gian kết thúc -->
-                            <v-td :content="item.EndTime"></v-td>
+                            <v-td
+                                :content="$fm.formatDateTime(item.EndTime, dateTimePattern)"
+                                :style="{ textAlign: 'center' }"
+                            ></v-td>
                             <!-- Thời gian làm -->
-                            <v-td :content="(item.TimeToDo ? `${item.TimeToDo} ${$t('com.minute')}` : '')"></v-td>
+                            <v-td
+                                :content="(item.TimeToDo ? `${item.TimeToDo} ${$t('com.minute')}` : '')"
+                                :style="{ textAlign: 'center' }"
+                            ></v-td>
                             <!-- Đã tham gia -->
                             <v-td :style="{
                                 textAlign: 'center'
                             }">
                                 {{ $cv.numberToSuffix(item.JoinCount) }}
+                                <v-icon
+                                    icon="far fa-user"
+                                    color="light"
+                                ></v-icon>
                             </v-td>
                         </template>
                     </v-tr>
@@ -166,7 +182,7 @@ export default {
                 {
                     title: this.$t("contest.field.contestName"),
                     textAlign: 'left',
-                    widthCell: 200,
+                    widthCell: 160,
                     name: "ContestName",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -178,7 +194,7 @@ export default {
                 {
                     title: this.$t("contest.field.state"),
                     textAlign: 'left',
-                    widthCell: 60,
+                    widthCell: 80,
                     name: "State",
                     filterConfig: {
                         filterType: this.$enums.filterType.selectKey,
@@ -194,7 +210,7 @@ export default {
                         sortType: this.$enums.sortType.blur,
                     },
                     filterConfig: {
-                        filterType: this.$enums.filterType.dateTime,
+                        filterType: this.$enums.filterType.text,
                     }
                 },
                 {
@@ -206,12 +222,12 @@ export default {
                         sortType: this.$enums.sortType.blur,
                     },
                     filterConfig: {
-                        filterType: this.$enums.filterType.dateTime,
+                        filterType: this.$enums.filterType.text,
                     }
                 },
                 {
                     title: this.$t("contest.field.timeToDo"),
-                    textAlign: 'left',
+                    textAlign: 'center',
                     widthCell: 100,
                     name: "TimeToDo",
                     sortConfig: {
@@ -223,7 +239,7 @@ export default {
                 },
                 {
                     title: this.$t("contest.field.joinCount"),
-                    textAlign: 'left',
+                    textAlign: 'center',
                     widthCell: 100,
                     name: "JoinCount",
                     sortConfig: {
@@ -237,6 +253,7 @@ export default {
             contestStates: [],
             contestFilters: [],
             selectedContestFilter: null,
+            dateTimePattern: 'dd/mm/yyyy hh/mm',
         }
     },
     computed: {
@@ -246,15 +263,39 @@ export default {
         addFilterModelsComputed() {
             let filters = [];
 
-            // Lọc thêm State
-            // filters.push({
-            //     columnName: 'State',
-            //     logicType: this.$enums.logicType.and,
-            //     logicName: 'and',
-            //     compareType: this.$enums.compareType.equal,
-            //     compareName: '=',
-            //     filterValue: this.selectedContestFilter?.key
-            // });
+            let filterKey = this.$cv.selectedToEnumKey(this.selectedContestFilter);
+
+            switch (filterKey) {
+                // Công khai
+                case contestEnum.contestFilter.public.value:
+                    filters.push({
+                        columnName: 'IsPublic',
+                        logicType: this.$enums.logicType.and,
+                        compareType: this.$enums.compareType.equal,
+                        filterValue: 1
+                    });
+                    break;
+                // Cá nhân
+                case contestEnum.contestFilter.private.value:
+                    filters.push({
+                        columnName: 'AccountId',
+                        logicType: this.$enums.logicType.and,
+                        compareType: this.$enums.compareType.equal,
+                        filterValue: this.$auth.getAccountId()
+                    });
+                    break;
+                // Đã tham gia
+                case contestEnum.contestFilter.joined.value:
+                    filters.push({
+                        columnName: 'ContestAccountState',
+                        logicType: this.$enums.logicType.and,
+                        compareType: this.$enums.compareType.notNull,
+                    });
+                    break;
+
+                default:
+                    break;
+            }
 
             return filters;
         },
@@ -283,29 +324,7 @@ export default {
         onSelectedContestFilter() {
             this.reloadItems();
         },
-        // addFilterProblemState() {
-
-        //     if (!this.$cf.isEmptyArray(this.filterModels)) {
-        //         let filterProblemState = this.filterModels.find(item => item.column == 'State')
-        //         if (filterProblemState) {
-        //             filterProblemState.values = [this.selectedContestFilter];
-        //             return;
-        //         }
-        //     }
-        //     this.filterModels.push({
-        //         column: 'State',
-        //         logicType: this.$enums.logicType.and,
-        //         logicName: 'and',
-        //         compareType: this.$enums.compareType.equal,
-        //         compareName: '=',
-        //         values: [this.selectedContestFilter]
-        //     });
-        // }
     }
-
-
 }
 </script>
-<style scoped>
-@import './contests-list.css';
-</style>
+<style scoped>@import './contests-list.css';</style>

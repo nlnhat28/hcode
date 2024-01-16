@@ -3,6 +3,8 @@ using HCode.Domain;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Data;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace HCode.Application
@@ -515,6 +517,17 @@ namespace HCode.Application
         }
 
 
+        // Lấy danh sách bài toán cho bài thi
+        public async Task GetForContestAsync(ServerResponse res)
+        {
+            var accountId = _authService.GetAccountId();
+
+            var problems = await _repository.GetForContestAsync(accountId) ?? new List<Problem>();
+
+            var result = _mapper.Map<IEnumerable<ProblemDto>>(problems) ?? new List<ProblemDto>();
+
+            res.Data = result;
+        }
         #endregion
     }
 }

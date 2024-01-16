@@ -10,8 +10,14 @@
         /// Lấy mã lớn nhất
         /// </summary>
         /// <param name="state">Công khai hay riêng tư</param>
-        /// <param name="AccountId"></param>
+        /// <param name="accountId"></param>
         /// <returns></returns>
-        Task<int> GetMaxCodeAsync(ProblemState state, Guid AccountId);
+        Task<int> GetMaxCodeAsync(ProblemState state, Guid accountId);
+        /// <summary>
+        /// Lấy danh sách bài toán cho bài thi
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<Problem>> GetForContestAsync(Guid accountId);
     }
 }

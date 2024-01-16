@@ -87,6 +87,7 @@ export default {
                 this.handleInstanceOnCreated(),
                 this.loadDataOnCreated(),
             ]);
+            await this.customInstanceOnCreated();
         });
     },
     mounted() {
@@ -141,6 +142,11 @@ export default {
          * Load data
          */
         async loadDataOnCreated() {
+        },
+        /**
+         * Custom lại instance
+         */
+        customInstanceOnCreated() {
         },
         /**
          * Handle instance on created()

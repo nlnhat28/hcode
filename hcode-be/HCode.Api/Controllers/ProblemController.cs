@@ -33,7 +33,18 @@ namespace HCode.Api
         #endregion
 
         #region Methods
-       
+        /// <summary>
+        /// Lấy danh sách bài toán cho bài thi
+        /// </summary>
+        /// <param name="authDto"></param>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpGet("ForContest")]
+        public async Task<IActionResult> GetForContestAsync()
+        {
+            var res = new ServerResponse();
+            await _service.GetForContestAsync(res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
         #endregion
     }
 }

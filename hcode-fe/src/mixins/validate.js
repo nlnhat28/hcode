@@ -28,7 +28,8 @@ export default {
             try {
                 let errorMessage = null;
                 this.refs.forEach((ref) => {
-                    const message = ref.checkValidate();
+                    let message = this.checkValidateRef(ref);
+
                     if (message) {
                         errorMessage = message;
                         this.refError = ref;
@@ -64,6 +65,17 @@ export default {
                 console.error(error);
                 return null;
             }
+        },
+        /**
+         * Checkvalidate
+         * @param {*} ref
+         */
+        checkValidateRef(ref) {
+            if (ref && typeof ref.checkValidate == "function") {
+                let msg = ref.checkValidate();
+                return msg;
+            }
+            return null;
         },
         /**
          * Focus vào ref lỗi

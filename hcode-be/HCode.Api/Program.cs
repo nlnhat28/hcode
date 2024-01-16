@@ -50,6 +50,8 @@ namespace HCode.Api
             builder.Services.AddScoped<IProblemService, ProblemService>();
             builder.Services.AddScoped<ILanguageService, LanguageService>();
             builder.Services.AddScoped<IContestService, ContestService>();
+            builder.Services.AddScoped<IContestAccountService, ContestAccountService>();
+            builder.Services.AddScoped<ISubmissionService, SubmissionService>();
             builder.Services.AddScoped<ICEService, CEService>();
 
             // Add repositories
@@ -60,6 +62,9 @@ namespace HCode.Api
             builder.Services.AddScoped<IParameterRepository, ParameterRepository>();
             builder.Services.AddScoped<ITestcaseRepository, TestcaseRepository>();
             builder.Services.AddScoped<IContestRepository, ContestRepository>();
+            builder.Services.AddScoped<IContestProblemRepository, ContestProblemRepository>();
+            builder.Services.AddScoped<IContestAccountRepository, ContestAccountRepository>();
+            builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 
             // Add mapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

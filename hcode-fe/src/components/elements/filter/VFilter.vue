@@ -35,10 +35,24 @@
                 ref="textfield"
                 v-model="filterValueKey"
                 :placeholder="`${$t('com.typeFilterValue')}`"
-                :validate="validateCannotNull"
+                :isRequired="validateRequired"
                 :maxLength=255
                 :label="$t('com.filterValue')"
                 hasClear
+            >
+            </v-input-text>
+            <v-input-text
+                v-if="isShowNumberField"
+                ref="numberfield"
+                v-model="filterValueKey"
+                hasClear
+                type='number'
+                textAlign="left"
+                :dataInput="$enums.dataInput.decimal"
+                :placeholder="`${$t('com.typeFilterValue')}`"
+                :isRequired="validateRequired"
+                :maxLength=255
+                :label="$t('com.filterValue')"
             >
             </v-input-text>
             <!-- <m-date-picker
@@ -50,28 +64,6 @@
                     @emitEnterInput="onClickApply()"
                 >
                 </m-date-picker> -->
-            <v-input-text
-                v-if="isShowMonthField"
-                type="number"
-                ref="textfield"
-                v-model="filterValueKey"
-                :placeholder="$t('com.typeMonth')"
-                :validate="validateMonthField"
-                :maxLength=255
-                :label="$t('com.month')"
-            >
-            </v-input-text>
-            <v-input-text
-                v-if="isShowYearField"
-                type="number"
-                ref="textfield"
-                v-model="filterValueKey"
-                :placeholder="$t('com.typeYear')"
-                :validate="validateYearField"
-                :maxLength=255
-                :label="$t('com.year')"
-            >
-            </v-input-text>
         </div>
         <div class="filter__footer">
             <v-button
@@ -133,23 +125,53 @@ export default {
             textCompareSelects: [
                 {
                     id: compareType.contain,
-                    name: this.$t('com.contain')
+                    name: this.$t('filter.contain')
                 },
                 {
                     id: compareType.equal,
-                    name: this.$t('com.equal')
+                    name: this.$t('filter.equal')
                 },
                 {
                     id: compareType.startWith,
-                    name: this.$t('com.startWith')
+                    name: this.$t('filter.startWith')
                 },
                 {
                     id: compareType.endWith,
-                    name: this.$t('com.endWith')
+                    name: this.$t('filter.endWith')
                 },
                 {
                     id: compareType.empty,
-                    name: this.$t('com.empty')
+                    name: this.$t('filter.empty')
+                },
+            ],
+            numberCompareSelects: [
+                {
+                    id: compareType.equal,
+                    name: this.$t('filter.equal')
+                },
+                {
+                    id: compareType.less,
+                    name: this.$t('filter.less')
+                },
+                {
+                    id: compareType.lessEqual,
+                    name: this.$t('filter.lessEqual')
+                },
+                {
+                    id: compareType.more,
+                    name: this.$t('filter.more')
+                },
+                {
+                    id: compareType.moreEqual,
+                    name: this.$t('filter.moreEqual')
+                },
+                {
+                    id: compareType.notEqual,
+                    name: this.$t('filter.notEqual')
+                },
+                {
+                    id: compareType.null,
+                    name: this.$t('filter.null')
                 },
             ],
             /**
@@ -158,27 +180,19 @@ export default {
             dateCompareSelects: [
                 {
                     id: compareType.equal,
-                    name: this.$t('com.equal')
+                    name: this.$t('filter.equal')
                 },
                 {
                     id: compareType.less,
-                    name: this.$t('com.before')
+                    name: this.$t('filter.before')
                 },
                 {
                     id: compareType.more,
-                    name: this.$t('com.after')
-                },
-                {
-                    id: compareType.month,
-                    name: this.$t('com.monthEqual')
-                },
-                {
-                    id: compareType.year,
-                    name: this.$t('com.yearEqual')
+                    name: this.$t('filter.after')
                 },
                 {
                     id: compareType.empty,
-                    name: this.$t('com.empty')
+                    name: this.$t('filter.empty')
                 }
             ],
             /**
@@ -187,7 +201,7 @@ export default {
             selectOneCompareSelects: [
                 {
                     id: compareType.contain,
-                    name: this.$t('com.equal')
+                    name: this.$t('filter.equal')
                 }
             ],
             /**
@@ -233,7 +247,10 @@ export default {
         this.mapSelects();
     },
     mounted() {
-
+        this.refs = [
+            this.$refs.textfield,
+            this.$refs.numberfield,
+        ]
     },
     expose: ['focus', 'focusOnApply'],
     computed: {
@@ -246,6 +263,8 @@ export default {
             switch (this.filterConfig.filterType) {
                 case filterType.text:
                     return this.textCompareSelects;
+                case filterType.number:
+                    return this.numberCompareSelects;
                 case filterType.date:
                     return this.dateCompareSelects;
                 case filterType.selectOne:
@@ -282,6 +301,13 @@ export default {
                 && this.compareType.id != compareType.empty)
         },
         /**
+         * Ô lọc số
+         */
+        isShowNumberField() {
+            return (this.filterConfig.filterType == filterType.number
+                && this.compareType.id != compareType.empty)
+        },
+        /**
          * Show datepicker or not 
          * 
          * Author: nlnhat (25/07/2023)
@@ -315,6 +341,7 @@ export default {
          */
         isShowCompareSelects() {
             return (this.filterConfig.filterType == filterType.text
+                || this.filterConfig.filterType == filterType.number
                 || this.filterConfig.filterType == filterType.date)
         },
         /**
@@ -335,10 +362,15 @@ export default {
                 title: this.title,
                 column: this.name,
                 compareType: this.compareType.id,
-                compareName: this.compareType.name.toLowerCase(),
                 filterType: this.filterConfig.filterType,
                 values: (this.compareType.id == compareType.empty) ? [] : [...this.filterValues],
             }
+        },
+        /**
+         * Validate required không
+         */
+        validateRequired() {
+            return this.compareType.id != compareType.empty;
         }
     },
     watch: {
@@ -347,9 +379,10 @@ export default {
          */
         compareType: {
             handler() {
+                this.clearErrorMessage();
                 this.$nextTick(() => {
                     this.focus();
-                })
+                });
             },
             deep: true
         },
@@ -413,6 +446,10 @@ export default {
             if (this.$refs.textfield != null) {
                 this.$refs.textfield.focus();
                 this.$refs.textfield.select();
+            }
+            else if (this.$refs.numberfield != null) {
+                this.$refs.numberfield.focus();
+                this.$refs.numberfield.select();
             }
             else if (this.$refs.datepicker != null) {
                 this.$refs.datepicker.focus();
@@ -485,7 +522,7 @@ export default {
             let errorMessage = null;
 
             // Validate date
-            if (this.isShowDatePicker && this.$refs.datepicker != null) {
+            if (this.isShowDatePicker && this.$refs.datepicker) {
                 errorMessage = this.$refs.datepicker.checkValidate();
                 if (errorMessage != null) {
                     this.$refs.datepicker.focus()
@@ -495,8 +532,7 @@ export default {
             }
 
             // Validate textfield
-            if (this.isShowTextField || this.isShowMonthField || this.isShowYearField
-                && this.$refs.textfield != null) {
+            if (this.isShowTextField && this.$refs.textfield) {
                 errorMessage = this.$refs.textfield.checkValidate();
                 if (errorMessage != null) {
                     this.$refs.textfield.focus()
@@ -505,7 +541,29 @@ export default {
                 return null;
             }
 
+            // Validate textfield
+            if (this.isShowNumberField && this.$refs.numberfield) {
+                errorMessage = this.$refs.numberfield.checkValidate();
+                if (errorMessage != null) {
+                    this.$refs.numberfield.focus()
+                    return errorMessage;
+                }
+                return null;
+            }
+
             return null;
+        },
+        /**
+         * Check validate ref
+         */
+        clearErrorMessage() {
+            if (!this.$cf.isEmptyArray(this.refs)) {
+                this.refs.forEach(ref => {
+                    if (ref && typeof (ref.clearErrorMessage == 'function')) {
+                        ref.clearErrorMessage();
+                    }
+                })
+            }
         },
         /**
          * Map select from props to data

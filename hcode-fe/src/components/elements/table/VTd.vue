@@ -14,7 +14,7 @@
             'td__content',
             { 'flex-start': style.textAlign == 'left' },
             { 'justify-center': style.textAlign == 'center' },
-            { 'flex-start': style.textAlign == 'right' },
+            { 'flex-end': style.textAlign == 'right' },
         ]">
             <div
                 ref="td"

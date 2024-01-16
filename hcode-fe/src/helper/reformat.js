@@ -6,8 +6,8 @@ const reformat = {
      */
     removeSpace(value) {
         try {
-            if (value) {
-                return value.toString().replace(/\s/g, "");
+            if (value && typeof value == "string") {
+                return value.replace(/\s/g, "");
             }
         } catch (error) {
             console.error(error);
@@ -34,7 +34,8 @@ const reformat = {
      */
     cleanFormatIntNumber(value) {
         try {
-            if (value) return value.replace(/[\s.,]/g, "");
+            if (value && typeof value == "string")
+                return value.replace(/[\s.,]/g, "");
         } catch (error) {
             console.log(error);
         }
@@ -47,13 +48,13 @@ const reformat = {
      */
     cleanFormatInteger(value) {
         try {
-            if (value) {
-                return value.toString().replace(/\s/g, "");
+            if (value && typeof(value) == 'string') {
+                return value.replace(/\s/g, "");
             }
         } catch (error) {
             console.error(error);
-            return value;
         }
+        return value;
     },
     /**
      * Reformat date

@@ -48,7 +48,7 @@ namespace HCode.Domain
         /// <summary>
         /// Công khai
         /// </summary>
-        public bool isPublic { get; set; } = false;
+        public bool IsPublic { get; set; } = false;
         /// <summary>
         /// Id tài khoản tạo
         /// </summary>

@@ -23,5 +23,10 @@ namespace HCode.Application
         /// <param name="res"></param>
         /// <returns></returns>
         Task SubmitAsync(ProblemDto problemDto, ServerResponse res);
+        /// <summary>
+        /// Lấy danh sách bài toán cho bài thi
+        /// </summary>
+        /// <returns></returns>
+        Task GetForContestAsync(ServerResponse res);
     }
 }

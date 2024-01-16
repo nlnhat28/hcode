@@ -19,14 +19,22 @@ const problem = {
         limitTimeLabel: "Giới hạn thời gian",
         limitMemory: "Giới hạn bộ nhớ (kilobyte)",
         limitMemoryLabel: "Giới hạn bộ nhớ",
-        solution: "Lời giải"
+        solution: "Lời giải",
+        createdTime: "Thời gian",
+        result: "Kết quả",
+        statusName: "Kết quả",
+        runTime: "Thời gian",
+        memory: "Bộ nhớ",
+        languageName: "Ngôn ngữ",
+        seen: "Đã xem",
+        acceptedRate: "Tỉ lệ đúng"
     },
     problemAccountState: {
         none: "Chưa xem",
         seen: "Đã xem",
         doing: "Đang làm",
         wrong: "Lời giải sai",
-        solved: "Đã giải",
+        accepted: "Đã giải",
         draft: "Nháp",
     },
     problemState: {
@@ -59,6 +67,7 @@ const problem = {
     savePrivate: "Lưu riêng tư",
     showOrHideTestcase: "Ẩn/Hiện testcase",
     result: "Kết quả",
+    submissions: "Đã nộp",
 };
 
 export default problem;

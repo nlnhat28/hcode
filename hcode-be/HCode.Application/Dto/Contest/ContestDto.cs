@@ -53,7 +53,7 @@ namespace HCode.Application
         /// <summary>
         /// Công khai
         /// </summary>
-        public bool isPublic { get; set; } = false;
+        public bool IsPublic { get; set; } = false;
         /// <summary>
         /// Id tài khoản tạo
         /// </summary>
@@ -66,6 +66,11 @@ namespace HCode.Application
         /// Số lượng tham gia
         /// </summary>
         public int? JoinCount { get; set; }
+        /// <summary>
+        /// Danh sách câu hỏi
+        /// </summary>
+        [AutoMapper.Configuration.Annotations.Ignore]
+        public List<ContestProblem>? ContestProblems { get; set; }
         #endregion
     }
 }

@@ -107,6 +107,17 @@ namespace HCode.Application
 
             var accountId = _authService.GetAccountId();
 
+            if (filterModels != null && filterModels.Count > 0)
+            {
+                foreach (var item in filterModels)
+                {
+                    if (item.CompareType == CompareType.AccountId)
+                    {
+                        item.FilterValue = accountId;
+                    }
+                }
+            }
+
             var res = await _repository.FilterAsync(keySearch, pagingModel, sortModels, filterModels, accountId);
 
             var dtos = _mapper.Map<IEnumerable<TEntityDto>>(res.Data);

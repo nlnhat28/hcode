@@ -287,7 +287,7 @@ export default {
                     return `${this.label} ${this.$t('msg.mustLessEqualLength', { length: this.maxLength })}`;
 
                 // Validate số 
-                if (this.innerValue) {
+                if (this.innerValue != null) {
                     let integerValue = this.innerValue;
                     if (this.dataInput == this.$enums.dataInput.integer) {
                         integerValue = this.$rfm.cleanFormatInteger(this.innerValue); 

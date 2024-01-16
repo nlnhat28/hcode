@@ -54,5 +54,25 @@
         /// Không bằng
         /// </summary>
         NotEqual = 12,
+        /// <summary>
+        /// Null
+        /// </summary>
+        Null = 13,
+        /// <summary>
+        /// Null or empty
+        /// </summary>
+        NullOrEmpty = 14,
+        /// <summary>
+        /// Không null
+        /// </summary>
+        NotNull = 15,
+        /// <summary>
+        /// Không null or not empty
+        /// </summary>
+        NotNullOrEmpty = 16,
+        /// <summary>
+        /// Lọc theo AccountId
+        /// </summary>
+        AccountId = 17,
     }
 }

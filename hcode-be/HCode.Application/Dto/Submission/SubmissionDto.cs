@@ -8,7 +8,7 @@ namespace HCode.Application
     /// <summary>
     /// Nộp code
     /// </summary>
-    public class SubmissionDto
+    public class SubmissionDto : BaseDto, IHasEntityId
     {
         #region Properties
         /// <summary>
@@ -20,9 +20,42 @@ namespace HCode.Application
             get { return SubmissionId; }
             set { SubmissionId = value; }
         }
+        /// <summary>
+        /// Id cha
+        /// </summary>
         public Guid? ParentId { get; set; }
-        public string? SourceCode { get; set;}
-        public Guid LanguageId { get; set;}
+        /// <summary>
+        /// Sourcecode
+        /// </summary>
+        public string? SourceCode { get; set; }
+        /// <summary>
+        /// Ngôn ngữ
+        /// </summary>
+        public Guid? LanguageId { get; set; }
+        /// <summary>
+        /// Ngôn ngữ
+        /// </summary>
+        public StatusJudge0? Status { get; set; }
+        /// <summary>
+        /// Thời gian chạy
+        /// </summary>
+        public decimal? RunTime { get; set; }
+        /// <summary>
+        /// Bộ nhớ chạy
+        /// </summary>
+        public decimal? Memory { get; set; }
+        /// <summary>
+        /// Số testcase qua
+        /// </summary>
+        public int? PassedCount { get; set; }
+        /// <summary>
+        /// Số testcase lỗi
+        /// </summary>
+        public int? FailedCount { get; set; }
+        /// <summary>
+        /// Ngôn ngữ
+        /// </summary>
+        public Language? Language { get; set; }
         #endregion
     }
 }

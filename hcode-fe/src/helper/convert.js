@@ -74,7 +74,7 @@ const convert = {
                 return "far fa-code";
             case problemEnum.problemAccountState.wrong.value:
                 return "far fa-circle-xmark";
-            case problemEnum.problemAccountState.solved.value:
+            case problemEnum.problemAccountState.accepted.value:
                 return "far fa-circle-check";
             // case problemEnum.problemAccountState.draft.value:
             //     return "far fa-file";
@@ -94,7 +94,7 @@ const convert = {
                 return "light";
             case problemEnum.problemAccountState.wrong.value:
                 return "error";
-            case problemEnum.problemAccountState.solved.value:
+            case problemEnum.problemAccountState.accepted.value:
                 return "success";
             default:
                 return "light";
@@ -143,11 +143,14 @@ const convert = {
      * @param {*} enumObj
      */
     enumToSelects(enumObj) {
-        const enumArray = Object.entries(enumObj).map(([key, value]) => ({
-            key: value.value,
-            name: value.label,
-        }));
-        return enumArray;
+        if (enumObj) {
+            const enumArray = Object.entries(enumObj).map(([key, value]) => ({
+                key: value.value,
+                name: value.label,
+            }));
+            return enumArray;
+        };
+        return [];
     },
     /**
      * Chuyển selected object sang enum key
@@ -201,5 +204,20 @@ const convert = {
         let result = JSON.stringify(any);
         return result;
     },
+    /**
+     * Chuyển tỷ lệ sang phần trăm
+     */
+    rateToPercent(value, fixed = 2, defaultValue) {
+        if (value != null) {
+            let cent = value * 100;
+            let result = `${cent.toFixed(fixed)}%`;
+            return result;
+        }
+
+        if (defaultValue) {
+            return defaultValue;
+        }
+        return null;
+    }
 };
 export default convert;

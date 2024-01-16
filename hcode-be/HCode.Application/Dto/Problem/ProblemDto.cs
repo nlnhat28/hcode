@@ -97,6 +97,10 @@ namespace HCode.Application
         /// </summary>
         public int? CommentCount { get; set; }
         /// <summary>
+        /// Tỉ lệ accepted
+        /// </summary>
+        public decimal? AcceptedRate { get; set; }
+        /// <summary>
         /// Điểm tương tác
         /// </summary>
         public decimal? ReactionScore { get; set; }

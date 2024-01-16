@@ -192,7 +192,16 @@ namespace HCode.Domain
                     // Phân loại so sánh
                     switch (compare)
                     {
+                        case CompareType.Null:
+                            queryItem = $"({column} IS NULL)";
+                            break;
+                        case CompareType.NotNull:
+                            queryItem = $"({column} IS NOT NULL)";
+                            break;
                         case CompareType.Empty:
+                            queryItem = $"({column} = '')";
+                            break;
+                        case CompareType.NullOrEmpty:
                             queryItem = $"({column} IS NULL OR {column} = '')";
                             break;
                         case CompareType.Equal:
@@ -224,6 +233,9 @@ namespace HCode.Domain
                             break;
                         case CompareType.EndWidth:
                             queryItem = $"({column} LIKE '%{value}')";
+                            break;
+                        case CompareType.AccountId:
+                            queryItem = $"({column} = '{value}')";
                             break;
                         default:
                             break;

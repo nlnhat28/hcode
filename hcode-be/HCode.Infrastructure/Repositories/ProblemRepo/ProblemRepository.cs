@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using HCode.Domain;
+using Org.BouncyCastle.Crypto.Operators;
 using System.Data;
 using System.Text.Json;
 using static Dapper.SqlMapper;
@@ -86,8 +87,22 @@ namespace HCode.Infrastructure
             param.Add($"p_State", state);
             param.Add($"p_AccountId", AccountId);
 
-            var result = await _unitOfWork.Connection.QueryFirstOrDefault(
+            var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync(
                 proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure) ?? 0;
+
+            return result;
+        }
+
+        // Lấy danh sách bài toán cho bài thi
+        public async Task<IEnumerable<Problem>> GetForContestAsync(Guid accountId)
+        {
+            var proc = $"{Procedure}GetForContest";
+
+            var param = new DynamicParameters();
+            param.Add($"p_AccountId", accountId);
+
+            var result = await _unitOfWork.Connection.QueryAsync<Problem>(
+                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
             return result;
         }

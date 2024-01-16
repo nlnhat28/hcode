@@ -33,7 +33,6 @@ namespace HCode.Api
         #endregion
 
         #region Methods
-       
         #endregion
     }
 }

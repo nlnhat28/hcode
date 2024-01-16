@@ -11,10 +11,10 @@ const commonFuction = {
     isNullValue(value) {
         // try catch đề phòng reference null object thì return true luôn
         try {
-            let result = (value == undefined || value == null);
+            let result = value == null;
             return result;
         } catch (error) {
-            console.error(error);            
+            console.error(error);
             return true;
         }
     },
@@ -132,14 +132,104 @@ const commonFuction = {
     },
     /**
      * Bỏ những item null hoặc bằng ''
-     * @param {*} array 
+     * @param {*} array
      */
     removeNullOrEmpty(array) {
         if (array) {
-            const result = array.filter(item => item != null && item !== '');
+            const result = array.filter((item) => item != null && item !== "");
             return result;
         }
         return array;
-    }
-}
+    },
+    /**
+     * Lấy tên key của enum
+     *
+     * @param {*} value Giá trị enum
+     * @param {*} enumObj Enum object
+     * @param {*} defaultValue Giá trị default nếu không có
+     */
+    getKeyNameEnum(value, enumObj, defaultValue) {
+        if (enumObj) {
+            for (const key in enumObj) {
+                if (enumObj[key] == value) {
+                    return key;
+                } else if (
+                    enumObj[key] != null &&
+                    enumObj[key].value == value
+                ) {
+                    return key;
+                }
+            }
+        }
+        return defaultValue;
+    },
+    /**
+     * Lấy số lượng
+     *
+     * @param {array} array
+     * @param {boolean} nullToZero Null thì return 0
+     */
+    getCount(array, nullToZero = true) {
+        if (array) {
+            return array.length;
+        }
+
+        if (nullToZero) {
+            return 0;
+        }
+        return null;
+    },
+    /**
+     * Tính tổng theo trên trường
+     *
+     * @param {array} array
+     * @param {string} fieldTotal Trường lấy tổng
+     * @param {number} from Giá trị bắt đầu
+     * @param {boolean} nullToZero Null thì return 0
+     */
+    calcTotal(array, fieldTotal, from = 0, nullToZero) {
+        if (array) {
+            const sum = array.reduce((accumulator, currentObject) => {
+                return accumulator + (currentObject[fieldTotal] ?? 0);
+            }, from);
+
+            return sum;
+        }
+
+        if (nullToZero) {
+            return 0;
+        }
+        return null;
+    },
+    /**
+     * Tính số phút giữa 2 khoảng thời gian
+     *
+     * @param {*} startTime
+     * @param {*} endTime
+     */
+    getMinuteTwoDateTime(startTime, endTime, nullToZero = false) {
+        if (startTime && endTime) {
+            let milliseconds = endTime - startTime;
+            let minutes = milliseconds / (1000 * 60);
+
+            return minutes;
+        }
+
+        if (nullToZero) {
+            return 0;
+        }
+        return null;
+    },
+    /**
+     * Checkvalidate
+     * @param {*} ref
+     */
+    checkValidateRef(ref) {
+        if (ref && typeof ref.checkValidate == "function") {
+            let msg = ref.checkValidate();
+            return msg;
+        }
+        return null;
+    },
+};
 export default commonFuction;

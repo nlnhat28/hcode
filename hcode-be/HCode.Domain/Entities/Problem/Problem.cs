@@ -109,6 +109,11 @@ namespace HCode.Domain
         [NotMapped]
         public int? CommentCount { get; set; }
         /// <summary>
+        /// Tỉ lệ accepted
+        /// </summary>
+        [NotMapped]
+        public decimal? AcceptedRate { get; set; }
+        /// <summary>
         /// Điểm tương tác
         /// </summary>
         [NotMapped]

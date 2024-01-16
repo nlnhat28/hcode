@@ -28,6 +28,7 @@ import Dialog from "primevue/dialog";
  */
 import VButton from "@/components/elements/button/VButton.vue";
 import VButtonContainer from "@/components/elements/button/VButtonContainer.vue";
+import VCalendar from "@/components/elements/calendar/VCalendar.vue";
 import VCheckbox from "@/components/elements/checkbox/VCheckbox.vue";
 import VCodeEditor from "@/components/elements/code-editor/VCodeEditor.vue";
 import VCodeMirror from "@/components/elements/code-editor/VCodeMirror.vue";
@@ -83,6 +84,7 @@ import CountDown from "keep-countdown";
 
 app.component("v-button", VButton);
 app.component("v-button-container", VButtonContainer);
+app.component("v-calendar", VCalendar);
 app.component("v-checkbox", VCheckbox);
 app.component("v-code-editor", VCodeEditor);
 app.component("v-code-mirror", VCodeMirror);
@@ -145,7 +147,9 @@ import dialog from "@/components/overlay/dialog/dialog.js";
 import validate from "@/helper/validate.js";
 import regex from "@/helper/regex.js";
 import lodash from "lodash";
+import auth from "@/auth/auth.js";
 
+app.config.globalProperties.$auth = auth;
 app.config.globalProperties.$emitter = emitter;
 app.config.globalProperties.$enums = enums;
 app.config.globalProperties.$errorCode = errorCode;

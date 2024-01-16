@@ -33,9 +33,9 @@ const problemEnum = {
         /**
          * Đã giải
          */
-        solved: {
+        accepted: {
             value: 4,
-            label: t("problem.problemAccountState.solved"),
+            label: t("problem.problemAccountState.accepted"),
         },
     },
     problemState: {
@@ -260,8 +260,7 @@ const problemEnum = {
         InternalError: 13,
         ExecFormatError: 14,
         OverLimit: 50,
-    }
-
+    },
 };
 
 export default problemEnum;

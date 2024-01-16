@@ -93,40 +93,38 @@
                                             </v-form-item>
                                         </v-form-group>
                                         <!-- Giới hạn -->
-                                        <v-form-column :columnGap="12">
-                                            <v-form-group>
-                                                <!-- Thời gian -->
-                                                <v-form-item :label="$t('problem.field.limitTime')">
-                                                    <div class="flex-align-center col-gap-8">
-                                                        <v-input-text
-                                                            v-model="instance.LimitTime"
-                                                            type='number'
-                                                            :dataInput="$enums.dataInput.decimal"
-                                                            :minValue="0"
-                                                            :maxValue="10"
-                                                            :label="$t('problem.field.limitTime')"
-                                                            :applyPlaceholder="false"
-                                                        >
-                                                        </v-input-text>
-                                                    </div>
-                                                </v-form-item>
-                                                <!-- Bộ nhớ -->
-                                                <v-form-item :label="$t('problem.field.limitMemory')">
-                                                    <div class="flex-align-center col-gap-8">
-                                                        <v-input-text
-                                                            v-model="instance.LimitMemory"
-                                                            type='number'
-                                                            :dataInput="$enums.dataInput.decimal"
-                                                            :minValue="2048"
-                                                            :maxValue="51200"
-                                                            :label="$t('problem.field.limitMemory')"
-                                                            :applyPlaceholder="false"
-                                                        >
-                                                        </v-input-text>
-                                                    </div>
-                                                </v-form-item>
-                                            </v-form-group>
-                                        </v-form-column>
+                                        <v-form-group :columnGap="12">
+                                            <!-- Thời gian -->
+                                            <v-form-item :label="$t('problem.field.limitTime')">
+                                                <div class="flex-align-center col-gap-8">
+                                                    <v-input-text
+                                                        v-model="instance.LimitTime"
+                                                        type='number'
+                                                        :dataInput="$enums.dataInput.decimal"
+                                                        :minValue="0"
+                                                        :maxValue="10"
+                                                        :label="$t('problem.field.limitTime')"
+                                                        :applyPlaceholder="false"
+                                                    >
+                                                    </v-input-text>
+                                                </div>
+                                            </v-form-item>
+                                            <!-- Bộ nhớ -->
+                                            <v-form-item :label="$t('problem.field.limitMemory')">
+                                                <div class="flex-align-center col-gap-8">
+                                                    <v-input-text
+                                                        v-model="instance.LimitMemory"
+                                                        type='number'
+                                                        :dataInput="$enums.dataInput.decimal"
+                                                        :minValue="2048"
+                                                        :maxValue="51200"
+                                                        :label="$t('problem.field.limitMemory')"
+                                                        :applyPlaceholder="false"
+                                                    >
+                                                    </v-input-text>
+                                                </div>
+                                            </v-form-item>
+                                        </v-form-group>
                                         <div class="flex col-gap-24">
                                             <div class="checkbox-item">
                                                 <!-- Trạng thái lưu -->
@@ -247,12 +245,16 @@
                                 </div>
                             </v-tab-panel>
                             <!-- Thông báo kết quả chạy -->
-                            <v-tab-panel :header="$t('problem.result')">
+                            <!-- <v-tab-panel :header="$t('problem.result')">
                                 <v-editor
                                     class='no-toolbar'
                                     v-model="result"
                                     readonly
                                 ></v-editor>
+                            </v-tab-panel> -->
+                            <!-- Đã nộp -->
+                            <v-tab-panel :header="$t('problem.submissions')">
+                                <SubmissionsList :parentId="instance.ProblemAccountId"/>
                             </v-tab-panel>
                         </v-tab-view>
                     </div>
@@ -309,6 +311,7 @@ import problemEnum from "@/enums/problem-enum";
 import problemConst from "@/consts/problem-const.js";
 import ParameterItem from "./ParameterItem.vue";
 import TestcaseItem from "./TestcaseItem.vue";
+import SubmissionsList from "./submission/SubmissionsList.vue";
 import enums from "@/enums/enums";
 
 const formMode = enums.formMode;
@@ -319,6 +322,7 @@ export default {
     components: {
         ParameterItem,
         TestcaseItem,
+        SubmissionsList
     },
     data() {
         return {
@@ -333,7 +337,7 @@ export default {
             tabView: {
                 info: 0,
                 parameter: 3,
-                test: 4
+                test: 4,
             },
             activeTab: 0,
             result: null,
@@ -601,7 +605,7 @@ export default {
                     icon: "fa fa-xmark",
                 },
                 {
-                    // Gửi
+                    // Xoá
                     severity: "danger",
                     label: this.$t("com.delete"),
                     icon: "far fa-trash-can",
@@ -654,7 +658,7 @@ export default {
                     icon: "fa fa-xmark",
                 },
                 {
-                    // Gửi
+                    // Xoá
                     severity: "danger",
                     label: this.$t("com.delete"),
                     icon: "far fa-trash-can",
@@ -765,4 +769,6 @@ export default {
     }
 }
 </script>
-<style scoped>@import './problem-detail.css';</style>
+<style scoped>
+@import './problem-detail.css';
+</style>

@@ -268,14 +268,19 @@ export default {
             let filterModelsDto = this.filterModelsClean.map(item => ({
                 columnName: item.column,
                 logicType: item.logicType,
-                logicName: item.logicName,
                 compareType: item.compareType,
-                compareName: item.compareName,
                 filterValue: item.values[0].key,
             }));
 
             if (!this.$cf.isEmptyArray(this.addFilterModelsComputed)) {
                 filterModelsDto.push(...this.addFilterModelsComputed);
+            }
+
+            if (filterModelsDto) {
+                filterModelsDto.forEach(item => {
+                    item.logicName = this.$cf.getKeyNameEnum(item.logicType, this.$enums.logicType);
+                    item.compareName = this.$cf.getKeyNameEnum(item.compareType, this.$enums.compareType);
+                });
             }
 
             return filterModelsDto;

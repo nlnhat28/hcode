@@ -26,6 +26,6 @@ namespace HCode.Domain
         /// <summary>
         /// Đã giải
         /// </summary>
-        Solved = 4
+        Accepted = 4
     }
 }

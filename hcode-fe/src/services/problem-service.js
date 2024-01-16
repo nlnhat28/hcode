@@ -21,6 +21,16 @@ class ProblemService extends BaseService {
         );
         return response;
     }
+    /**
+     * Lấy danh sách câu hỏi cho bài thi
+     *
+     * Author: nlnhat (17/08/2023)
+     * @return
+     */
+    async getForContest() {
+        const response = await this.baseRequest.get(this.baseUrl + "/ForContest");
+        return response;
+    }
 }
 const problemService = new ProblemService();
 export default problemService;

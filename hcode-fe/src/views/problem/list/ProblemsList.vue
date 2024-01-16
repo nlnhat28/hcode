@@ -11,7 +11,10 @@
                 :filterModels="filterModels"
             >
                 <template #toolbarLeft>
-                    <div class="dark" style="width: 160px;">
+                    <div
+                        class="dark"
+                        style="width: 160px;"
+                    >
                         <v-combobox
                             v-model="selectedProblemState"
                             optionLabel="name"
@@ -86,15 +89,30 @@
                                 }"
                             >
                             </v-td>
-                            <!-- Tương tấc -->
+                            <!-- Đã xem -->
                             <v-td :style="{
                                 textAlign: 'center'
                             }">
-                                <v-reaction
-                                    :rate="item.Rate"
-                                    :comment="item.CommentCount"
-                                    :seen="item.SeenCount"
-                                />
+                                <div style="width: 40px">
+                                    {{ $cv.numberToSuffix(item.SeenCount) }}
+                                </div>
+                                <v-icon
+                                    icon='far fa-eye'
+                                    color="light"
+                                ></v-icon>
+                            </v-td>
+                            <!-- Tỉ lệ đúng -->
+                            <v-td :style="{
+                                textAlign: 'center',
+                                // color: $enums.color.green
+                            }">
+                                <div style="width: 56px">
+                                    {{ $cv.rateToPercent(item.AcceptedRate, 1, '0%') }}
+                                </div>
+                                <v-icon
+                                    icon='far fa-circle-check'
+                                    color="success"
+                                ></v-icon>
                             </v-td>
                         </template>
                     </v-tr>
@@ -162,7 +180,7 @@ export default {
                 {
                     title: this.$t("problem.field.topic"),
                     textAlign: 'left',
-                    widthCell: 140,
+                    widthCell: 160,
                     name: "Topic",
                     filterConfig: {
                         filterType: this.$enums.filterType.text,
@@ -182,13 +200,27 @@ export default {
                     }
                 },
                 {
-                    title: this.$t("problem.field.reaction"),
+                    title: this.$t("problem.field.seen"),
                     textAlign: 'center',
-                    widthCell: 100,
-                    name: "Reaction",
+                    widthCell: 80,
+                    name: "SeenCount",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
-                        field: "ReactionScore",
+                    },
+                    filterConfig: {
+                        filterType: this.$enums.filterType.number,
+                    }
+                },
+                {
+                    title: this.$t("problem.field.acceptedRate"),
+                    textAlign: 'center',
+                    widthCell: 80,
+                    name: "AcceptedRate",
+                    sortConfig: {
+                        sortType: this.$enums.sortType.blur,
+                    },
+                    filterConfig: {
+                        filterType: this.$enums.filterType.number,
                     }
                 }
             ],
@@ -204,14 +236,54 @@ export default {
             let filters = [];
 
             // Lọc thêm State
-            filters.push({
-                columnName: 'State',
-                logicType: this.$enums.logicType.and,
-                logicName: 'and',
-                compareType: this.$enums.compareType.equal,
-                compareName: '=',
-                filterValue: this.selectedProblemState?.key
-            });
+            switch (this.$cv.selectedToEnumKey(this.selectedProblemState)) {
+                // Công khai
+                case problemEnum.problemState.public.value:
+                    let filterPublic = {
+                        columnName: 'State',
+                        logicType: this.$enums.logicType.and,
+                        compareType: this.$enums.compareType.equal,
+                        filterValue: problemEnum.problemState.public.value
+                    };
+                    filters.push(filterPublic);
+                    break;
+                // Cá nhân
+                case problemEnum.problemState.private.value:
+                    let filterPrivate = [
+                        {
+                            columnName: 'State',
+                            logicType: this.$enums.logicType.and,
+                            compareType: this.$enums.compareType.equal,
+                            filterValue: problemEnum.problemState.private.value
+                        },
+                        {
+                            columnName: 'AccountId',
+                            logicType: this.$enums.logicType.and,
+                            compareType: this.$enums.compareType.accountId,
+                        }
+                    ];
+                    filters.push(...filterPrivate);
+                    break;
+                // Nháp
+                case problemEnum.problemState.draft.value:
+                    let filterDraft = [
+                        {
+                            columnName: 'IsDraft',
+                            logicType: this.$enums.logicType.and,
+                            compareType: this.$enums.compareType.equal,
+                            filterValue: 1,
+                        },
+                        {
+                            columnName: 'AccountId',
+                            logicType: this.$enums.logicType.and,
+                            compareType: this.$enums.compareType.accountId,
+                        }
+                    ];
+                    filters.push(...filterDraft);
+                    break;
+                default:
+                    break;
+            }
 
             return filters;
         },
