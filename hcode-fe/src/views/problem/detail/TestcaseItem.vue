@@ -346,6 +346,7 @@ export default {
 
 .testcase__label {
     font-weight: 700;
+    width: 120px;
 }
 
 .testcase__function {

@@ -254,7 +254,7 @@
                             </v-tab-panel> -->
                             <!-- Đã nộp -->
                             <v-tab-panel :header="$t('problem.submissions')">
-                                <SubmissionsList :parentId="instance.ProblemAccountId"/>
+                                <SubmissionsList :parentId="instance.ProblemAccountId" />
                             </v-tab-panel>
                         </v-tab-view>
                     </div>
@@ -276,7 +276,10 @@
                             </div>
                         </div>
                         <div class="code__body">
-                            <v-code-mirror v-model="instance.Solution"></v-code-mirror>
+                            <v-code-mirror
+                                v-model="instance.Solution"
+                                :language="instance.SolutionLanguage"
+                            ></v-code-mirror>
                         </div>
                         <div class="code__footer">
 
@@ -402,6 +405,7 @@ export default {
          */
         defaultSourceCode() {
             let funcName = problemConst.solutionFunction;
+            let className = problemConst.solutionClass;
 
             const outputType = this.instance.OutputType;
             const params = this.instance.Parameters;
@@ -414,6 +418,8 @@ export default {
                 let outputCode = '';
                 let paramCode = '';
                 let sourceCode = '';
+                let tab = '    ';
+                let tab2 = tab + tab;
 
                 // const judgeId = language.JudgeId;
                 const judgeId = this.instance.SolutionLanguage?.JudgeId;
@@ -450,23 +456,23 @@ export default {
 
                 switch (judgeId) {
                     case lang.c:
-                        sourceCode = `${outputCode} ${funcName}(${paramCode}) {\n    \n}`;
+                        sourceCode = `${outputCode} ${funcName}(${paramCode}) {\n${tab}\n}`;
                         break;
                     case lang.cpp:
-                        sourceCode = `public:\n    ${outputCode} ${funcName}(${paramCode}) {\n        \n}`;
+                        sourceCode = `class ${className} {\npublic:\n${tab}${outputCode} ${funcName}(${paramCode}) {\n${tab2}\n${tab}}\n}`;
                         break;
                     case lang.csharp:
                     case lang.java:
-                        sourceCode = `public ${outputCode} ${funcName}(${paramCode}) {\n    \n}`;
+                        sourceCode = `class ${className} {\n${tab}public ${outputCode} ${funcName}(${paramCode}) {\n${tab2}\n${tab}}\n}`;
                         break;
                     case lang.js:
                         sourceCode = `const ${funcName} = function(${paramCode}) {\n    \n}`;
                         break;
                     case lang.php:
-                        sourceCode = `function ${funcName}(${paramCode}) {\n    \n}`;
+                        sourceCode = `class ${className} {\n${tab}function ${funcName}(${paramCode}) {\n${tab2}\n${tab}}\n}`;
                         break;
                     case lang.python:
-                        sourceCode = `def ${funcName}(self, ${paramCode}) {\n    \n}`;
+                        sourceCode = `class ${className}():\n${tab}def ${funcName}(self, ${paramCode}) {\n${tab2}\n}`;
                         break;
                     default:
                         break;
@@ -769,6 +775,4 @@ export default {
     }
 }
 </script>
-<style scoped>
-@import './problem-detail.css';
-</style>
+<style scoped>@import './problem-detail.css';</style>

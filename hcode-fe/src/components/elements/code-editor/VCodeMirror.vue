@@ -21,6 +21,7 @@ import { cpp } from '@codemirror/lang-cpp';
 import { java } from '@codemirror/lang-java';
 import { python } from '@codemirror/lang-python';
 import { php } from '@codemirror/lang-php';
+import problemEnum from "@/enums/problem-enum";
 
 export default {
     name: 'VCodeMirror',
@@ -54,8 +55,26 @@ export default {
     },
     computed: {
         extensions() {
-            let extensions = [oneDark, javascript(), cpp(), java(), python(), php()]
-            return extensions;
+            // let extensions = [oneDark, javascript(), cpp(), java(), python(), php()]
+
+            const enumLanguage = problemEnum.language;
+            switch (this.language.JudgeId) {
+                case enumLanguage.c:
+                case enumLanguage.cpp:
+                    return [oneDark, cpp()];
+                case enumLanguage.csharp:
+                case enumLanguage.java:
+                    return [oneDark, cpp(), java()];
+                case enumLanguage.javascript:
+                    return [oneDark, javascript()];
+                case enumLanguage.python:
+                    return [oneDark, python()];
+                case enumLanguage.php:
+                    return [oneDark, cpp(), php()];
+                default:
+                    return [oneDark, javascript()];
+            }
+
         }
     },
     data() {

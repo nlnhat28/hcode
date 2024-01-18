@@ -2,8 +2,10 @@
 using HCode.Domain;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
+using Org.BouncyCastle.Asn1.Mozilla;
 using System;
 using System.Data;
+using System.Linq.Expressions;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -102,20 +104,61 @@ namespace HCode.Application
                     var submissionResponses = resCreateBatch.Data as List<SubmissionResponse>;
                     var tokens = submissionResponses?.Select(r => r.token).ToList() ?? new List<string>();
 
-                    var resGetBatch = await _ceService.GetBatchAsync(tokens);
+                    var allResponses = new List<SubmissionResponse>();
+                    var processingTokens = new List<string>(tokens);
+                    var count = 0;
+                    var limitCount = 3;
+                    var resError = new object();
 
-                    res.Data = resGetBatch;
+                    while (processingTokens.Count > 0 && count < limitCount)
+                    {
+                        count++;
 
-                    if (resGetBatch.Data is List<SubmissionResponse> data && data.Count > 0)
+                        await Task.Delay(2000);
+
+                        var _res = await _ceService.GetBatchAsync(processingTokens);
+
+                        processingTokens.Clear();
+
+                        if ((object)_res.Data is List<SubmissionResponse> _data && _data.Count > 0)
+                        {
+                            // Lần cuối rồi thì Add hết
+                            if (count >= limitCount)
+                            {
+                                allResponses.AddRange(_data);
+                            }
+                            else
+                            {
+                                foreach (var item in _data)
+                                {
+                                    if (item.status_id == StatusJudge0.InQueue && item.status_id == StatusJudge0.Processing)
+                                    {
+                                        processingTokens.Add(item.token);
+                                    }
+                                    else
+                                    {
+                                        allResponses.Add(item);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            resError = _res;
+                        }
+                    }
+
+
+                    if (allResponses.Count > 0)
                     {
                         var submissionData = new SubmissionResponseData()
                         {
-                            Submissions = data
+                            Submissions = allResponses
                         };
 
-                        foreach (var subRes in data)
+                        foreach (var subRes in allResponses)
                         {
-                            var index = data.IndexOf(subRes);
+                            var index = allResponses.IndexOf(subRes);
 
                             if (index >= 0 && index < testcases.Count && testcases[index] != null)
                             {
@@ -174,7 +217,7 @@ namespace HCode.Application
                     }
                     else
                     {
-                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resGetBatch);
+                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resError);
                     }
                 }
                 else
@@ -352,7 +395,7 @@ namespace HCode.Application
             }
 
             // Nếu thành công thì lưu vào db
-            if (res.Success)
+            if (res.Success && false)
             {
                 // Nếu mà lưu ở 2 chế độ công khai và riêng tư
                 if (problemDto.IsPrivateState == true && problemDto.IsPublicState == true)
@@ -421,7 +464,7 @@ namespace HCode.Application
         }
 
         // Build submission params 
-        private static List<SubmissionParam> BuildSubmissionParams(ProblemDto problemDto, int? judgeId)
+        private List<SubmissionParam> BuildSubmissionParams(ProblemDto problemDto, int? judgeId)
         {
             var parames = new List<SubmissionParam>();
 
@@ -431,8 +474,8 @@ namespace HCode.Application
             var limitTime = problemDto.LimitTime;
             var limitMemory = problemDto.LimitMemory;
 
-            var sourceCode = problemDto.Solution;
             var languageId = judgeId;
+            var sourceCode = BuildFullSourceCode(problemDto.Solution, parameters, (LanguageId)(languageId ?? 0));
 
             if (testcases != null && parameters != null)
             {
@@ -527,6 +570,105 @@ namespace HCode.Application
             var result = _mapper.Map<IEnumerable<ProblemDto>>(problems) ?? new List<ProblemDto>();
 
             res.Data = result;
+        }
+
+        // Build full source code
+        public string BuildFullSourceCode(string? sourceCode, List<ParameterDto>? param, LanguageId languageId)
+        {
+            var userCode = sourceCode ?? string.Empty;
+            var full = userCode;
+            switch (languageId)
+            {
+                case LanguageId.C:
+                    break;
+                case LanguageId.Csharp:
+                    var arg = RenderArgument(param, languageId);
+                    full = ReplaceCode(SourceCode.CSharp, arg, userCode);
+                    break;
+                case LanguageId.Cpp:
+                    break;
+                case LanguageId.Js:
+                    break;
+                case LanguageId.Php:
+                    break;
+                case LanguageId.Java:
+                    break;
+                case LanguageId.Python:
+                    break;
+                default:
+                    break;
+            };
+
+            return full;
+        }
+
+        // Ốp arg vs userCode vào
+        public string ReplaceCode(string sysCode, string args, string userCode)
+        {
+            var result = sysCode.Replace("{args}", args).Replace("{userCode}", userCode);
+            return result;
+        }
+
+        // Build argument
+        public string RenderArgument(List<ParameterDto>? param, LanguageId languageId)
+        {
+            var result = string.Empty;
+
+            if (param?.Count > 0)
+            {
+                var args = new List<string>();
+
+                for (int i = 0; i < param.Count; i++)
+                {
+                    var p = param[i];
+                    var exp = Explicit(p.DataType, languageId);
+                    args.Add(string.Format(exp, $"a[{i}]"));
+                }
+
+                result = string.Join(", ", args);
+            }
+
+            return result;
+        }
+
+        // Build explicit
+        public static string Explicit(DataType dataType, LanguageId languageId)
+        {
+            var res = string.Empty;
+
+            switch (languageId)
+            {
+                case LanguageId.C:
+                    break;
+                case LanguageId.Csharp:
+                    res = dataType switch
+                    {
+                        DataType.String => "(string)",
+                        DataType.Strings => "(List<string>)",
+                        DataType.Int => "Convert.ToInt32({0})",
+                        DataType.Ints => "(List<int>)",
+                        DataType.Decimal => "(double)",
+                        DataType.Decimals => "(List<double>)",
+                        DataType.Bool => "(bool)",
+                        DataType.Bools => "(List<bool>)",
+                        _ => ""
+                    };
+                    break;
+                case LanguageId.Cpp:
+                    break;
+                case LanguageId.Js:
+                    break;
+                case LanguageId.Php:
+                    break;
+                case LanguageId.Java:
+                    break;
+                case LanguageId.Python:
+                    break;
+                default:
+                    break;
+            };
+
+            return res;
         }
         #endregion
     }

@@ -42,7 +42,8 @@ namespace HCode.Application
         #region Methods
         public string SerializeInputs()
         {
-            var json = JsonSerializer.Serialize(Inputs);
+            //var json = JsonSerializer.Serialize(Inputs);
+            var json = Inputs != null ? string.Join("|", Inputs) : string.Empty;
             return json;
         }
         #endregion

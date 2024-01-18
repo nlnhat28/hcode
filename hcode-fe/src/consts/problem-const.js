@@ -1,5 +1,6 @@
 const problemConst = {
     maxParameterCount: 10,
-    solutionFunction: 'solution'
+    solutionFunction: "solve",
+    solutionClass: "Solution",
 };
 export default problemConst;
