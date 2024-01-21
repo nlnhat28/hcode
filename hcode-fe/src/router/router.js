@@ -8,6 +8,7 @@ import ForgotPassword from "@/views/auth/ForgotPassword.vue";
 import ChangePassword from "@/views/auth/ChangePassword.vue";
 import ProblemsList from "@/views/problem/list/ProblemsList.vue";
 import ProblemDetail from "@/views/problem/detail/ProblemDetail.vue";
+import ProblemSubmit from "@/views/problem/submit/ProblemSubmit.vue";
 import ContestsList from "@/views/contest/list/ContestList.vue";
 import ContestDetail from "@/views/contest/detail/ContestDetail.vue";
 import cf from "@/helper/common-function.js";
@@ -75,12 +76,13 @@ const routes = [
         components: {
             viewApp: ProblemDetail,
         },
-        // redirect: (to) => {
-        //     return {
-        //         path: path.problem,
-        //         query: { q: to.params.id },
-        //     };
-        // },
+    },
+    {
+        path: path.problemSubmit + ":id",
+        name: "problemSubmit",
+        components: {
+            viewApp: ProblemSubmit,
+        },
     },
     {
         path: path.contests,

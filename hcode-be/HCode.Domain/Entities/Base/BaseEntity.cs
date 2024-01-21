@@ -21,10 +21,12 @@ namespace HCode.Domain
         /// <summary>
         /// Ngày tạo
         /// </summary>
+        [NoUpdate]
         public DateTime? CreatedTime { get; set; }
         /// <summary>
         /// Người tạo
         /// </summary>
+        [NoUpdate]
         public string? CreatedBy { get; set; }
         /// <summary>
         /// Ngày cập nhật

@@ -3,6 +3,7 @@
         :class="[
             'icon-container',
             { 'cursor-pointer': applyPointer },
+            { 'readonly ': isReadOnly },
             color
         ]"
         :style="`width: ${size}px; height: ${size}px;`"
@@ -64,6 +65,11 @@ export default {
         title: {
             type: [Number, String],
             default: null,
+        },
+        /** Chỉ đọc */
+        isReadOnly: {
+            type: Boolean,
+            default: false
         }
     },
 }

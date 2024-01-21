@@ -1,5 +1,5 @@
 <template>
-    <div class="form__item">
+    <div :class="['form__item', { 'disabled': isDisabled }, { 'readonly': isReadOnly }]">
         <div
             class="form__label"
             v-tooltip:right="title"
@@ -33,6 +33,20 @@ export default {
          * Required of not
          */
         isRequired: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Disabled
+         */
+        isDisabled: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Readonly
+         */
+        isReadOnly: {
             type: Boolean,
             default: false,
         }

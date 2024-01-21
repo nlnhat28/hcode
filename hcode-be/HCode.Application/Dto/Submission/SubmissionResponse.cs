@@ -1,6 +1,7 @@
 ﻿
 using AutoMapper.Configuration.Annotations;
 using HCode.Domain;
+using System.Globalization;
 using System.Reflection;
 
 namespace HCode.Application
@@ -65,7 +66,7 @@ namespace HCode.Application
         /// <summary>
         /// Bộ nhớ sử dụng (kilobyte)
         /// </summary>
-        public decimal? memory { get; set; } = 0;
+        public double? memory { get; set; } = 0;
         #endregion
 
         #region Methods
@@ -115,17 +116,17 @@ namespace HCode.Application
         /// <summary>
         /// Thời gian trung bình
         /// </summary>
-        public decimal? AverageTime { get; set; }
+        public double? AverageTime { get; set; }
         /// <summary>
         /// Bộ nhớ trung bình
         /// </summary>
-        public decimal? AverageMemory { get; set; }
+        public double? AverageMemory { get; set; }
         /// <summary>
         /// Tính toán các giá trị trung bình
         /// </summary>
         public void CalculateAverage()
         {
-            AverageTime = Submissions.Average(submit => Convert.ToDecimal(submit.time));
+            AverageTime = Submissions.Average(submit => Convert.ToDouble(submit.time, CultureInfo.InvariantCulture));
             AverageMemory = Submissions.Average(submit => submit.memory);
         }
     }

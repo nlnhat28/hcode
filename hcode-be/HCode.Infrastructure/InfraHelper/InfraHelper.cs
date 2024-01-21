@@ -371,7 +371,7 @@ namespace HCode.Domain
                     param.Add(propertyName, propertyValue);
                 };
 
-                var keyAttribute = entityType.GetCustomAttribute<KeyAttribute>();
+                var keyAttribute = property.GetCustomAttribute<KeyAttribute>();
                 if (keyAttribute != null)
                 {
                     tableId = property.Name;
@@ -384,6 +384,69 @@ namespace HCode.Domain
             {
                 script += $"\nSELECT @p_{tableId} AS {tableId}";
             }
+
+            return (script, param);
+        }
+        /// <summary>
+        /// Tạo script update
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static (string script, DynamicParameters param) ScriptUpdate<TEntity>(
+            TEntity entity, int? index = null)
+        {
+            var script = "UPDATE {0} SET\n{1}\n{2};";
+            var param = new DynamicParameters();
+            var entityType = typeof(TEntity);
+            var expressions = new List<string>();  // Id = @p_Id
+
+            var tableAttribute = entityType.GetCustomAttribute<TableAttribute>();
+            var table = tableAttribute != null ? tableAttribute.Name : typeof(TEntity).Name;
+            var tableId = $"{table}Id";
+
+            var id = index != null ? $"_{index}" : string.Empty;
+
+            var paramId = $"@p_{tableId}{id}";
+
+            var properties = entityType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
+                if (notMapped == null)
+                {
+                    var noUpdateAttribute = property.GetCustomAttribute<NoUpdateAttribute>();
+
+                    if (noUpdateAttribute != null)
+                    {
+                        continue;
+                    }
+
+                    var propertyName = $"p_{property.Name}{id}";
+                    var paramName = $"@{propertyName}";
+
+                    var propertyValue = entity != null ? property.GetValue(entity) : null;
+                    param.Add(propertyName, propertyValue);
+
+                    var keyAttribute = property.GetCustomAttribute<KeyAttribute>();
+
+                    if (keyAttribute != null)
+                    {
+                        tableId = property.Name;
+                        paramId = paramName;
+                        continue;
+                    }
+
+                    var expression = $"{property.Name} = {paramName}";
+                    expressions.Add(expression);
+                };
+            }
+
+            var whereScript = $"WHERE {tableId} = {paramId}";
+
+            script = string.Format(script, table, string.Join(",\n", expressions), whereScript);
 
             return (script, param);
         }

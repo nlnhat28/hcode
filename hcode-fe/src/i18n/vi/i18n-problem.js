@@ -71,6 +71,7 @@ const problem = {
     submissions: "Đã nộp",
     practice: "Thực hành",
     draft: "Nháp",
+    cannotView: "Không thể xem"
 };
 
 export default problem;

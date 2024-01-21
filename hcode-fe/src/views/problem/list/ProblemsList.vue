@@ -120,12 +120,14 @@
                             }">
                                 <div class="flex-align-center col-gap-4">
                                     <v-button
+                                        v-if="item.IsDraft == false"
                                         icon="far fa-code"
                                         severity="info"
                                         text
                                         raised
                                         rounded
                                         :title="$t('problem.practice')"
+                                        @click="clickRun(item.ProblemId)"
                                     />
                                     <v-button
                                         icon="far fa-pen"
@@ -184,7 +186,7 @@ export default {
             itemIdKey: "ProblemId",
             cfg: {
                 formPath: this.$path.problem,
-                name: this.$t("problem.problem")
+                subSysName: this.$t("problem.problem")
             },
             problemEnum: problemEnum,
             /**
@@ -353,6 +355,14 @@ export default {
         onSelectedProblemState() {
             this.reloadItems();
         },
+        /**
+         * Click submit
+         */
+        clickRun(id) {
+            if (id != null) {
+                this.$router.push(this.$cf.combineRoute(this.$path.problemSubmit, id))
+            }
+        }
     }
 
 

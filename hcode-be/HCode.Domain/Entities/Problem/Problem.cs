@@ -29,6 +29,7 @@ namespace HCode.Domain
         /// <summary>
         /// Mã bài toán
         /// </summary>
+        [NoUpdate]
         public int ProblemCode { get; set; }
         /// <summary>
         /// Alias
@@ -45,15 +46,16 @@ namespace HCode.Domain
         /// <summary>
         /// Trạng thái
         /// </summary>
+        [NoUpdate]
         public ProblemState? State { get; set; }
         /// <summary>
         /// Giới hạn thời gian (giây)
         /// </summary>
-        public decimal? LimitTime { get; set; }
+        public double? LimitTime { get; set; }
         /// <summary>
         /// Giới hạn bộ nhớ (kb)
         /// </summary>
-        public decimal? LimitMemory { get; set; }
+        public double? LimitMemory { get; set; }
         /// <summary>
         /// Gợi ý
         /// </summary>
@@ -79,6 +81,7 @@ namespace HCode.Domain
         /// <summary>
         /// Id tài khoản tạo
         /// </summary>
+        [NoUpdate]
         public Guid? AccountId { get; set; }
         /// <summary>
         /// Chủ đề

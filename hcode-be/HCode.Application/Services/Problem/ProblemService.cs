@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using Org.BouncyCastle.Asn1.Mozilla;
 using System;
 using System.Data;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -83,7 +84,7 @@ namespace HCode.Application
         // Tạo problem mới
         public override async Task CreateAsync(ProblemDto problemDto, ServerResponse res)
         {
-            var (problem, parameters, testcases) = MapCreateProblemDtoToEntity(problemDto);
+            var (problem, parameters, testcases) = MapProblemDtoToEntity(problemDto);
 
             await ValidateAsync(problem, res);
 
@@ -175,7 +176,7 @@ namespace HCode.Application
                                     break;
                                 case StatusJudge0.WrongAnswer:
                                     // Lỗi quá tài nguyên
-                                    var time = Convert.ToDecimal(subRes.time);
+                                    var time = Convert.ToDouble(subRes.time, CultureInfo.InvariantCulture);
                                     var memory = subRes.memory;
                                     var errors = new List<string>();
 
@@ -194,6 +195,7 @@ namespace HCode.Application
                                     {
                                         var userMsg = string.Join(" ", errors);
                                         subRes.status_id = StatusJudge0.OverLimit;
+                                        subRes.status_name = StatusJudge0.OverLimit.ToString();
                                         subRes.user_msg = userMsg;
                                     }
 
@@ -233,7 +235,7 @@ namespace HCode.Application
                 {
                     problem.State = ProblemState.Private;
 
-                    var (problemPublic, paramPublic, testcasePublic) = MapCreateProblemDtoToEntity(problemDto);
+                    var (problemPublic, paramPublic, testcasePublic) = MapProblemDtoToEntity(problemDto, isClone: true);
                     problemPublic.State = ProblemState.Public;
 
                     try
@@ -269,7 +271,7 @@ namespace HCode.Application
                 {
                     await _unitOfWork.BeginTransactionAsync();
 
-                    var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
+                    var newCode = await _repository.GetMaxCodeAsync(problemDto.State ?? ProblemState.Private, _authService.GetAccountId());
                     newCode++;
                     problem.ProblemCode = newCode; 
                     await _repository.InsertAsync(problem);
@@ -292,7 +294,7 @@ namespace HCode.Application
         // Cập nhật problem
         public override async Task UpdateAsync(Guid problemId, ProblemDto problemDto, ServerResponse res)
         {
-            var (problem, parameters, testcases) = MapCreateProblemDtoToEntity(problemDto);
+            var (problem, parameters, testcases) = MapProblemDtoToEntity(problemDto, EditMode.Update);
 
             await ValidateAsync(problem, res);
 
@@ -302,7 +304,7 @@ namespace HCode.Application
             }
 
             // Lưu thật
-            if (problemDto.State == ProblemState.Public || problemDto.State == ProblemState.Private)
+            if (problemDto.IsDraft == false)
             {
                 var parames = BuildSubmissionParams(problemDto, problemDto.SolutionLanguage?.JudgeId);
 
@@ -313,20 +315,60 @@ namespace HCode.Application
                     var submissionResponses = resCreateBatch.Data as List<SubmissionResponse>;
                     var tokens = submissionResponses?.Select(r => r.token).ToList() ?? new List<string>();
 
-                    var resGetBatch = await _ceService.GetBatchAsync(tokens);
+                    var allResponses = new List<SubmissionResponse>();
+                    var processingTokens = new List<string>(tokens);
+                    var count = 0;
+                    var limitCount = 3;
+                    var resError = new object();
 
-                    res.Data = resGetBatch;
+                    while (processingTokens.Count > 0 && count < limitCount)
+                    {
+                        count++;
 
-                    if (resGetBatch.Data is List<SubmissionResponse> data && data.Count > 0)
+                        await Task.Delay(2000);
+
+                        var _res = await _ceService.GetBatchAsync(processingTokens);
+
+                        processingTokens.Clear();
+
+                        if (_res.Data is List<SubmissionResponse> _data && _data.Count > 0)
+                        {
+                            // Lần cuối rồi thì Add hết
+                            if (count >= limitCount)
+                            {
+                                allResponses.AddRange(_data);
+                            }
+                            else
+                            {
+                                foreach (var item in _data)
+                                {
+                                    if (item.status_id == StatusJudge0.InQueue && item.status_id == StatusJudge0.Processing)
+                                    {
+                                        processingTokens.Add(item.token);
+                                    }
+                                    else
+                                    {
+                                        allResponses.Add(item);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            resError = _res;
+                        }
+                    }
+
+                    if (allResponses.Count > 0)
                     {
                         var submissionData = new SubmissionData()
                         {
-                            Submissions = data
+                            Submissions = allResponses
                         };
 
-                        foreach (var subRes in data)
+                        foreach (var subRes in allResponses)
                         {
-                            var index = data.IndexOf(subRes);
+                            var index = allResponses.IndexOf(subRes);
 
                             if (index >= 0 && index < testcases.Count && testcases[index] != null)
                             {
@@ -344,7 +386,7 @@ namespace HCode.Application
                                     break;
                                 case StatusJudge0.WrongAnswer:
                                     // Lỗi quá tài nguyên
-                                    var time = Convert.ToDecimal(subRes.time);
+                                    var time = Convert.ToDouble(subRes.time, CultureInfo.InvariantCulture);
                                     var memory = subRes.memory;
                                     var errors = new List<string>();
 
@@ -363,6 +405,7 @@ namespace HCode.Application
                                     {
                                         var userMsg = string.Join(" ", errors);
                                         subRes.status_id = StatusJudge0.OverLimit;
+                                        subRes.status_name = StatusJudge0.OverLimit.ToString();
                                         subRes.user_msg = userMsg;
                                     }
 
@@ -385,7 +428,7 @@ namespace HCode.Application
                     }
                     else
                     {
-                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resGetBatch);
+                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resError);
                     }
                 }
                 else
@@ -395,54 +438,16 @@ namespace HCode.Application
             }
 
             // Nếu thành công thì lưu vào db
-            if (res.Success && false)
+            if (res.Success)
             {
-                // Nếu mà lưu ở 2 chế độ công khai và riêng tư
-                if (problemDto.IsPrivateState == true && problemDto.IsPublicState == true)
-                {
-                    problem.State = ProblemState.Private;
-
-                    var (problemPublic, paramPublic, testcasePublic) = MapCreateProblemDtoToEntity(problemDto);
-                    problemPublic.State = ProblemState.Public;
-
-                    try
-                    {
-                        await _unitOfWork.BeginTransactionAsync();
-
-                        var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
-                        newCode++;
-                        problemPublic.ProblemCode = newCode;
-                        await _repository.InsertAsync(problemPublic);
-                        await _parameterRepo.InsertManyAsync(paramPublic);
-                        await _testcaseRepo.InsertManyAsync(testcasePublic);
-
-                        await _unitOfWork.CommitAsync();
-                    }
-                    catch (Exception exception)
-                    {
-                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], exception);
-                    }
-                    finally
-                    {
-                        await _unitOfWork.RollbackAsync();
-                    }
-                }
-
-                if (!res.Success)
-                {
-                    return;
-                }
-
-                // Không thì lưu đúng chế độ
+                // Lưu đúng chế độ
                 try
                 {
                     await _unitOfWork.BeginTransactionAsync();
 
-                    var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
-                    newCode++;
-                    problem.ProblemCode = newCode; await _repository.InsertAsync(problem);
-                    await _parameterRepo.InsertManyAsync(parameters);
-                    await _testcaseRepo.InsertManyAsync(testcases);
+                    await _repository.UpdateAsync(problem);
+                    await _parameterRepo.ReplaceManyAsync(parameters, problemId, "ProblemId");
+                    await _testcaseRepo.ReplaceManyAsync(testcases, problemId, "ProblemId");
 
                     await _unitOfWork.CommitAsync();
                 }
@@ -464,7 +469,7 @@ namespace HCode.Application
         }
 
         // Build submission params 
-        private List<SubmissionParam> BuildSubmissionParams(ProblemDto problemDto, int? judgeId)
+        private static List<SubmissionParam> BuildSubmissionParams(ProblemDto problemDto, int? judgeId)
         {
             var parames = new List<SubmissionParam>();
 
@@ -501,14 +506,26 @@ namespace HCode.Application
             return parames;
         }
 
-        // Clone 
-        public (Problem problem, List<Parameter> parameters, List<Testcase> testcases) MapCreateProblemDtoToEntity(
-            ProblemDto problemDto, bool? isClone = false)
+        // Map
+        public (Problem problem, List<Parameter> parameters, List<Testcase> testcases) MapProblemDtoToEntity(
+            ProblemDto problemDto, EditMode? editMode = EditMode.Create, bool? isClone = false)
         {
             var clone = isClone ?? false;
 
-            var problem = MapCreateDtoToEntity(problemDto);
-            problem.AccountId = _authService.GetAccountId();
+            var problem = new Problem();
+
+            switch (editMode)   
+            {
+                case EditMode.Create:
+                    problem = MapCreateDtoToEntity(problemDto);
+                    problem.AccountId = _authService.GetAccountId();
+                    break;
+                case EditMode.Update:
+                    problem = MapUpdateDtoToEntity(problemDto);
+                    break;
+                default:
+                    break;
+            }
 
             var problemId = problem.ProblemId;
 
@@ -558,7 +575,6 @@ namespace HCode.Application
 
             return (problem, parameters, testcases);
         }
-
 
         // Lấy danh sách bài toán cho bài thi
         public async Task GetForContestAsync(ServerResponse res)

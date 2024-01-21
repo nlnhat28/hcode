@@ -51,7 +51,7 @@ namespace HCode.Application
         /// <summary>
         /// Giới hạn thời gian (giây)
         /// </summary>
-        public decimal? LimitTime { get; set; }
+        public double? LimitTime { get; set; }
         /// <summary>
         /// Đơn vị thời gian 
         /// </summary>
@@ -59,7 +59,7 @@ namespace HCode.Application
         /// <summary>
         /// Giới hạn bộ nhớ (Kb)
         /// </summary>
-        public decimal? LimitMemory { get; set; }
+        public double? LimitMemory { get; set; }
         /// <summary>
         /// Đơn vị bộ nhớ
         /// </summary>

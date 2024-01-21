@@ -1,7 +1,7 @@
 <template>
     <div class="testcase-item">
         <div
-            class="testcase__panel"
+            :class="['testcase__panel', { 'cursor-pointer': instance.AllowView }]"
             @click="clickPanel"
         >
             <div class="flex-align-center col-gap-16">
@@ -20,18 +20,9 @@
             </div>
             <div class="testcase__function flex-align-center col-gap-12">
                 <v-icon
-                    applyPointer
                     :icon="this.instance.AllowView ? 'far fa-lock-keyhole-open' : 'far fa-lock-keyhole'"
                     :color="this.instance.AllowView ? 'light' : 'warn'"
-                    :title="$t('problem.showOrHideTestcase')"
-                    @click="clickLock"
-                />
-                <v-icon
-                    icon="far fa-circle-xmark"
-                    color="danger"
-                    applyPointer
-                    :title="$t('com.delete')"
-                    @click="clickDelete"
+                    :title="this.instance.AllowView ? null : $t('problem.cannotView')"
                 />
             </div>
         </div>
@@ -54,7 +45,7 @@
                     </div>
                     <div class="testcase__parameter-input">
                         <v-input-text
-                            hasClear
+                            isReadOnly
                             v-model="instance.Inputs[index]"
                         ></v-input-text>
                     </div>
@@ -66,20 +57,10 @@
                 </div>
                 <div class="testcase__parameter-input">
                     <v-input-text
-                        hasClear
+                        isReadOnly
                         v-model="instance.ExpectedOutput"
                     ></v-input-text>
                 </div>
-            </div>
-            <div class="flex-center btn-hide-detail">
-                <v-button
-                    icon="far fa-circle-chevron-up"
-                    severity="warning"
-                    text
-                    raised
-                    rounded
-                    @click="this.isShowDetail = false"
-                />
             </div>
         </div>
         <div
@@ -145,19 +126,12 @@ export default {
             default: {}
         },
         /**
-         * Danh sách testcase khác
-         */
-        testcases: {
-            type: Array,
-            default: []
-        },
-        /**
          * Danh sách parameters
          */
         parameters: {
             type: Array,
             default: []
-        }
+        },
     },
     data() {
         return {
@@ -220,7 +194,7 @@ export default {
         isShowWrongAnswerDetail() {
             if (this.instance && this.instance.Status) {
                 return this.instance.Status.status_id == problemEnum.statusJudge0.WrongAnswer
-                    // this.instance.Status.status_id == problemEnum.statusJudge0.Accepted;
+                // this.instance.Status.status_id == problemEnum.statusJudge0.Accepted;
             }
             return false;
         },
@@ -297,8 +271,10 @@ export default {
          * Đóng mở detail
          */
         clickPanel() {
-            this.isShowStatus = false;
-            this.isShowDetail = !this.isShowDetail;
+            if (this.instance.AllowView) {
+                this.isShowStatus = false;
+                this.isShowDetail = !this.isShowDetail;
+            }
         },
         /**
          * Đóng mở status detail
@@ -350,7 +326,6 @@ export default {
     align-items: center;
     padding: 0 20px;
     background-color: var(--dark-400);
-    cursor: pointer;
     border-radius: 8px;
     transition: background-color 0.2s;
 }

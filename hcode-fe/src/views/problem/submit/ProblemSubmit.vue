@@ -16,11 +16,6 @@
                 <div class="font-bold font-20 yellow-300">
                     {{ centerTitle }}
                 </div>
-                <v-tag
-                    v-if="this.isDraft"
-                    class="p-tag-draft"
-                    :value="$t('problem.draft')"
-                />
             </div>
             <div class="problem-detail__header--right">
 
@@ -37,22 +32,6 @@
                                     <v-form-column :rowGap="32">
                                         <!-- Mã và tên -->
                                         <v-form-group :columnGap="12">
-                                            <!-- Mã -->
-                                            <!-- <v-form-item
-                                                style="width: 20%;"
-                                                isRequired
-                                                :label="$t('problem.field.problemCode')"
-                                            >
-                                                <v-input-text
-                                                    ref="refProblemCode"
-                                                    isRequired
-                                                    v-model="instance.ProblemCode"
-                                                    :maxLength="20"
-                                                    :label="$t('problem.field.code')"
-                                                    :applyPlaceholder="false"
-                                                >
-                                                </v-input-text>
-                                            </v-form-item> -->
                                             <!-- Tên -->
                                             <v-form-item
                                                 isRequired
@@ -60,11 +39,8 @@
                                             >
                                                 <v-input-text
                                                     ref="refProblemName"
-                                                    isRequired
                                                     v-model="instance.ProblemName"
-                                                    hasClear
-                                                    :maxLength="255"
-                                                    :label="$t('problem.field.problemName')"
+                                                    isReadOnly
                                                     :applyPlaceholder="false"
                                                 >
                                                 </v-input-text>
@@ -77,21 +53,20 @@
                                                 style="width: 20%;"
                                                 :label="$t('problem.field.difficulty')"
                                             >
-                                                <v-combobox
-                                                    v-model="selectedDifficulty"
-                                                    optionLabel="name"
-                                                    :options="difficulties"
+                                                <v-input-text
+                                                    ref="refDifficulty"
+                                                    isReadOnly
+                                                    :value="selectedDifficulty?.name"
+                                                    :applyPlaceholder="false"
                                                 >
-                                                </v-combobox>
+                                                </v-input-text>
                                             </v-form-item>
                                             <!-- Chủ đề -->
                                             <v-form-item :label="$t('problem.field.topic')">
                                                 <v-input-text
                                                     ref="refTopic"
                                                     v-model="instance.Topic"
-                                                    hasClear
-                                                    :maxLength="255"
-                                                    :label="$t('problem.field.topic')"
+                                                    isReadOnly
                                                     :applyPlaceholder="false"
                                                 >
                                                 </v-input-text>
@@ -105,10 +80,8 @@
                                                     <v-input-text
                                                         v-model="instance.LimitTime"
                                                         type='number'
+                                                        isReadOnly
                                                         :dataInput="$enums.dataInput.decimal"
-                                                        :minValue="0"
-                                                        :maxValue="10"
-                                                        :label="$t('problem.field.limitTime')"
                                                         :applyPlaceholder="false"
                                                     >
                                                     </v-input-text>
@@ -120,10 +93,8 @@
                                                     <v-input-text
                                                         v-model="instance.LimitMemory"
                                                         type='number'
+                                                        isReadOnly
                                                         :dataInput="$enums.dataInput.decimal"
-                                                        :minValue="2048"
-                                                        :maxValue="51200"
-                                                        :label="$t('problem.field.limitMemory')"
                                                         :applyPlaceholder="false"
                                                     >
                                                     </v-input-text>
@@ -176,41 +147,26 @@
                                             style="width: 20%;"
                                             :label="$t('problem.outputType')"
                                         >
-                                            <v-combobox
-                                                v-model="selectedOutputType"
-                                                optionLabel="name"
-                                                :options="dataTypes"
+                                            <v-input-text
+                                                ref="refOutputType"
+                                                isReadOnly
+                                                :value="selectedOutputType?.name"
+                                                :applyPlaceholder="false"
                                             >
-                                            </v-combobox>
+                                            </v-input-text>
                                         </v-form-item>
                                         <!-- Tham số đầu vào-->
                                         <v-form-item :label="$t('problem.inputParameter')">
-                                            <v-button-container class="w-full justify-between">
-                                                <v-button
-                                                    icon="far fa-plus"
-                                                    :label="$t('com.add')"
-                                                    @click="clickAddParameter"
-                                                ></v-button>
-                                                <v-button
-                                                    v-if="!$cf.isEmptyArray(instance.Parameters)"
-                                                    severity="danger"
-                                                    icon="far fa-trash-can"
-                                                    outlined
-                                                    :label="$t('com.deleteAll')"
-                                                    @click="clickDeleteAllParameter"
-                                                ></v-button>
-                                            </v-button-container>
                                             <div
                                                 class="parameter__list"
                                                 v-if="!$cf.isEmptyArray(instance.Parameters)"
                                             >
                                                 <ParameterItem
                                                     v-for="(param, index) in instance.Parameters"
+                                                    isReadOnly
                                                     :key="param.ParameterId"
                                                     :index="index"
                                                     :parameter="param"
-                                                    :parameters="instance.Parameters"
-                                                    @onDelete="deleteParameter"
                                                 ></ParameterItem>
                                             </div>
                                         </v-form-item>
@@ -220,37 +176,33 @@
                             <!-- Test -->
                             <v-tab-panel :header="$t('problem.testcase')">
                                 <div class="testcase-container dark">
-                                    <v-button-container class="w-full justify-between">
-                                        <v-button
-                                            icon="far fa-plus"
-                                            :label="$t('com.add')"
-                                            @click="clickAddTestcase"
-                                        ></v-button>
-                                        <v-button
-                                            v-if="!$cf.isEmptyArray(instance.Testcases)"
-                                            severity="danger"
-                                            icon="far fa-trash-can"
-                                            outlined
-                                            :label="$t('com.deleteAll')"
-                                            @click="clickDeleteAllTestcase"
-                                        ></v-button>
-                                    </v-button-container>
                                     <div
                                         class="testcase__list"
                                         v-if="!$cf.isEmptyArray(instance.Testcases)"
                                     >
                                         <TestcaseItem
                                             v-for="(testcase, index) in instance.Testcases"
+                                            isReadOnly
                                             :key="testcase.TestcaseId"
                                             :index="index"
                                             :testcase="testcase"
-                                            :testcases="instance.Testcases"
                                             :parameters="instance.Parameters"
-                                            @onDelete="deleteTestcase"
                                         ></TestcaseItem>
                                     </div>
                                 </div>
                             </v-tab-panel>
+                            <!-- Thông báo kết quả chạy -->
+                            <!-- <v-tab-panel :header="$t('problem.result')">
+                                <v-editor
+                                    class='no-toolbar'
+                                    v-model="result"
+                                    readonly
+                                ></v-editor>
+                            </v-tab-panel> -->
+                            <!-- Đã nộp -->
+                            <!-- <v-tab-panel :header="$t('problem.submissions')">
+                                <SubmissionsList :parentId="instance.ProblemAccountId" />
+                            </v-tab-panel> -->
                         </v-tab-view>
                     </div>
                 </v-splitter-panel>
@@ -312,14 +264,8 @@
             >
                 <!-- Lưu -->
                 <v-button
-                    :label="$t('com.save')"
-                    @click="onClickSave"
-                />
-                <!-- Lưu nháp -->
-                <v-button
-                    outlined
-                    :label="$t('com.saveDraft')"
-                    @click="onClickSaveDraft"
+                    :label="$t('com.submit')"
+                    @click="clickSubmit"
                 />
             </v-button-container>
         </div>
@@ -334,16 +280,18 @@ import problemEnum from "@/enums/problem-enum";
 import problemConst from "@/consts/problem-const.js";
 import ParameterItem from "./ParameterItem.vue";
 import TestcaseItem from "./TestcaseItem.vue";
+import SubmissionsList from "./submission/SubmissionsList.vue";
 import enums from "@/enums/enums";
 
 const formMode = enums.formMode;
 
 export default {
-    name: "ProblemDetail",
+    name: "ProblemSubmit",
     extends: BaseForm,
     components: {
         ParameterItem,
         TestcaseItem,
+        SubmissionsList
     },
     data() {
         return {
@@ -619,112 +567,6 @@ export default {
         dataTypeByLanguage(dataType, judgeId) {
             const value = problemEnum.mapDataTypeByLanguage(dataType, judgeId);
             return value;
-        },
-        /**
-         * Thêm param
-         */
-        clickAddParameter() {
-            if (!this.instance.Parameters) {
-                this.instance.Parameters = []
-            };
-
-            const param = {
-                ParameterId: this.$cf.uuid.new(),
-            }
-
-            this.instance.Parameters.push(param);
-        },
-        /**
-         * Xoá 1 parameter
-         * 
-         * @param {*} parameter 
-         */
-        deleteParameter(parameter) {
-            this.instance.Parameters = this.instance.Parameters.filter(item => item.ParameterId != parameter.ParameterId)
-        },
-        /**
-         * Click xoá tham số
-         */
-        clickDeleteAllParameter() {
-            const header = this.$t("problem.deleteAllParam");
-            const message = this.$t('problem.deleteAllParamConfirm');
-            const buttons = [
-                {
-                    // Huỷ
-                    severity: "secondary",
-                    outlined: true,
-                    label: this.$t("com.cancel"),
-                    icon: "fa fa-xmark",
-                },
-                {
-                    // Xoá
-                    severity: "danger",
-                    label: this.$t("com.delete"),
-                    icon: "far fa-trash-can",
-                    autofocus: true,
-                    click: this.deleteAllParameter,
-                }
-            ];
-            this.$dl.confirm(message, buttons, header);
-        },
-        /**
-         * Xoá hết tham số
-         */
-        deleteAllParameter() {
-            this.instance.Parameters = [];
-        },
-        /**
-         * Thêm Testcase
-         */
-        clickAddTestcase() {
-            if (!this.instance.Testcases) {
-                this.instance.Testcases = []
-            };
-
-            const testcase = {
-                TestcaseId: this.$cf.uuid.new(),
-            }
-
-            this.instance.Testcases.push(testcase);
-        },
-        /**
-         * Xoá 1 testcase
-         * 
-         * @param {*} testcase 
-         */
-        deleteTestcase(testcase) {
-            this.instance.Testcases = this.instance.Testcases.filter(item => item.TestcaseId != testcase.TestcaseId)
-        },
-        /**
-         * Click xoá hết testcase
-         */
-        clickDeleteAllTestcase() {
-            const header = this.$t("problem.deleteAllTestcase");
-            const message = this.$t('problem.deleteAllTestcaseConfirm');
-            const buttons = [
-                {
-                    // Huỷ
-                    severity: "secondary",
-                    outlined: true,
-                    label: this.$t("com.cancel"),
-                    icon: "fa fa-xmark",
-                },
-                {
-                    // Xoá
-                    severity: "danger",
-                    label: this.$t("com.delete"),
-                    icon: "far fa-trash-can",
-                    autofocus: true,
-                    click: this.deleteAllTestcase,
-                }
-            ];
-            this.$dl.confirm(message, buttons, header);
-        },
-        /**
-         * Xoá hết testcase
-         */
-        deleteAllTestcase() {
-            this.instance.Testcases = [];
         },
         /**
          * Trước khi doSave() trong clickSave()

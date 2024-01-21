@@ -112,13 +112,25 @@ namespace HCode.Infrastructure
         /// Created by: nlnhat (16/08/2023)
         public async Task<int> UpdateAsync(TEntity entity)
         {
-            var proc = $"{Procedure}Update";
+            try
+            {
+                var proc = $"{Procedure}Update";
 
-            var param = InfraHelper.GetParamFromEntity(entity);
+                var param = InfraHelper.GetParamFromEntity(entity);
 
-            var result = await _unitOfWork.Connection.ExecuteAsync(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
-            return result;
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                return result;
+            }
+            catch
+            {
+                var (sql, param) = InfraHelper.ScriptUpdate(entity);
+
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    sql, param, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                return result;
+            }
         }
         /// <summary>
         /// Cập nhật nhiều đối tượng
@@ -130,16 +142,39 @@ namespace HCode.Infrastructure
         {
             if (entities?.Count() > 0)
             {
-                var proc = $"{Procedure}UpdateMany";
+                try
+                {
+                    var proc = $"{Procedure}UpdateMany";
 
-                var entitiesJson = JsonSerializer.Serialize(entities);
+                    var entitiesJson = JsonSerializer.Serialize(entities);
 
-                var param = new DynamicParameters();
-                param.Add($"p_{Table}s", entitiesJson);
+                    var param = new DynamicParameters();
+                    param.Add($"p_{Table}s", entitiesJson);
 
-                var result = await _unitOfWork.Connection.ExecuteAsync(
-                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
-                return result;
+                    var result = await _unitOfWork.Connection.ExecuteAsync(
+                        proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                    return result;
+                }
+                catch
+                {
+                    var scripts = new List<string>();
+                    var parames = new DynamicParameters();
+                    var index = 1;
+
+                    foreach (var entity in entities)
+                    {
+                        var (script, param) = InfraHelper.ScriptUpdate(entity, index);
+                        scripts.Add(script);
+                        parames.AddDynamicParams(param);
+                        index++;
+                    }
+
+                    var sql = string.Join("\n", scripts);
+
+                    var result = await _unitOfWork.Connection.ExecuteAsync(
+                        sql, parames, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+                    return result;
+                }
             };
 
             return 0;
@@ -237,6 +272,36 @@ namespace HCode.Infrastructure
                     sql, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
                 return result;
             }
+        }
+
+        // Replace many
+        public async Task<int> ReplaceManyAsync(IEnumerable<TEntity>? entities, Guid masterId, string masterColumn)
+        {
+            if (entities?.Count() > 0)
+            {
+                var scripts = new List<string>();
+                var parames = new DynamicParameters();
+                var index = 1;
+
+                foreach (var entity in entities)
+                {
+                    var (script, param) = InfraHelper.ScriptInsert(entity, index, false);
+                    scripts.Add(script);
+                    parames.AddDynamicParams(param);
+                    index++;
+                }
+
+                var sql = $"DELETE FROM {Table} WHERE {masterColumn} = @p_MasterId;\n";
+                parames.Add("p_MasterId", masterId);
+
+                sql += string.Join("\n", scripts);
+
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    sql, parames, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+                return result;
+            };
+
+            return 0;
         }
         #endregion
     }

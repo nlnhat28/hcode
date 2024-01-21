@@ -61,7 +61,7 @@ const com = {
     minute: "phút",
     second: "giây",
     function: "Chức năng",
-    
+    submit: "Nộp",
 };
 
 export default com;

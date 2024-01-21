@@ -38,8 +38,10 @@ export default {
                 formPath: '',
                 /** Path gọi đến form này. Có gì còn callback */
                 callbackPath: '',
-                /** Subcode */
-                subSysCode: '',
+                /** tên entity */
+                entity: '',
+                /** tên phân hệ */
+                subSysName: 'Form',
             },
             /** Service */
             instanceService: null,
@@ -221,6 +223,8 @@ export default {
                     if (!this.$cf.isEmptyObject(response.Data)) {
                         this.instance = this.$cf.cloneDeep(response.Data);
                         this.storeOriginalInstance();
+                        this.documentTitle = this.instance[`${this.cfg.entity}Name`] + " - " + this.cfg.subSysName;
+                        document.title = this.$cf.documentTitle(this.documentTitle);
                     }
                     else {
                         this.$dl.error(this.$t('msg.cannotFindRecord'), this.goFormPath)
@@ -246,7 +250,7 @@ export default {
             try {
                 const response = await this.instanceService.post(this.reformatInstance);
                 if (this.$cf.isSuccess(response)) {
-                    this.instance.InstanceId = response.Data;
+                    this.instanceId = response.Data;
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;
@@ -267,14 +271,14 @@ export default {
         async updateInstance() {
             try {
                 const response = await this.instanceService.put(
-                    this.instance.InstanceId,
+                    this.instanceId,
                     this.reformatInstance
                 );
                 if (this.$cf.isSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                 } else {
-                    this.handleError(response);
                     this.isSuccessResponseFlag = false;
+                    this.handleError(response);
                 }
                 this.processResponseUpdate(response);
             } catch (error) {
@@ -386,9 +390,6 @@ export default {
                 this.isSuccessResponseFlag = false;
                 await this.onSave();
                 if (this.isSuccessResponseFlag == true) {
-                    this.$emit("emitUpdateFocusedId", this.instance.InstanceId);
-                    this.$emit("emitUpdateFocusedIds", [this.instance.InstanceId]);
-                    this.$emit("emitReloadData");
 
                     if (this.messageOnToast) {
                         this.$ts.success(this.messageOnToast);

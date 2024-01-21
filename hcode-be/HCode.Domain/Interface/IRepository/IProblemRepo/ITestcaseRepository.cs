@@ -6,6 +6,5 @@
     /// Created by: nlnhat (16/08/2023)
     public interface ITestcaseRepository : IBaseRepository<Testcase>
     {
-        
     }
 }

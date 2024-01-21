@@ -1032,7 +1032,7 @@ export default {
         async clickDelete(id, itemName) {
             const header = this.$t("com.delete");
             let name = itemName ? `<${itemName}>` : ''; 
-            let msgs = [this.$t('com.deleteConfirm'), this.cfg.name?.toLowerCase(), name];
+            let msgs = [this.$t('com.deleteConfirm'), this.cfg.subSysName?.toLowerCase(), name];
             msgs = this.$cf.removeNullOrEmpty(msgs);
             const message = msgs.join(" ") + "?";
             const buttons = [
@@ -1057,6 +1057,7 @@ export default {
         async delete(id) {
             const response = await this.itemService.delete(id);
             if (this.$cf.isSuccess(response)) {
+                this.$ts.success();
                 this.reloadItems();
             }
             else {

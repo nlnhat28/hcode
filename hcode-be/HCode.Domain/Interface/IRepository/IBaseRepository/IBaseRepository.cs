@@ -55,5 +55,12 @@
         /// <returns>Số lượng bản ghi bị ảnh hưởng</returns>
         /// Created by: nlnhat (15/08/2023)
         Task<int> DeleteAllAsync();
+        /// <summary>
+        /// Thay thế các testcase
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="problemId"></param>
+        /// <returns></returns>
+        Task<int> ReplaceManyAsync(IEnumerable<TEntity>? entities, Guid masterId, string masterColumn);
     }
 }
