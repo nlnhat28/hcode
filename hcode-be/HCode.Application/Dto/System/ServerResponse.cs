@@ -72,6 +72,7 @@ namespace HCode.Application
         public void OnError(Exception exception)
         {
             Success = false;
+            DevMsg = exception.Message;
             Data = ExceptionToData(exception);
         }
         /// <summary>
@@ -109,6 +110,7 @@ namespace HCode.Application
             Success = false;
             ErrorCode = errorCode;
             UserMsg = userMsg;
+            DevMsg = exception?.Message;
 
             if (exception != null)
             {
@@ -200,6 +202,7 @@ namespace HCode.Application
         {
             var data = new
             {
+                exception.Message,
                 exception.Source,
                 exception.Data,
                 exception.StackTrace,

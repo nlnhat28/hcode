@@ -102,7 +102,7 @@
                     </div>
                 </div>
                 <div class="testcase__input">
-                    <div class="testcase__parameter-name">
+                    <div class="testcase__parameter-name color-error">
                         {{ $t('problem.output') }}
                     </div>
                     <div class="testcase__parameter-input">
@@ -213,7 +213,8 @@ export default {
          */
         isShowWrongAnswerDetail() {
             if (this.instance && this.instance.Status) {
-                return this.instance.Status.status_name == problemEnum.statusJudge0.WrongAnswer;
+                return this.instance.Status.status_id == problemEnum.statusJudge0.WrongAnswer
+                    // this.instance.Status.status_id == problemEnum.statusJudge0.Accepted;
             }
             return false;
         },
@@ -223,7 +224,7 @@ export default {
         severityStatusButton() {
             if (this.instance && this.instance.Status) {
                 const statusJudge0 = problemEnum.statusJudge0;
-                switch (this.instance.Status.status_name) {
+                switch (this.instance.Status.status_id) {
                     case statusJudge0.Accepted:
                         return 'success';
                     case statusJudge0.OverLimit:
@@ -237,22 +238,39 @@ export default {
         logStatus() {
             let log = '';
             if (this.instance && this.instance.Status) {
-                let logs = [
-                    this.instance.Status.compile_output,
-                    this.instance.Status.stderr,
-                    this.instance.Status.message,
-                ];
+                switch (this.instance.Status.status_id) {
+                    case problemEnum.statusJudge0.Accepted:
+                    case problemEnum.statusJudge0.OverLimit:
+                        let t = this.$t("problem.field.runTime")
+                        let m = this.$t("problem.field.usedMemory")
 
-                logs = this.$cf.removeNullOrEmpty(logs);
+                        let time = this.instance.Status.time
+                        let memory = this.instance.Status.memory
+
+                        let timeMsg = `${t}: <span style="color: red">${time}</span> ${this.$t('com.second')}`
+                        let memoryMsg = `${m}: <span style="color: red">${memory}</span> kilobytes`
+
+                        log = [timeMsg, memoryMsg].join('<br><br>');
+
+                        break;
+
+                    default:
+                        let logs = [
+                            this.instance.Status.compile_output,
+                            this.instance.Status.stderr,
+                            this.instance.Status.message,
+                        ];
+
+                        logs = this.$cf.removeNullOrEmpty(logs);
 
 
-                if (!this.$cf.isEmptyArray(logs)) {
-                    logs.forEach(item => item.replace(/\n/g, "<br>"))
-                    log = logs.join("<br>");
+                        if (!this.$cf.isEmptyArray(logs)) {
+                            logs.forEach(item => item.replace(/\n/g, "<br>"))
+                            log = logs.join("<br>");
+                        }
+                        break;
                 }
-
                 return log;
-
             };
             return log;
         },
@@ -354,7 +372,7 @@ export default {
 }
 
 .testcase__detail {
-    width: 100%;
+    width: 99%;
     height: fit-content;
     background-color: var(--dark-500);
     border-radius: 0 0 8px 8px;

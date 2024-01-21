@@ -113,13 +113,13 @@ const problemEnum = {
             label: "int[]",
         },
         // Số thực
-        decimal: {
+        double: {
             value: 7,
-            label: "decimal",
+            label: "double",
         },
-        decimals: {
+        doubles: {
             value: 8,
-            label: "decimal[]",
+            label: "double[]",
         },
         /**
          * Bool
@@ -191,8 +191,8 @@ const problemEnum = {
                     default:
                         return "";
                 }
-            // Kiểu decimal
-            case this.dataType.decimal.value:
+            // Kiểu double
+            case this.dataType.double.value:
                 switch (judgeId) {
                     case this.language.c:
                     case this.language.cpp:
@@ -202,8 +202,8 @@ const problemEnum = {
                     default:
                         return "";
                 }
-            // Kiểu decimal[]
-            case this.dataType.decimals.value:
+            // Kiểu double[]
+            case this.dataType.doubles.value:
                 switch (judgeId) {
                     case this.language.cpp:
                         return "vector<double>";

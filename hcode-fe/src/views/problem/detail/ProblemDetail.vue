@@ -12,10 +12,15 @@
                     @click="$router.push($path.problems)"
                 ></v-button>
             </div>
-            <div class="problem-detail__header--center flex-center">
+            <div class="problem-detail__header--center flex-center col-gap-12">
                 <div class="font-bold font-20 yellow-300">
                     {{ centerTitle }}
                 </div>
+                <v-tag
+                    v-if="this.isDraft"
+                    class="p-tag-draft"
+                    :value="$t('problem.draft')"
+                />
             </div>
             <div class="problem-detail__header--right">
 
@@ -253,9 +258,9 @@
                                 ></v-editor>
                             </v-tab-panel> -->
                             <!-- Đã nộp -->
-                            <v-tab-panel :header="$t('problem.submissions')">
+                            <!-- <v-tab-panel :header="$t('problem.submissions')">
                                 <SubmissionsList :parentId="instance.ProblemAccountId" />
-                            </v-tab-panel>
+                            </v-tab-panel> -->
                         </v-tab-view>
                     </div>
                 </v-splitter-panel>
@@ -263,8 +268,19 @@
                 <v-splitter-panel class="flex-center">
                     <div class="wh-full p-20 flex-column code-container">
                         <div class="code__header flex justify-between">
-                            <div class="font-bold color-text flex-center">
-                                {{ $t('problem.field.solution') }}
+                            <div class="flex-align-center col-gap-12">
+                                <div class="font-bold color-text flex-center">
+                                    {{ $t('problem.field.solution') }}
+                                </div>
+                                <v-button
+                                    icon="far fa-arrows-rotate"
+                                    severity="danger"
+                                    text
+                                    raised
+                                    rounded
+                                    :title="'Reset'"
+                                    @click="clickResetSource"
+                                />
                             </div>
                             <div class="flex-align-center w-fit">
                                 <v-combobox
@@ -329,6 +345,10 @@ export default {
     },
     data() {
         return {
+            cfg: {
+                formPath: this.$path.problem,
+                callbackPath: this.$path.problems,
+            },
             instanceService: problemService,
             problemConst: problemConst,
             languages: [],
@@ -344,6 +364,8 @@ export default {
             },
             activeTab: 0,
             result: null,
+            allowBuildSource: false,
+            isDraft: false,
         }
     },
     watch: {
@@ -364,19 +386,25 @@ export default {
         // Build source code khi những thứ này thay đổi
         "instance.SolutionLanguage": {
             handler() {
-                this.buildSourceCode();
+                if (this.checkBuildSource) {
+                    this.buildSourceCode();
+                }
             },
             deep: true
         },
         "instance.Parameters": {
             handler() {
-                this.buildSourceCode();
+                if (this.checkBuildSource) {
+                    this.buildSourceCode();
+                }
             },
             deep: true
         },
         "instance.OutputType": {
             handler() {
-                this.buildSourceCode();
+                if (this.checkBuildSource) {
+                    this.buildSourceCode();
+                }
             },
             deep: true
         },
@@ -483,6 +511,9 @@ export default {
             }
             return ''
         },
+        checkBuildSource() {
+            return this.mode != this.$enums.formMode.update || this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
+        },
         /**
          * Tạo tiêu đề problem
          */
@@ -503,17 +534,8 @@ export default {
          * Khởi tạo dữ liệu data
          */
         async initOnCreated() {
-
             this.difficulties = this.$cv.enumToSelects(enums.difficulty);
             this.dataTypes = this.$cv.enumToSelects(problemEnum.dataType);
-
-            let id = this.$route.params.id;
-
-            if (id == null) {
-                this.mode = formMode.create;
-                this.instance = this.problemStore.problem;
-            }
-
         },
         /**
          * Khởi tạo problem khi thêm mới
@@ -523,12 +545,23 @@ export default {
             this.documentTitle = this.$t("problem.createProblem");
             document.title = this.$cf.documentTitle(this.documentTitle);
 
-            this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
-            this.selectedOutputType = this.$cv.enumKeyToSelected(this.instance.OutputType, this.dataTypes, 0);
             this.instance.Solution ??= '';
             this.instance.IsPrivateState = true;
             this.instance.TimeUnit = this.$enums.timeUnit.second.value;
             this.instance.MemoryUnit = this.$enums.memoryUnit.kilobyte.value;
+        },
+        /** 
+         * @overrid 
+         * */
+        customInstanceOnCreated() {
+            this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
+            this.selectedOutputType = this.$cv.enumKeyToSelected(this.instance.OutputType, this.dataTypes, 0);
+            this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
+
+            this.instance.IsPrivateState = this.instance.State == problemEnum.problemState.private.value;
+            this.instance.IsPublicState = this.instance.State == problemEnum.problemState.public.value;
+
+            this.isDraft = this.instance.IsDraft;
         },
         /**
          * Lấy dữ liệu
@@ -536,7 +569,7 @@ export default {
         async loadDataOnCreated() {
             await this.getLanguages();
             if (this.$cf.isEmptyObject(this.instance.SolutionLanguage) && !this.$cf.isEmptyArray(this.languages)) {
-                this.instance.SolutionLanguage = this.languages[0];
+                this.instance.SolutionLanguage ??= this.languages[0];
             }
         },
         /**
@@ -563,6 +596,13 @@ export default {
          */
         buildSourceCode() {
             this.instance.Solution = this.defaultSourceCode;
+        },
+        /**
+         * Click reset lời giải
+         */
+        clickResetSource() {
+            this.buildSourceCode();
+            this.allowBuildSource = true;
         },
         /**
          * Lấy kiểu dữ liệu theo language
@@ -681,19 +721,21 @@ export default {
             this.instance.Testcases = [];
         },
         /**
-         * Trước khi doSave()
+         * Trước khi doSave() trong clickSave()
          * @virtual
          */
         beforeDoSave() {
+            this.instance.IsDraft = false;
             this.instance.State = problemEnum.problemState.private.value;
+            this.resetTestcaseStatus();
         },
         /**
          * Click lưu nháp
          */
         onClickSaveDraft() {
             try {
-                this.instance.State = problemEnum.problemState.draft.value;
-                console.log("Saving...:", this.instance);
+                this.instance.IsDraft = true;
+                this.instance.State = problemEnum.problemState.private.value;
                 this.doSave();
             } catch (error) {
                 console.error(error);
@@ -713,8 +755,6 @@ export default {
                     this.messageValidate = this.$t("problem.mustHasTestcase");
                     this.focusTabView(this.tabView.test);
                 }
-                // this.refError = this.$refs["refConfirmPassword"];
-                // this.$refs["refConfirmPassword"].setErrorMessage(this.messageValidate);
             };
         },
         /**
@@ -724,6 +764,16 @@ export default {
          */
         focusTabView(tabViewIndex) {
             this.activeTab = tabViewIndex;
+        },
+        /**
+         * Reset kết quả các testcases
+         */
+        resetTestcaseStatus() {
+            if (this.instance.Testcases) {
+                for (let test of this.instance.Testcases) {
+                    test.Status = {};
+                }
+            }
         },
         /**
          * Map submission vào testcases
@@ -744,7 +794,7 @@ export default {
          */
         processResponseCreate(response) {
             if (response) {
-                if (!this.$cf.isSuccess(response) && response.Data) {
+                if (response.Data) {
                     const submissions = this.$cf.cloneDeep(response.Data.Submissions);
                     this.processSubmissionResponse(submissions)
                 }

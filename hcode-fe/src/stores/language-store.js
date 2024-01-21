@@ -11,7 +11,7 @@ const useLanguageStore = defineStore("language", {
         },
     },
     persist: {
-        storage: sessionStorage,
+        storage: localStorage,
     },
 });
 

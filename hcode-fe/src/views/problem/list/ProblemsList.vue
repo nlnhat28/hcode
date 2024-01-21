@@ -93,7 +93,7 @@
                             <v-td :style="{
                                 textAlign: 'center'
                             }">
-                                <div style="width: 40px">
+                                <div style="width: 32px">
                                     {{ $cv.numberToSuffix(item.SeenCount) }}
                                 </div>
                                 <v-icon
@@ -114,6 +114,39 @@
                                     color="success"
                                 ></v-icon>
                             </v-td>
+                            <!-- Chức năng -->
+                            <v-td :style="{
+                                textAlign: 'center'
+                            }">
+                                <div class="flex-align-center col-gap-4">
+                                    <v-button
+                                        icon="far fa-code"
+                                        severity="info"
+                                        text
+                                        raised
+                                        rounded
+                                        :title="$t('problem.practice')"
+                                    />
+                                    <v-button
+                                        icon="far fa-pen"
+                                        severity="warning"
+                                        text
+                                        raised
+                                        rounded
+                                        :title="$t('com.edit')"
+                                        @click="clickEdit(item.ProblemId)"
+                                    />
+                                    <v-button
+                                        icon="far fa-trash"
+                                        severity="danger"
+                                        text
+                                        raised
+                                        rounded
+                                        :title="$t('com.delete')"
+                                        @click="clickDelete(item.ProblemId, item.ProblemName)"
+                                    />
+                                </div>
+                            </v-td>
                         </template>
                     </v-tr>
                 </template>
@@ -130,11 +163,11 @@
                 </template>
             </v-table>
         </div>
-        <div class="problems-list__right">
+        <!-- <div class="problems-list__right">
             <div class="problems-list__stat">
 
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 <script>
@@ -149,6 +182,10 @@ export default {
         return {
             documentTitle: this.$t("problem.problemList"),
             itemIdKey: "ProblemId",
+            cfg: {
+                formPath: this.$path.problem,
+                name: this.$t("problem.problem")
+            },
             problemEnum: problemEnum,
             /**
              * Các cột
@@ -167,7 +204,7 @@ export default {
                 {
                     title: this.$t("problem.field.problemName"),
                     textAlign: 'left',
-                    widthCell: 200,
+                    widthCell: 180,
                     name: "ProblemName",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -180,7 +217,7 @@ export default {
                 {
                     title: this.$t("problem.field.topic"),
                     textAlign: 'left',
-                    widthCell: 160,
+                    widthCell: 140,
                     name: "Topic",
                     filterConfig: {
                         filterType: this.$enums.filterType.text,
@@ -222,6 +259,11 @@ export default {
                     filterConfig: {
                         filterType: this.$enums.filterType.number,
                     }
+                },
+                {
+                    title: this.$t("com.function"),
+                    textAlign: 'center',
+                    widthCell: 60,
                 }
             ],
             problemStates: [],
@@ -255,6 +297,12 @@ export default {
                             logicType: this.$enums.logicType.and,
                             compareType: this.$enums.compareType.equal,
                             filterValue: problemEnum.problemState.private.value
+                        },
+                        {
+                            columnName: 'IsDraft',
+                            logicType: this.$enums.logicType.and,
+                            compareType: this.$enums.compareType.equal,
+                            filterValue: 0,
                         },
                         {
                             columnName: 'AccountId',
@@ -297,13 +345,7 @@ export default {
         initOnCreated() {
             this.itemService = problemService;
             this.problemStates = this.$cv.enumToSelects(problemEnum.problemState);
-            this.selectedProblemState = this.problemStates[0];
-        },
-        /**
-         * Click vào nút tạo mới
-         */
-        clickCreate() {
-            this.$router.push(this.$path.problem)
+            this.selectedProblemState = this.problemStates[1];
         },
         /**
          * Chọn problem state
@@ -311,24 +353,6 @@ export default {
         onSelectedProblemState() {
             this.reloadItems();
         },
-        // addFilterProblemState() {
-
-        //     if (!this.$cf.isEmptyArray(this.filterModels)) {
-        //         let filterProblemState = this.filterModels.find(item => item.column == 'State')
-        //         if (filterProblemState) {
-        //             filterProblemState.values = [this.selectedProblemState];
-        //             return;
-        //         }
-        //     }
-        //     this.filterModels.push({
-        //         column: 'State',
-        //         logicType: this.$enums.logicType.and,
-        //         logicName: 'and',
-        //         compareType: this.$enums.compareType.equal,
-        //         compareName: '=',
-        //         values: [this.selectedProblemState]
-        //     });
-        // }
     }
 
 

@@ -2,6 +2,7 @@
 import enums from "@/enums/enums";
 import { loadingEffect, handleResponse } from "@/mixins/mixins.js"
 import { mapStores, mapState } from 'pinia';
+const formMode = enums.formMode;
 
 export default {
     name: "BaseForm",
@@ -10,7 +11,7 @@ export default {
         /**
          * Id của instance
          */
-        instanceId: {
+        id: {
             type: [String, Number],
         },
         /**
@@ -32,55 +33,54 @@ export default {
     },
     data() {
         return {
-            subSystemCode: '',
-            /**
-             * Service
-             */
+            cfg: {
+                /** Path */
+                formPath: '',
+                /** Path gọi đến form này. Có gì còn callback */
+                callbackPath: '',
+                /** Subcode */
+                subSysCode: '',
+            },
+            /** Service */
             instanceService: null,
-            /**
-             * Mode of form
-             */
+            /** Mode of form */
             mode: this.formMode,
-            /**
-             * Đối tượng show trên form
-             */
+            /*** Đối tượng show trên form */
             instance: {},
-            /**
-             * Đối tượng gốc
-             */
+            /** id của instance */
+            instanceId: this.id,
+            /** Đối tượng gốc */
             originalInstance: {},
-            /**
-             * Flag check success response
-             */
+            /** Flag check success response */
             isSuccessResponseFlag: true,
-            /**
-             * Message to show on dialog if invalid form
-             */
+            /** Message to show on dialog if invalid form */
             messageValidate: null,
-            /**
-             * Focused input
-             */
+            /** Focused input */
             refFocus: null,
-            /**
-             * Focused error ref
-             */
+            /** Focused error ref */
             refError: null,
-            /**
-             * Form item refs
-             */
+            /** Form item refs */
             refs: [],
-            /**
-             * Flag loading
-             */
+            /** Flag loading */
             isLoading: false,
-            /**
-             * Message hiện lên on toast
-             */
+            /** Message hiện lên on toast */
             messageOnToast: null,
         };
     },
     async created() {
         document.title = this.$cf.documentTitle(this.documentTitle);
+        
+        let id = this.$route.params.id;
+
+        if (id == null) {
+            this.mode = formMode.create;
+            this.instance = {};
+        }
+        else {
+            this.mode = formMode.update;
+            this.instanceId = id;
+        }
+
         await this.initOnCreated();
         await this.loadingEffect(async () => {
             await Promise.all([
@@ -177,6 +177,31 @@ export default {
         initCreateInstance() {
         },
         /**
+         * Về màn callback path
+         */
+        goCallbackPath() {
+            if (this.cfg.callbackPath) {
+                this.$router.push(this.cfg.callbackPath);
+            }
+            else {
+                console.warning("DEV chưa cấu hình cfg.callbackPath")
+            }
+        },
+        /**
+         * Về màn form path
+         */
+        goFormPath() {
+            if (this.cfg.formPath) {
+                this.$router.push(this.$cf.combineRoute(this.cfg.formPath));
+            }
+            else if (this.cfg.callbackPath) {
+                this.$router.push(this.cfg.callbackPath);
+            }
+            else {
+                console.warning("DEV chưa cấu hình cfg.callbackPath")
+            }
+        },
+        /**
          * Lưu đối tượng gốc
          * 
          * Author: nlnhat (30/08/2023)
@@ -193,20 +218,24 @@ export default {
             if (this.instanceService) {
                 const response = await this.instanceService.get(id);
                 if (this.$cf.isSuccess(response)) {
-                    this.instance = this.$cf.cloneDeep(response.Data);
-                    this.processResponseGetData(response.Data);
-                    this.storeOriginalInstance();
+                    if (!this.$cf.isEmptyObject(response.Data)) {
+                        this.instance = this.$cf.cloneDeep(response.Data);
+                        this.storeOriginalInstance();
+                    }
+                    else {
+                        this.$dl.error(this.$t('msg.cannotFindRecord'), this.goFormPath)
+                    }
                 }
                 else {
-                    this.handleError(response)
+                    this.handleError(response, this.goCallbackPath)
                 }
+                this.processResponseGet(response);
             }
         },
         /**
          * Xử lý dữ liệu trả về
          */
-        processResponseGetData(data) {
-
+        processResponseGet(response) {
         },
         /**
          * Create new instance

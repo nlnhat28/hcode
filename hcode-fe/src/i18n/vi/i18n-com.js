@@ -10,6 +10,7 @@ const com = {
     edit: "Sửa",
     delete: "Xoá",
     deleteAll: "Xoá hết",
+    deleteConfirm: "Bạn có chắc chắn xoá",
     showPassword: "Hiện mật khẩu",
     hidePassword: "Ẩn mật khẩu",
     passwordTooltip:
@@ -58,6 +59,9 @@ const com = {
     reload: "Làm mới",
     value: "Giá trị",
     minute: "phút",
+    second: "giây",
+    function: "Chức năng",
+    
 };
 
 export default com;

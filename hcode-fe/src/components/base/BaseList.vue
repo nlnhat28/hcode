@@ -22,6 +22,13 @@ export default {
     },
     data() {
         return {
+            /** config các thông tin */
+            cfg: {
+                /** path dẫn đến form */
+                formPath: '',
+                /** Tên phân hệ */
+                name: ''
+            },
             /**
              * Columns
              */
@@ -999,6 +1006,62 @@ export default {
          * Click vào nút tạo mới
          */
         clickCreate() {
+            if (this.cfg.formPath) {
+                this.$router.push(this.$cf.combineRoute(this.cfg.formPath));
+            }
+            else {
+                console.error("DEV chưa cấu hình cfg.formPath")
+            }
+        },
+        /**
+         * Click sửa
+         * @param {*} id 
+         */
+        clickEdit(id) {
+            if (this.cfg.formPath && id != null) {
+                this.$router.push(this.$cf.combineRoute(this.cfg.formPath, id))
+            }
+            else {
+                console.error("DEV chưa cấu hình cfg.formPath")
+            }
+        },
+        /**
+         * Click sửa
+         * @param {*} id 
+         */
+        async clickDelete(id, itemName) {
+            const header = this.$t("com.delete");
+            let name = itemName ? `<${itemName}>` : ''; 
+            let msgs = [this.$t('com.deleteConfirm'), this.cfg.name?.toLowerCase(), name];
+            msgs = this.$cf.removeNullOrEmpty(msgs);
+            const message = msgs.join(" ") + "?";
+            const buttons = [
+                {
+                    // Huỷ
+                    severity: "secondary",
+                    outlined: true,
+                    label: this.$t("com.cancel"),
+                    icon: "fa fa-xmark",
+                },
+                {
+                    // Xoá
+                    severity: "danger",
+                    label: this.$t("com.delete"),
+                    icon: "far fa-trash-can",
+                    autofocus: true,
+                    click: () => {this.delete(id)},
+                }
+            ];
+            this.$dl.confirm(message, buttons, header);
+        },
+        async delete(id) {
+            const response = await this.itemService.delete(id);
+            if (this.$cf.isSuccess(response)) {
+                this.reloadItems();
+            }
+            else {
+                this.handleError(response);
+            }
         }
     }
 }

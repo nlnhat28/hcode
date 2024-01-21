@@ -53,6 +53,7 @@ namespace HCode.Domain
             DevMsg = exception.Message;
             Data = new
             {
+                exception.Message,
                 exception.Source,
                 exception.Data,
                 exception.StackTrace,

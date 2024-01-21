@@ -8,7 +8,8 @@
         </div>
         <!-- <div v-if="!$cf.isEmptyString(title)"></div> -->
         <div class="log-view__content">
-            {{ content }}
+            <!-- {{ content }} -->
+            <div v-html="content"></div>
         </div>
     </div>
 </template>

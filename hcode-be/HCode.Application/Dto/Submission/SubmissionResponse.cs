@@ -102,12 +102,16 @@ namespace HCode.Application
     /// <summary>
     /// Submission data
     /// </summary>
-    public class SubmissionResponseData
+    public class SubmissionData
     {
         /// <summary>
         /// Danh sách submission response
         /// </summary>
         public List<SubmissionResponse> Submissions { get; set; }
+        /// <summary>
+        /// Status
+        /// </summary>
+        public StatusJudge0 StatusId { get; set; }
         /// <summary>
         /// Thời gian trung bình
         /// </summary>

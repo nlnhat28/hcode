@@ -87,8 +87,8 @@ namespace HCode.Infrastructure
             param.Add($"p_State", state);
             param.Add($"p_AccountId", AccountId);
 
-            var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure) ?? 0;
+            var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<int>(
+                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
             return result;
         }

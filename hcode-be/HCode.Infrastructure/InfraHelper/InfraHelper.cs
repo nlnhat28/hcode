@@ -1,4 +1,8 @@
 ﻿using Dapper;
+using HCode.Infrastructure;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using System.Data.Common;
 using System.Drawing.Printing;
 using System.Reflection;
@@ -43,19 +47,21 @@ namespace HCode.Domain
         /// <param name="entity">Đối tượng</param>
         /// <returns>Param được add các tham số từ properties của class</returns>
         /// Created by: nlnhat (20/07/2023)
-        public static DynamicParameters GetParamFromEntity<TEntity>(TEntity? entity)
+        public static DynamicParameters GetParamFromEntity<TEntity>(TEntity? entity, int? index = null)
         {
             var param = new DynamicParameters();
 
             var entityType = typeof(TEntity);
             var properties = entityType.GetProperties();
 
+            var id = index != null ? $"_{index}" : string.Empty;
+
             foreach (var property in properties)
             {
                 var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
                 if (notMapped == null)
                 {
-                    var propertyName = "p_" + property.Name;
+                    var propertyName = $"p_{property.Name}{id}";
                     var propertyValue = entity != null ? property.GetValue(entity) : null;
                     param.Add(propertyName, propertyValue);
                 }
@@ -324,6 +330,62 @@ namespace HCode.Domain
 
                 return result;
             }
+        }
+        /// <summary>
+        /// Tạo script insert
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static (string script, DynamicParameters param) ScriptInsert<TEntity>(
+            TEntity entity, int? index = null, bool? getId = true)
+        {
+            var script = "INSERT INTO {0}(\n{1}) VALUES (\n{2});";
+            var param = new DynamicParameters();
+            var entityType = typeof(TEntity);
+            var columns = new List<string>();
+            var parameters = new List<string>();
+
+            var tableAttribute = entityType.GetCustomAttribute<TableAttribute>();
+            var table = tableAttribute != null ? tableAttribute.Name : typeof(TEntity).Name;
+            var tableId = $"{table}Id";
+
+            var id = index != null ? $"_{index}" : string.Empty;
+
+            var properties = entityType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
+                if (notMapped == null)
+                {
+                    columns.Add(property.Name);
+
+                    var propertyName = $"p_{property.Name}{id}";
+                    var paramName = $"@{propertyName}";
+
+                    parameters.Add(paramName);
+
+                    var propertyValue = entity != null ? property.GetValue(entity) : null;
+                    param.Add(propertyName, propertyValue);
+                };
+
+                var keyAttribute = entityType.GetCustomAttribute<KeyAttribute>();
+                if (keyAttribute != null)
+                {
+                    tableId = property.Name;
+                }
+            }
+
+            script = string.Format(script, table, string.Join(",\n", columns), string.Join(",\n", parameters));
+
+            if (getId == true)
+            {
+                script += $"\nSELECT @p_{tableId} AS {tableId}";
+            }
+
+            return (script, param);
         }
     }
 }

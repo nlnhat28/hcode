@@ -121,6 +121,10 @@ namespace HCode.Application
         /// </summary>
         public DataType? OutputType { get; set; }
         /// <summary>
+        /// Nháp
+        /// </summary>
+        public bool? IsDraft { get; set; }
+        /// <summary>
         /// Trạng thái của người dùng
         /// </summary>
         public ProblemAccountState? ProblemAccountState { get; set; }

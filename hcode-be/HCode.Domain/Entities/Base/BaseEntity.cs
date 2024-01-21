@@ -16,6 +16,7 @@ namespace HCode.Domain
         /// <summary>
         /// Số thứ tự
         /// </summary>
+        [NotMapped]
         public int? RowNumber { get; set; }
         /// <summary>
         /// Ngày tạo

@@ -227,7 +227,6 @@ import { mapStores, mapState } from 'pinia';
 import contestEnum from "@/enums/contest-enum";
 import contestConst from "@/consts/contest-const.js";
 import ContestProblemItem from "./ContestProblemItem.vue";
-import TestcaseItem from "./TestcaseItem.vue";
 import enums from "@/enums/enums";
 import { problemService } from "@/services/services.js";
 import ContestAccountList from "./contest-account/ContestAccountList.vue";
@@ -239,7 +238,6 @@ export default {
     extends: BaseForm,
     components: {
         ContestProblemItem,
-        TestcaseItem,
         ContestAccountList
     },
     data() {

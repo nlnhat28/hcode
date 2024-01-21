@@ -10,6 +10,7 @@ import ProblemsList from "@/views/problem/list/ProblemsList.vue";
 import ProblemDetail from "@/views/problem/detail/ProblemDetail.vue";
 import ContestsList from "@/views/contest/list/ContestList.vue";
 import ContestDetail from "@/views/contest/detail/ContestDetail.vue";
+import cf from "@/helper/common-function.js";
 
 const routes = [
     {
@@ -63,10 +64,23 @@ const routes = [
     },
     {
         path: path.problem,
+        name: "problemNew",
+        components: {
+            viewApp: ProblemDetail,
+        },
+    },
+    {
+        path: path.problem + ":id",
         name: "problem",
         components: {
             viewApp: ProblemDetail,
         },
+        // redirect: (to) => {
+        //     return {
+        //         path: path.problem,
+        //         query: { q: to.params.id },
+        //     };
+        // },
     },
     {
         path: path.contests,

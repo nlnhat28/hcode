@@ -31,16 +31,30 @@ namespace HCode.Infrastructure
         /// Created by: nlnhat (16/08/2023)
         public async Task<Guid> InsertAsync(TEntity entity)
         {
-            var proc = $"{Procedure}Insert";
+            try
+            {
+                var proc = $"{Procedure}Insert";
 
-            var param = InfraHelper.GetParamFromEntity(entity);
-            param.Add($"p_{TableId}Out", dbType: DbType.Guid, direction: ParameterDirection.Output);
+                var param = InfraHelper.GetParamFromEntity(entity);
+                param.Add($"p_{TableId}Out", dbType: DbType.Guid, direction: ParameterDirection.Output);
 
-            _ = await _unitOfWork.Connection.ExecuteAsync(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                _ = await _unitOfWork.Connection.ExecuteAsync(
+                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
-            var result = param.Get<Guid>($"p_{TableId}Out");
-            return result;
+                var result = param.Get<Guid>($"p_{TableId}Out");
+                return result;
+            }
+            catch
+            {
+                var (sql, param) = InfraHelper.ScriptInsert(entity);
+
+                var id = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<string>(
+                    sql, param, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                var result = id == null ? Guid.Empty : Guid.Parse(id);
+
+                return result;
+            }
         }
         /// <summary>
         /// Tạo mới nhiều bản ghi
@@ -53,16 +67,39 @@ namespace HCode.Infrastructure
 
             if (entities?.Count() > 0)
             {
-                var proc = $"{Procedure}InsertMany";
+                try
+                {
+                    var proc = $"{Procedure}InsertMany";
 
-                var entitiesJson = JsonSerializer.Serialize(entities);
+                    var entitiesJson = JsonSerializer.Serialize(entities);
 
-                var param = new DynamicParameters();
-                param.Add($"p_{Table}s", entitiesJson);
+                    var param = new DynamicParameters();
+                    param.Add($"p_{Table}s", entitiesJson);
 
-                var result = await _unitOfWork.Connection.ExecuteAsync(
-                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
-                return result;
+                    var result = await _unitOfWork.Connection.ExecuteAsync(
+                        proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                    return result;
+                }
+                catch
+                {
+                    var scripts = new List<string>();
+                    var parames = new DynamicParameters();
+                    var index = 1;
+
+                    foreach (var entity in entities)
+                    {
+                        var (script, param) = InfraHelper.ScriptInsert(entity, index, false);
+                        scripts.Add(script);
+                        parames.AddDynamicParams(param);
+                        index++;
+                    }
+
+                    var sql = string.Join("\n", scripts);
+
+                    var result = await _unitOfWork.Connection.ExecuteAsync(
+                        sql, parames, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+                    return result;
+                }
             }
 
             return 0;

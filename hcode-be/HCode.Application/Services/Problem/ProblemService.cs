@@ -93,7 +93,7 @@ namespace HCode.Application
             }
 
             // Lưu thật
-            if (problemDto.State == ProblemState.Public || problemDto.State == ProblemState.Private)
+            if (problemDto.IsDraft == false)
             {
                 var parames = BuildSubmissionParams(problemDto, problemDto.SolutionLanguage?.JudgeId);
 
@@ -120,7 +120,7 @@ namespace HCode.Application
 
                         processingTokens.Clear();
 
-                        if ((object)_res.Data is List<SubmissionResponse> _data && _data.Count > 0)
+                        if (_res.Data is List<SubmissionResponse> _data && _data.Count > 0)
                         {
                             // Lần cuối rồi thì Add hết
                             if (count >= limitCount)
@@ -148,10 +148,9 @@ namespace HCode.Application
                         }
                     }
 
-
                     if (allResponses.Count > 0)
                     {
-                        var submissionData = new SubmissionResponseData()
+                        var submissionData = new SubmissionData()
                         {
                             Submissions = allResponses
                         };
@@ -265,14 +264,15 @@ namespace HCode.Application
                     return;
                 }
 
-                // Không thì lưu đúng chế độ
+                // Lưu đúng chế độ
                 try
                 {
                     await _unitOfWork.BeginTransactionAsync();
 
                     var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
                     newCode++;
-                    problem.ProblemCode = newCode; await _repository.InsertAsync(problem);
+                    problem.ProblemCode = newCode; 
+                    await _repository.InsertAsync(problem);
                     await _parameterRepo.InsertManyAsync(parameters);
                     await _testcaseRepo.InsertManyAsync(testcases);
 
@@ -319,7 +319,7 @@ namespace HCode.Application
 
                     if (resGetBatch.Data is List<SubmissionResponse> data && data.Count > 0)
                     {
-                        var submissionData = new SubmissionResponseData()
+                        var submissionData = new SubmissionData()
                         {
                             Submissions = data
                         };
@@ -475,7 +475,7 @@ namespace HCode.Application
             var limitMemory = problemDto.LimitMemory;
 
             var languageId = judgeId;
-            var sourceCode = BuildFullSourceCode(problemDto.Solution, parameters, (LanguageId)(languageId ?? 0));
+            var sourceCode = BuildFullSourceCode(problemDto.Solution, parameters, problemDto.OutputType, (LanguageId)(languageId ?? 0));
 
             if (testcases != null && parameters != null)
             {
@@ -573,27 +573,36 @@ namespace HCode.Application
         }
 
         // Build full source code
-        public string BuildFullSourceCode(string? sourceCode, List<ParameterDto>? param, LanguageId languageId)
+        public static string BuildFullSourceCode(string? sourceCode, List<ParameterDto>? param, DataType? outputType, LanguageId languageId)
         {
             var userCode = sourceCode ?? string.Empty;
             var full = userCode;
+            var outType = outputType ?? DataType.String;
+            var arg = RenderArgument(param, languageId);
+            var output = RenderStdout(outType);
+
             switch (languageId)
             {
                 case LanguageId.C:
+                    full = ReplaceCode(SourceCode.C, arg, output, userCode);
                     break;
                 case LanguageId.Csharp:
-                    var arg = RenderArgument(param, languageId);
-                    full = ReplaceCode(SourceCode.CSharp, arg, userCode);
+                    full = ReplaceCode(SourceCode.CSharp, arg, output, userCode);
                     break;
                 case LanguageId.Cpp:
+                    full = ReplaceCode(SourceCode.Cpp, arg, output, userCode);
                     break;
                 case LanguageId.Js:
+                    full = ReplaceCode(SourceCode.Javascript, arg, output, userCode);
                     break;
                 case LanguageId.Php:
+                    full = ReplaceCode(SourceCode.Php, arg, output, userCode);
                     break;
                 case LanguageId.Java:
+                    full = ReplaceCode(SourceCode.Java, arg, output, userCode);
                     break;
                 case LanguageId.Python:
+                    full = ReplaceCode(SourceCode.Python, arg, output, userCode);
                     break;
                 default:
                     break;
@@ -603,14 +612,14 @@ namespace HCode.Application
         }
 
         // Ốp arg vs userCode vào
-        public string ReplaceCode(string sysCode, string args, string userCode)
+        public static string ReplaceCode(string sysCode, string args, string stdout, string userCode)
         {
-            var result = sysCode.Replace("{args}", args).Replace("{userCode}", userCode);
+            var result = sysCode.Replace("{args}", args).Replace("{stdout}", stdout).Replace("{userCode}", userCode);
             return result;
         }
 
         // Build argument
-        public string RenderArgument(List<ParameterDto>? param, LanguageId languageId)
+        public static string RenderArgument(List<ParameterDto>? param, LanguageId languageId)
         {
             var result = string.Empty;
 
@@ -621,8 +630,15 @@ namespace HCode.Application
                 for (int i = 0; i < param.Count; i++)
                 {
                     var p = param[i];
-                    var exp = Explicit(p.DataType, languageId);
-                    args.Add(string.Format(exp, $"a[{i}]"));
+                    var exp = Explicit(p.DataType);
+                    if (languageId == LanguageId.Php)
+                    {
+                        args.Add(string.Format(exp, $"$a[{i}]"));
+                    }
+                    else
+                    {
+                        args.Add(string.Format(exp, $"a[{i}]"));
+                    }
                 }
 
                 result = string.Join(", ", args);
@@ -632,42 +648,37 @@ namespace HCode.Application
         }
 
         // Build explicit
-        public static string Explicit(DataType dataType, LanguageId languageId)
+        public static string Explicit(DataType dataType)
         {
-            var res = string.Empty;
-
-            switch (languageId)
+            var res = dataType switch
             {
-                case LanguageId.C:
-                    break;
-                case LanguageId.Csharp:
-                    res = dataType switch
-                    {
-                        DataType.String => "(string)",
-                        DataType.Strings => "(List<string>)",
-                        DataType.Int => "Convert.ToInt32({0})",
-                        DataType.Ints => "(List<int>)",
-                        DataType.Decimal => "(double)",
-                        DataType.Decimals => "(List<double>)",
-                        DataType.Bool => "(bool)",
-                        DataType.Bools => "(List<bool>)",
-                        _ => ""
-                    };
-                    break;
-                case LanguageId.Cpp:
-                    break;
-                case LanguageId.Js:
-                    break;
-                case LanguageId.Php:
-                    break;
-                case LanguageId.Java:
-                    break;
-                case LanguageId.Python:
-                    break;
-                default:
-                    break;
+                DataType.String => "{0}",
+                DataType.Strings => "stringToStrings({0})",
+                DataType.Int => "stringToInt({0})",
+                DataType.Ints => "stringToInts({0})",
+                DataType.Double => "stringToDouble({0})",
+                DataType.Doubles => "stringToDoubles({0})",
+                DataType.Bool => "stringToBool({0})",
+                DataType.Bools => "stringToBools({0})",
+                _ => "{0}"
             };
+            return res;
+        }
 
+        public static string RenderStdout(DataType dataType)
+        {
+            var res = dataType switch
+            {
+                DataType.String => "printString",
+                DataType.Strings => "printStrings",
+                DataType.Int => "printInt",
+                DataType.Ints => "printStrings",
+                DataType.Double => "printDouble",
+                DataType.Doubles => "printDoubles",
+                DataType.Bool => "printBool",
+                DataType.Bools => "printBool",
+                _ => ""
+            };
             return res;
         }
         #endregion

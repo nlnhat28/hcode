@@ -23,8 +23,9 @@ const problem = {
         createdTime: "Thời gian",
         result: "Kết quả",
         statusName: "Kết quả",
-        runTime: "Thời gian",
+        runTime: "Thời gian chạy",
         memory: "Bộ nhớ",
+        usedMemory: "Bộ nhớ sử dụng",
         languageName: "Ngôn ngữ",
         seen: "Đã xem",
         acceptedRate: "Tỉ lệ đúng"
@@ -68,6 +69,8 @@ const problem = {
     showOrHideTestcase: "Ẩn/Hiện testcase",
     result: "Kết quả",
     submissions: "Đã nộp",
+    practice: "Thực hành",
+    draft: "Nháp",
 };
 
 export default problem;

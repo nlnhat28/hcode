@@ -1,4 +1,7 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HCode.Domain
 {
     /// <summary>
@@ -11,7 +14,9 @@ namespace HCode.Domain
         /// <summary>
         /// Khoá chính
         /// </summary>
+        [Key]
         public Guid ProblemId { get; set; }
+        [NotMapped]
         public Guid Id
         {
             get { return ProblemId; }
@@ -83,6 +88,10 @@ namespace HCode.Domain
         /// Kiểu trả về
         /// </summary>
         public DataType? OutputType { get; set; }
+        /// <summary>
+        /// Nháp
+        /// </summary>
+        public bool? IsDraft { get; set; }
         /// <summary>
         /// Danh sách testcases
         /// </summary>

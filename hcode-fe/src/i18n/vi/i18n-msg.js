@@ -20,6 +20,7 @@ const msg = {
     createSuccess: "Tạo mới thành công",
     duplicateSuccess: "Nhân bản thành công",
     updateSuccess: "Cập nhật thành công",
+    cannotFindRecord: "Không tìm thấy bản ghi",
 };
 
 export default msg;

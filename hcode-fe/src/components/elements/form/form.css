@@ -52,5 +52,5 @@
 }
 .form__label .required {
   color: var(--red-500);
-  height: 20px;
+  height: 14px;
 }
