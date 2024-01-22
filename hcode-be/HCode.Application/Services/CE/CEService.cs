@@ -189,13 +189,7 @@ namespace HCode.Application
             return response;
         }
 
-        /// <summary>
-        /// Thực thi bài toán
-        /// </summary>
-        /// <param name="problemDto"></param>
-        /// <param name="testcases"></param>
-        /// <param name="res"></param>
-        /// <returns></returns>
+        // Thực thi bài toán
         public async Task ExecuteAsync(ProblemDto problemDto, List<Testcase> testcases, ServerResponse res)
         {
             var parames = BuildSubmissionParams(problemDto, problemDto.SolutionLanguage?.JudgeId);

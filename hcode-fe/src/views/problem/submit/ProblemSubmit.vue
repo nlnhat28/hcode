@@ -252,7 +252,7 @@
             >
                 <!-- Nộp -->
                 <v-button
-                    :label="$t('com.submit')"
+                    :label="$t('problem.submitSubmission')"
                     @click="clickSubmit"
                 />
             </v-button-container>
@@ -260,7 +260,7 @@
     </div>
 </template>
 <script>
-import BaseForm from "@/components/base/BaseForm.vue";
+import BaseProblemDetail from "@/views/problem/base/BaseProblemDetail.vue";
 import { problemService, languageService } from "@/services/services";
 import { useLanguageStore, useProblemStore } from "@/stores/stores";
 import { mapStores, mapState } from 'pinia';
@@ -275,7 +275,7 @@ const formMode = enums.formMode;
 
 export default {
     name: "ProblemSubmit",
-    extends: BaseForm,
+    extends: BaseProblemDetail,
     components: {
         ParameterItem,
         TestcaseItem,
@@ -291,168 +291,15 @@ export default {
             },
             instanceService: problemService,
             problemConst: problemConst,
-            languages: [],
-            difficulties: [],
-            dataTypes: [],
-            sourceCodes: [],
-            selectedDifficulty: null,
-            selectedOutputType: null,
-            tabView: {
-                info: 0,
-                parameter: 3,
-                test: 4,
-            },
-            activeTab: 0,
-            result: null,
-            allowBuildSource: false,
-            isDraft: false,
         }
     },
     watch: {
-        // Gán độ khó
-        selectedDifficulty: {
-            handler() {
-                this.instance.Difficulty = this.$cv.selectedToEnumKey(this.selectedDifficulty);
-            },
-            deep: true
-        },
-        // Gán kiểu trả về
-        selectedOutputType: {
-            handler() {
-                this.instance.OutputType = this.$cv.selectedToEnumKey(this.selectedOutputType);
-            },
-            deep: true
-        },
-        // Build source code khi những thứ này thay đổi
-        "instance.SolutionLanguage": {
-            handler() {
-                if (this.checkBuildSource) {
-                    this.buildSourceCode();
-                }
-            },
-            deep: true
-        },
-        "instance.Parameters": {
-            handler() {
-                if (this.checkBuildSource) {
-                    this.buildSourceCode();
-                }
-            },
-            deep: true
-        },
-        "instance.OutputType": {
-            handler() {
-                if (this.checkBuildSource) {
-                    this.buildSourceCode();
-                }
-            },
-            deep: true
-        },
     },
     mounted() {
     },
     computed: {
-        ...mapStores(useLanguageStore),
-        ...mapStores(useProblemStore),
-        /**
-         * Source code mặc định theo kiểu dữ liệu trả về, parameter, ngôn ngữ
-         */
-        defaultSourceCode() {
-            let funcName = problemConst.solutionFunction;
-            let className = problemConst.solutionClass;
-
-            const outputType = this.instance.OutputType;
-            const params = this.instance.Parameters;
-            const lang = problemEnum.language;
-
-            if (this.languages) {
-                // for (const language of this.languages) {
-
-                let paramItems = [];
-                let outputCode = '';
-                let paramCode = '';
-                let sourceCode = '';
-                let tab = '    ';
-                let tab2 = tab + tab;
-
-                // const judgeId = language.JudgeId;
-                const judgeId = this.instance.SolutionLanguage?.JudgeId;
-
-                // Build output
-                outputCode = this.dataTypeByLanguage(outputType, judgeId) ?? '';
-
-                // Build parameter
-                if (params) {
-                    for (const param of params) {
-
-                        if (!this.$cf.isEmptyString(param.ParameterName)) {
-
-                            let paramItem = this.dataTypeByLanguage(param.DataType, judgeId);
-
-                            if (!this.$cf.isEmptyString(paramItem)) {
-                                paramItem += ' ';
-                            };
-
-                            if (judgeId == problemEnum.language.php) {
-                                paramItem += '$'
-                            }
-
-                            paramItem += param.ParameterName;
-
-                            paramItems.push(paramItem);
-                        }
-                    };
-
-                    paramItems = this.$cf.removeNullOrEmpty(paramItems);
-
-                    paramCode = paramItems.join(', ');
-                }
-
-                switch (judgeId) {
-                    case lang.c:
-                        sourceCode = `${outputCode} ${funcName}(${paramCode}) {\n${tab}\n}`;
-                        break;
-                    case lang.cpp:
-                        sourceCode = `class ${className} {\npublic:\n${tab}${outputCode} ${funcName}(${paramCode}) {\n${tab2}\n${tab}}\n}`;
-                        break;
-                    case lang.csharp:
-                    case lang.java:
-                        sourceCode = `class ${className} {\n${tab}public ${outputCode} ${funcName}(${paramCode}) {\n${tab2}\n${tab}}\n}`;
-                        break;
-                    case lang.js:
-                        sourceCode = `const ${funcName} = function(${paramCode}) {\n    \n}`;
-                        break;
-                    case lang.php:
-                        sourceCode = `class ${className} {\n${tab}function ${funcName}(${paramCode}) {\n${tab2}\n${tab}}\n}`;
-                        break;
-                    case lang.python:
-                        sourceCode = `class ${className}():\n${tab}def ${funcName}(self, ${paramCode}) {\n${tab2}\n}`;
-                        break;
-                    default:
-                        break;
-                }
-                // }
-
-                return sourceCode;
-            }
-            return ''
-        },
         checkBuildSource() {
             return true || this.mode != this.$enums.formMode.update || this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
-        },
-        /**
-         * Tạo tiêu đề problem
-         */
-        centerTitle() {
-            let title = '';
-            if (!this.$cf.isEmptyString(this.instance.ProblemCode)) {
-                title = `${this.instance.ProblemCode}. `;
-            };
-            if (!this.$cf.isEmptyString(this.instance.ProblemName)) {
-                title += this.instance.ProblemName;
-            }
-
-            return title;
         },
     },
     methods: {
@@ -475,83 +322,6 @@ export default {
             this.instance.IsPublicState = this.instance.State == problemEnum.problemState.public.value;
         },
         /**
-         * Lấy dữ liệu
-         */
-        async loadDataOnCreated() {
-            await this.getLanguages();
-            if (this.$cf.isEmptyObject(this.instance.SolutionLanguage) && !this.$cf.isEmptyArray(this.languages)) {
-                this.instance.SolutionLanguage ??= this.languages[0];
-            }
-        },
-        /**
-         * Lấy danh sách language
-         */
-        async getLanguages() {
-            if (this.$cf.isEmptyArray(this.languageStore.languages)) {
-                try {
-                    const res = await languageService.getAll();
-                    if (this.$cf.isSuccess(res)) {
-                        this.languages = this.$cf.cloneDeep(res.Data);
-                        this.languageStore.setLanguages(res.Data);
-                    }
-                }
-                catch {
-                }
-            }
-            else {
-                this.languages = this.$cf.cloneDeep(this.languageStore.languages);
-            }
-        },
-        /**
-         * Build source code theo ngôn ngữ
-         */
-        buildSourceCode() {
-            this.instance.Solution = this.defaultSourceCode;
-        },
-        /**
-         * Click reset lời giải
-         */
-        clickResetSource() {
-            this.buildSourceCode();
-            this.allowBuildSource = true;
-        },
-        /**
-         * Lấy kiểu dữ liệu theo language
-         * 
-         * @param {*} dataType DataType enum
-         * @param {*} langId JugdeId
-         */
-        dataTypeByLanguage(dataType, judgeId) {
-            const value = problemEnum.mapDataTypeByLanguage(dataType, judgeId);
-            return value;
-        },
-        /**
-         * Reset kết quả các testcases
-         */
-        resetTestcaseStatus() {
-            if (this.instance.Testcases) {
-                for (let test of this.instance.Testcases) {
-                    test.Status = {};
-                }
-            }
-        },
-        /**
-         * Map submission vào testcases
-         */
-        processSubmissionResponse(response) {
-            if (response && response.Data) {
-                let submissions = this.$cf.cloneDeep(response.Data.Submissions);
-                if (!this.$cf.isEmptyArray(submissions) && !this.$cf.isEmptyArray(this.instance.Testcases)) {
-                    for (let testcase of this.instance.Testcases) {
-                        let sub = submissions.find(item => item.testcase_id == testcase.TestcaseId)
-                        if (sub) {
-                            testcase.Status = { ...sub };
-                        }
-                    }
-                }
-            }
-        },
-        /**
          * Click nộp
          */
         async clickSubmit() {
@@ -570,32 +340,14 @@ export default {
                     this.reformatInstance
                 );
                 if (this.$cf.isSuccess(response)) {
-                    this.isSuccessResponseFlag = true;
+                    this.$ts.success();
                 } else {
-                    this.isSuccessResponseFlag = false;
                     this.handleError(response);
                 }
                 this.processSubmissionResponse(response);
             } catch (error) {
                 console.error(error);
-                this.isSuccessResponseFlag = false;
             }
-        },
-        /**
-         * Hiển thị submission response lên tab kết quả
-         */
-        showSubmissionResponse(statusName, content, isSuccess) {
-            let title = statusName;
-            let body = content;
-            let divide = '<p><hr></p>';
-            let color = isSuccess == true ? '#00ff00' : '#ff0000';
-
-            title = `<p><strong style=\"color: ${color};\">${title}</strong></p>`;
-            body = `<p><span style=\"color: rgb(187, 187, 187);\">${body}</span></p>`;
-
-            let fullContent = title + divide + body;
-
-            this.result.log = fullContent;
         },
     }
 }

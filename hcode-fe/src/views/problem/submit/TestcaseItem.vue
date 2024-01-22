@@ -93,7 +93,6 @@
                     <div class="testcase__parameter-input">
                         <v-input-text
                             isReadOnly
-                            hasCopy
                             :modelValue="stdOutput"
                         ></v-input-text>
                     </div>
@@ -239,6 +238,7 @@ export default {
 
                     default:
                         let logs = [
+                            this.instance.Status.stdout,
                             this.instance.Status.compile_output,
                             this.instance.Status.stderr,
                             this.instance.Status.message,

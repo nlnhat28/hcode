@@ -116,7 +116,7 @@ namespace HCode.Domain
                 {
                     Console.Write($""[{string.Join("","", a)}]"");
                 }
-                static List<string> splitString(string inputString, char delimiter)
+                static List<string> splitString(string inputString, string delimiter)
                 {
                     return inputString?.Split(delimiter)?.ToList();
                 }
@@ -124,7 +124,7 @@ namespace HCode.Domain
                 static void Main()
                 {
                     string inputString = Console.ReadLine();
-                    var a = splitString(inputString, '|');
+                    var a = splitString(inputString, ""|"");
                     var sol = new Solution();
                     {stdout}(sol.solve({args}));
                 }
@@ -335,7 +335,7 @@ namespace HCode.Domain
 
             class Program {
             public:
-                static std::string StringInArray(const std::string& s) {
+                static std::string stringInArray(const std::string& s) {
                     try {
                         std::smatch m;
                         std::regex_match(s, m, std::regex(R""(\[(.+)\])""));
@@ -345,7 +345,7 @@ namespace HCode.Domain
                         throw std::invalid_argument(""Invalid argument: "" + s);
                     }
                 }
-                static int StringToInt(const std::string& s) {
+                static int stringToInt(const std::string& s) {
                     try {
                         return std::stoi(s);
                     }
@@ -353,13 +353,13 @@ namespace HCode.Domain
                         throw std::invalid_argument(""Invalid argument: "" + s);
                     }
                 }
-                static std::vector<int> StringToInts(const std::string& s) {
+                static std::vector<int> stringToInts(const std::string& s) {
                     try {
                         std::vector<int> result;
-                        std::istringstream ss(StringInArray(s));
+                        std::istringstream ss(stringInArray(s));
                         std::string token;
                         while (std::getline(ss, token, ',')) {
-                            result.push_back(StringToInt(token));
+                            result.push_back(stringToInt(token));
                         }
                         return result;
                     }
@@ -367,7 +367,7 @@ namespace HCode.Domain
                         throw std::invalid_argument(""Invalid argument: "" + s);
                     }
                 }
-                static double StringToDouble(const std::string& s) {
+                static double stringToDouble(const std::string& s) {
                     try {
                         return std::stod(s);
                     }
@@ -378,7 +378,7 @@ namespace HCode.Domain
                 std::vector<double> stringToDoubles(const std::string& s) {
                     try {
                         std::vector<double> result;
-                        std::istringstream ss(StringInArray(s));
+                        std::istringstream ss(stringInArray(s));
                         std::string token;
                         while (std::getline(ss, token, ',')) {
                             result.push_back(stringToDouble(token));
@@ -391,7 +391,7 @@ namespace HCode.Domain
                 std::vector<std::string> stringToStrings(const std::string& s) {
                     try {
                         std::vector<std::string> result;
-                        std::istringstream ss(StringInArray(s));
+                        std::istringstream ss(stringInArray(s));
                         std::string token;
                         while (std::getline(ss, token, ',')) {
                             result.push_back(token);
@@ -411,7 +411,7 @@ namespace HCode.Domain
                 std::vector<bool> stringToBools(const std::string& s) {
                     try {
                         std::vector<bool> result;
-                        std::istringstream ss(StringInArray(s));;
+                        std::istringstream ss(stringInArray(s));;
                         std::string token;
                         while (std::getline(ss, token, ',')) {
                             result.push_back(stringToBool(token));
@@ -486,10 +486,9 @@ namespace HCode.Domain
                 static void Main() {
                     std::string inputString;
                     std::getline(std::cin, inputString);
-                    std::vector<std::string> a = splitString(inputString, delimiter);
+                    std::vector<std::string> a = splitString(inputString, '|');
                     Solution sol;
                     {stdout}(sol.solve({args}));
-                    return 0;
                 }
             };
             int main() {
@@ -536,7 +535,7 @@ namespace HCode.Domain
             function stringToStrings(s) {
                 const exp = new Error(`Invalid argument: ${s}`);
                 try {
-                    return stringInArray(s).split("","").map(i => i?.toString());
+                    return stringInArray(s).split("","").map(i => i.toString());
                 } catch { throw exp; }
             }
             function stringToBool(s) {
@@ -707,7 +706,7 @@ namespace HCode.Domain
                 return explode($delimiter, $inputString);
             }
             {userCode}
-            $inputString = readline();
+            $inputString = fgets(STDIN);
             $a = splitString($inputString, '|');
             $sol = new Solution();
             {stdout}($sol->solve({args}));
@@ -718,6 +717,8 @@ namespace HCode.Domain
             import java.util.Arrays;
             import java.util.List;
             import java.util.Scanner;
+            import java.util.regex.Matcher;
+            import java.util.regex.Pattern;
 
             {userCode}
             public class Main {
@@ -824,13 +825,13 @@ namespace HCode.Domain
                 static void printBools(boolean[] a) {
                     System.out.print(""["" + Arrays.toString(a) + ""]"");
                 }
-                static List<String> splitString(String inputString, char delimiter) {
-                    return inputString != null ? Arrays.asList(inputString.split(String.valueOf(delimiter))) : null;
+                static String[] splitString(String inputString, String delimiter) {
+                    return inputString != null ? inputString.split(""\\Q"" + delimiter + ""\\E"") : null;
                 }
                 public static void main(String[] args) {
                     Scanner scanner = new Scanner(System.in);
                     String inputString = scanner.nextLine();
-                    List<String> a = splitString(inputString, '|');
+                    var a = splitString(inputString, ""|"");
                     Solution sol = new Solution();
                     {stdout}(sol.solve({args}));
                 }
@@ -838,87 +839,87 @@ namespace HCode.Domain
         ";
 
         public const string Python = @"
-            import re
-            {userCode}
-            def stringInArray(s):
-                exp = Exception(f""Invalid argument: {s}"")
-                try:
-                    m = re.match(r""^\[(.+)\]$"", s.strip())
-                    return m.group(1) if m else exp
-                except:
-                    raise exp
-            def stringToInt(s):
-                exp = Exception(f""Invalid argument: {s}"")
-                try:
-                    return int(s.strip())
-                except:
-                    raise exp
-            def stringToInts(s):
-                exp = Exception(f""Invalid argument: {s}"")
-                try:
-                    return [stringToInt(i) for i in stringInArray(s).split("","")]
-                except:
-                    raise exp
-            def stringToDouble(s):
-                exp = Exception(f""Invalid argument: {s}"")
-                try:
-                    return float(s.strip())
-                except:
-                    raise exp
-            def stringToDoubles(s):
-                exp = Exception(f""Invalid argument: {s}"")
-                try:
-                    return [stringToDouble(i) for i in stringInArray(s).split("","")]
-                except:
-                    raise exp
-            def stringToStrings(s):
-                exp = Exception(f""Invalid argument: {s}"")
-                try:
-                    return [i.strip() for i in stringInArray(s).split("","")]
-                except:
-                    raise exp
-            def stringToBool(s):
-                exp = Exception(f""Invalid argument: {s}"")
-                try:
-                    return bool(s.strip())
-                except:
-                    raise exp
-            def stringToBools(s):
-                exp = Exception(f""Invalid argument: {s}"")
-                try:
-                    return [stringToBool(i) for i in stringInArray(s).split("","")]
-                except:
-                    raise exp
-            def printString(s):
-                print(s, end='')
+import re
+{userCode}
+def stringInArray(s):
+    exp = Exception(f""Invalid argument: {s}"")
+    try:
+        m = re.match(r""^\[(.+)\]$"", s.strip())
+        return m.group(1) if m else exp
+    except:
+        raise exp
+def stringToInt(s):
+    exp = Exception(f""Invalid argument: {s}"")
+    try:
+        return int(s.strip())
+    except:
+        raise exp
+def stringToInts(s):
+    exp = Exception(f""Invalid argument: {s}"")
+    try:
+        return [stringToInt(i) for i in stringInArray(s).split("","")]
+    except:
+        raise exp
+def stringToDouble(s):
+    exp = Exception(f""Invalid argument: {s}"")
+    try:
+        return float(s.strip())
+    except:
+        raise exp
+def stringToDoubles(s):
+    exp = Exception(f""Invalid argument: {s}"")
+    try:
+        return [stringToDouble(i) for i in stringInArray(s).split("","")]
+    except:
+        raise exp
+def stringToStrings(s):
+    exp = Exception(f""Invalid argument: {s}"")
+    try:
+        return [i.strip() for i in stringInArray(s).split("","")]
+    except:
+        raise exp
+def stringToBool(s):
+    exp = Exception(f""Invalid argument: {s}"")
+    try:
+        return bool(s.strip())
+    except:
+        raise exp
+def stringToBools(s):
+    exp = Exception(f""Invalid argument: {s}"")
+    try:
+        return [stringToBool(i) for i in stringInArray(s).split("","")]
+    except:
+        raise exp
+def printString(s):
+    print(s, end='')
 
-            def printInt(i):
-                print(i, end='')
+def printInt(i):
+    print(i, end='')
 
-            def printDouble(i):
-                print(i, end='')
+def printDouble(i):
+    print(i, end='')
 
-            def printBool(i):
-                print(i, end='')
+def printBool(i):
+    print(i, end='')
 
-            def printStrings(a):
-                print(f""[{','.join(map(str, a))}]"", end='')
+def printStrings(a):
+    print(f""[{','.join(map(str, a))}]"", end='')
 
-            def printInts(a):
-                print(f""[{','.join(map(str, a))}]"", end='')
+def printInts(a):
+    print(f""[{','.join(map(str, a))}]"", end='')
 
-            def printDoubles(a):
-                print(f""[{','.join(map(str, a))}]"", end='')
+def printDoubles(a):
+    print(f""[{','.join(map(str, a))}]"", end='')
 
-            def printBools(a):
-                print(f""[{','.join(map(str, a))}]"", end='')
-            def split_string(input_string="""", delimiter='|'):
-                return input_string.split(delimiter) if input_string else []
-            if __name__ == ""__main__"":
-                input_string = input()
-                a = split_string(input_string, '|')
-                sol = Solution()
-                {stdout}(sol.solve({args}))
-        ";
+def printBools(a):
+    print(f""[{','.join(map(str, a))}]"", end='')
+def split_string(input_string="""", delimiter='|'):
+    return input_string.split(delimiter) if input_string else []
+if __name__ == ""__main__"":
+    input_string = input()
+    a = split_string(input_string, '|')
+    sol = Solution()
+    {stdout}(sol.solve({args}))
+";
     }
 }
