@@ -114,20 +114,58 @@ namespace HCode.Application
         /// </summary>
         public StatusJudge0 StatusId { get; set; }
         /// <summary>
+        /// Status
+        /// </summary>
+        public string? StatusName { get; set; }
+        /// <summary>
         /// Thời gian trung bình
         /// </summary>
-        public double? AverageTime { get; set; }
+        public double? RunTime { get; set; }
         /// <summary>
         /// Bộ nhớ trung bình
         /// </summary>
-        public double? AverageMemory { get; set; }
+        public double? Memory { get; set; }
         /// <summary>
-        /// Tính toán các giá trị trung bình
+        /// Tính toán thời gian, bộ nhớ
         /// </summary>
-        public void CalculateAverage()
+        public void CalculateTimeAndMemory()
         {
-            AverageTime = Submissions.Average(submit => Convert.ToDouble(submit.time, CultureInfo.InvariantCulture));
-            AverageMemory = Submissions.Average(submit => submit.memory);
+            RunTime = Submissions.Max(submit => Convert.ToDouble(submit.time, CultureInfo.InvariantCulture));
+            Memory = Submissions.Max(submit => submit.memory);
+        }
+        public void CalculateResult()
+        {
+            if (Submissions.Count > 0)
+            {
+                var status = StatusJudge0.Accepted;
+
+                foreach (var item in Submissions)
+                {
+                    if (item.status_id == StatusJudge0.Accepted)
+                    {
+                        continue;
+                    }
+
+                    if (item.status_id != StatusJudge0.OverLimit || status != StatusJudge0.WrongAnswer)
+                    {
+                        status = item.status_id;
+                    }
+
+                    if (item.status_id != StatusJudge0.OverLimit && item.status_id != StatusJudge0.WrongAnswer)
+                    {
+                        break;
+                    }
+
+                }
+
+                StatusId = status;
+                StatusName = status.ToString();
+
+                if (status == StatusJudge0.Accepted || status == StatusJudge0.OverLimit || status == StatusJudge0.WrongAnswer)
+                {
+                    CalculateTimeAndMemory();
+                }
+            }
         }
     }
 }

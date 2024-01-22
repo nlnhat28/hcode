@@ -249,20 +249,8 @@
         <div class="problem-detail__footer">
             <v-button-container
                 direction="row-reverse"
-                v-if="showExit"
             >
-                <!-- Đóng -->
-                <v-button
-                    v-if="showExit"
-                    :label="$t('com.close')"
-                    @click="$router.push($path.problems)"
-                />
-            </v-button-container>
-            <v-button-container
-                direction="row-reverse"
-                v-else
-            >
-                <!-- Lưu -->
+                <!-- Nộp -->
                 <v-button
                     :label="$t('com.submit')"
                     @click="clickSubmit"
@@ -318,7 +306,6 @@ export default {
             result: null,
             allowBuildSource: false,
             isDraft: false,
-            showExit: false,
         }
     },
     watch: {
@@ -361,22 +348,8 @@ export default {
             },
             deep: true
         },
-        "instance.IsPublicState"(newVal, oldVal) {
-            if (!this.instance.IsPrivateState && !newVal) {
-                this.instance.IsPublicState = oldVal;
-            }
-        },
-        "instance.IsPrivateState"(newVal, oldVal) {
-            if (!this.instance.IsPublicState && !newVal) {
-                this.instance.IsPrivateState = oldVal;
-            }
-        }
     },
     mounted() {
-        this.refs = [
-            this.$refs.refProblemName,
-            this.$refs.refProblemCode,
-        ]
     },
     computed: {
         ...mapStores(useLanguageStore),
@@ -465,7 +438,7 @@ export default {
             return ''
         },
         checkBuildSource() {
-            return this.mode != this.$enums.formMode.update || this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
+            return true || this.mode != this.$enums.formMode.update || this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
         },
         /**
          * Tạo tiêu đề problem
@@ -490,22 +463,8 @@ export default {
             this.difficulties = this.$cv.enumToSelects(enums.difficulty);
             this.dataTypes = this.$cv.enumToSelects(problemEnum.dataType);
         },
-        /**
-         * Khởi tạo problem khi thêm mới
-         * @override
-         */
-        initCreateInstance() {
-            this.documentTitle = this.$t("problem.createProblem");
-            document.title = this.$cf.documentTitle(this.documentTitle);
-
-            this.instance.Solution ??= '';
-            this.instance.IsPrivateState = true;
-            this.instance.TimeUnit = this.$enums.timeUnit.second.value;
-            this.instance.MemoryUnit = this.$enums.memoryUnit.kilobyte.value;
-        },
         /** 
-         * @overrid 
-         * 
+         * @override
          */
         customInstanceOnCreated() {
             this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
@@ -514,8 +473,6 @@ export default {
 
             this.instance.IsPrivateState = this.instance.State == problemEnum.problemState.private.value;
             this.instance.IsPublicState = this.instance.State == problemEnum.problemState.public.value;
-
-            this.isDraft = this.instance.IsDraft;
         },
         /**
          * Lấy dữ liệu
@@ -569,51 +526,6 @@ export default {
             return value;
         },
         /**
-         * Trước khi doSave() trong clickSave()
-         * @virtual
-         */
-        beforeDoSave() {
-            this.instance.IsDraft = false;
-            this.instance.State = problemEnum.problemState.private.value;
-            this.resetTestcaseStatus();
-        },
-        /**
-         * Click lưu nháp
-         */
-        onClickSaveDraft() {
-            try {
-                this.instance.IsDraft = true;
-                this.instance.State = problemEnum.problemState.private.value;
-                this.doSave();
-            } catch (error) {
-                console.error(error);
-            }
-            // this.onClickSave();
-        },
-        /**
-         * Xử lý thêm validate tại đây
-         * 
-         * Author: nlnhat1 (01/11/2023)
-         */
-        customValidate() {
-            // Validate testcase
-            if (this.messageValidate == null) {
-
-                if (this.$cf.isEmptyArray(this.instance.Testcases)) {
-                    this.messageValidate = this.$t("problem.mustHasTestcase");
-                    this.focusTabView(this.tabView.test);
-                }
-            };
-        },
-        /**
-         * Focus vào tab view
-         * 
-         * @param {*} tabViewIndex Index tab
-         */
-        focusTabView(tabViewIndex) {
-            this.activeTab = tabViewIndex;
-        },
-        /**
          * Reset kết quả các testcases
          */
         resetTestcaseStatus() {
@@ -640,25 +552,34 @@ export default {
             }
         },
         /**
-         * Xử lý response createInstance
-         * @override
+         * Click nộp
          */
-        processResponseCreate(response) {
-            this.processSubmissionResponse(response);
+        async clickSubmit() {
+            if (this.$cf.isEmptyString(this.instance.Solution)) {
+                let msg = this.$t('msg.labelCannotNull', { label: this.$t('problem.field.solution') });
+                this.$dl.error(msg);
+            }
+            else {
+                this.resetTestcaseStatus();
+                await this.loadingEffect(this.submit);
+            }
         },
-        /**
-         * Xử lý response updateInstance
-         * @override
-         */
-        processResponseUpdate(response) {
-            this.processSubmissionResponse(response);
-        },
-        /**
-         * Lưu thành công
-         */
-        afterSaveSuccess() {
-            this.$ts.success(this.messageOnToast);
-            this.showExit = true;
+        async submit() {
+            try {
+                const response = await this.instanceService.submit(
+                    this.reformatInstance
+                );
+                if (this.$cf.isSuccess(response)) {
+                    this.isSuccessResponseFlag = true;
+                } else {
+                    this.isSuccessResponseFlag = false;
+                    this.handleError(response);
+                }
+                this.processSubmissionResponse(response);
+            } catch (error) {
+                console.error(error);
+                this.isSuccessResponseFlag = false;
+            }
         },
         /**
          * Hiển thị submission response lên tab kết quả

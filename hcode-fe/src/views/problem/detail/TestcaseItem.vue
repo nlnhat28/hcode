@@ -377,7 +377,7 @@ export default {
 }
 
 .testcase__detail {
-    width: 99%;
+    width: 100%;
     height: fit-content;
     background-color: var(--dark-500);
     border-radius: 0 0 8px 8px;

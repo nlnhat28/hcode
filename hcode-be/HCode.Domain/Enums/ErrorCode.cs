@@ -96,7 +96,7 @@
         /// <summary>
         /// Tạo bài toán bị lỗi test case
         /// </summary>
-        ProblemTestcaseCreate = 201,
+        ProblemTestcase = 201,
         /// <summary>
         /// Lỗi source code
         /// </summary>
@@ -105,6 +105,10 @@
         /// Lỗi chạy quá thời gian
         /// </summary>
         ProblemTimeLimitExceeded = 203,
+        /// <summary>
+        /// Lỗi thực thi khác
+        /// </summary>
+        ProblemExecute = 204,
         #endregion
     }
 }

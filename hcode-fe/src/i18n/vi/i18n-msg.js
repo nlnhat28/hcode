@@ -3,6 +3,7 @@
  */
 const msg = {
     cannotNull: "không được để trống",
+    labelCannotNull: "{label} không được để trống",
     mustLessEqualLength: "không được vượt quá {length} ký tự",
     mustMoreEqual: "phải lớn hơn hoặc bằng {minValue}",
     mustLessEqual: "phải nhỏ hơn hoặc bằng {maxValue}",

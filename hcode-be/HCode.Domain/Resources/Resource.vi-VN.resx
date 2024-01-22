@@ -169,6 +169,9 @@ Mã xác thực là: {2}. Thời gian hiệu lực: {3} phút.</value>
   <data name="ProblemCreateError" xml:space="preserve">
     <value>Có lỗi xảy ra khi lưu bài toán. Vui lòng kiểm tra lại.</value>
   </data>
+  <data name="ProblemExecuteError" xml:space="preserve">
+    <value>Có lỗi xảy ra khi thực thi code. Vui lòng thử lại.</value>
+  </data>
   <data name="ProblemOverLimitMemory" xml:space="preserve">
     <value>Quá bộ nhớ cho phép ({0}).</value>
   </data>
@@ -178,7 +181,7 @@ Mã xác thực là: {2}. Thời gian hiệu lực: {3} phút.</value>
   <data name="ProblemSourceCodeError" xml:space="preserve">
     <value>Lỗi source code. Vui lòng kiểm tra lại.</value>
   </data>
-  <data name="ProblemTestcaseCreateError" xml:space="preserve">
+  <data name="ProblemTestcaseError" xml:space="preserve">
     <value>Có testcase bị sai. Vui lòng kiểm tra lại.</value>
   </data>
   <data name="ProblemTimeLimitExceeded" xml:space="preserve">

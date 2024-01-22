@@ -1,7 +1,11 @@
 <template>
     <div class="testcase-item">
         <div
-            :class="['testcase__panel', { 'cursor-pointer': instance.AllowView }]"
+            :class="[
+                'testcase__panel', 
+                { 'cursor-pointer': instance.AllowView }, 
+                { 'cursor-not-allowed': !instance.AllowView }]"
+            :title="this.instance.AllowView ? null : $t('problem.cannotView')"
             @click="clickPanel"
         >
             <div class="flex-align-center col-gap-16">
@@ -194,7 +198,6 @@ export default {
         isShowWrongAnswerDetail() {
             if (this.instance && this.instance.Status) {
                 return this.instance.Status.status_id == problemEnum.statusJudge0.WrongAnswer
-                // this.instance.Status.status_id == problemEnum.statusJudge0.Accepted;
             }
             return false;
         },
@@ -291,18 +294,17 @@ export default {
                     case statusJudge0.Accepted:
                     case statusJudge0.WrongAnswer:
                     case statusJudge0.OverLimit:
+                        if (this.instance.AllowView) {
+                            this.isShowDetail = false;
+                            this.isShowStatus = !this.isShowStatus;
+                        };
+                        break;
                     default:
                         this.isShowDetail = false;
                         this.isShowStatus = !this.isShowStatus;
                         break;
                 };
             }
-        },
-        /**
-         * Click xoá
-         */
-        clickDelete() {
-            this.$emit('onDelete', this.testcase);
         },
     }
 }
@@ -352,7 +354,7 @@ export default {
 }
 
 .testcase__detail {
-    width: 99%;
+    width: 100%;
     height: fit-content;
     background-color: var(--dark-500);
     border-radius: 0 0 8px 8px;
