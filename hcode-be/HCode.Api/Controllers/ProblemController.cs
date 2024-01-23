@@ -56,6 +56,17 @@ namespace HCode.Api
             await _service.SubmitAsync(problemDto, res);
             return StatusCode(StatusCodes.Status200OK, res);
         }
+        /// <summary>
+        /// Submit
+        /// </summary>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpPost("AccountState")]
+        public async Task<IActionResult> CreateProblemAccountState(ProblemDto problemDto)
+        {
+            var res = new ServerResponse();
+            await _service.SubmitAsync(problemDto, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
         #endregion
     }
 }

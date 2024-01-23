@@ -26,11 +26,15 @@ namespace HCode.Application
         /// <summary>
         /// Repo parameter
         /// </summary>
-        private new readonly IParameterRepository _parameterRepo;
+        private readonly IParameterRepository _parameterRepo;
         /// <summary>
         /// Repo testcase
         /// </summary>
-        private new readonly ITestcaseRepository _testcaseRepo;
+        private readonly ITestcaseRepository _testcaseRepo;
+        /// <summary>
+        /// Repo ProblemAccount
+        /// </summary>
+        private readonly IProblemAccountRepository _problemAccountRepo;
         /// <summary>
         /// Cache
         /// </summary>
@@ -53,14 +57,15 @@ namespace HCode.Application
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (17/08/2023)
         public ProblemService(IProblemRepository repository, IParameterRepository parameterRepo,
-                           ITestcaseRepository testcaseRepo, ICEService ceService,
-                           IStringLocalizer<Resource> resource, IMapper mapper, IAuthService authService,
-                           IUnitOfWork unitOfWork, IMemoryCache cache)
+                           ITestcaseRepository testcaseRepo, IProblemAccountRepository problemAccountRepo
+                           ICEService ceService, IStringLocalizer<Resource> resource, IMapper mapper,
+                           IAuthService authService, IUnitOfWork unitOfWork, IMemoryCache cache)
                          : base(repository, resource, mapper, unitOfWork, authService)
         {
             _repository = repository;
             _testcaseRepo = testcaseRepo;
             _parameterRepo = parameterRepo;
+            _problemAccountRepo = problemAccountRepo;
             _cache = cache;
             _ceService = ceService;
         }
@@ -292,6 +297,24 @@ namespace HCode.Application
 
             var result = _mapper.Map<IEnumerable<ProblemDto>>(problems) ?? new List<ProblemDto>();
 
+            res.Data = result;
+        }
+        
+        
+        /// <summary>
+        /// Tạo quan hệ bài toán tài khoản
+        /// </summary>
+        /// <returns></returns>
+        public async Task CreateProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res) {
+            var result = await _problemAccountRepo.InsertAsync(problemAccount);
+            res.Data = result;
+        }
+        /// <summary>
+        /// Cập nhật quan hệ bài toán tài khoản
+        /// </summary>
+        /// <returns></returns>
+        public async Task UpdateProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res) {
+            var result = await _problemAccountRepo.UpdateAsync(problemAccount);
             res.Data = result;
         }
         #endregion

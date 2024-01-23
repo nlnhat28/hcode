@@ -28,5 +28,15 @@ namespace HCode.Application
         /// </summary>
         /// <returns></returns>
         Task GetForContestAsync(ServerResponse res);
+        /// <summary>
+        /// Tạo quan hệ bài toán tài khoản
+        /// </summary>
+        /// <returns></returns>
+        Task CreateProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res);
+        /// <summary>
+        /// Cập nhật quan hệ bài toán tài khoản
+        /// </summary>
+        /// <returns></returns>
+        Task UpdateProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res);
     }
 }
