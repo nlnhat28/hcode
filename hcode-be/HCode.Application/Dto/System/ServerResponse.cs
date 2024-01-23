@@ -30,6 +30,10 @@ namespace HCode.Application
         /// Loại lỗi
         /// </summary>
         public ErrorKey? ErrorKey { get; set; }
+        /// <summary>
+        /// Data khác
+        /// </summary>
+        public List<object>? MoreData { get; set; }
         #endregion
 
         #region Methods
@@ -197,8 +201,40 @@ namespace HCode.Application
             Data = errorItems;
             ErrorKey = Domain.ErrorKey.FormItem;
         }
+        /// <summary>
+        /// Thêm data khác
+        /// </summary>
+        /// <param name="data"></param>
+        public void AddData(object data)
+        {
+            if (data != null)
+            {
+                MoreData ??= new List<object>();
 
-        private object ExceptionToData(Exception exception)
+                if (data is BaseResponse)
+                {
+                    MoreData.Add(data);
+                }
+                else if (data is Exception exception)
+                {
+                    MoreData.Add(new BaseResponse(exception));
+                }
+                else if (data is string msg)
+                {
+                    MoreData.Add(new BaseResponse(devMsg: msg));
+                }
+                else
+                {
+                    MoreData.Add(new BaseResponse(data: data));
+                }
+            }
+        }
+        /// <summary>
+        /// Thanh lọc exception
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <returns></returns>
+        public object ExceptionToData(Exception exception)
         {
             var data = new
             {

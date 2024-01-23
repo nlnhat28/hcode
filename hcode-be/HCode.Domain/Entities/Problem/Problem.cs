@@ -17,6 +17,7 @@ namespace HCode.Domain
         [Key]
         public Guid ProblemId { get; set; }
         [NotMapped]
+        [Script(isNotUpdate: true)]
         public Guid Id
         {
             get { return ProblemId; }
@@ -29,7 +30,7 @@ namespace HCode.Domain
         /// <summary>
         /// Mã bài toán
         /// </summary>
-        [NoUpdate]
+        [Script(isNotUpdate: true)]
         public int ProblemCode { get; set; }
         /// <summary>
         /// Alias
@@ -46,7 +47,7 @@ namespace HCode.Domain
         /// <summary>
         /// Trạng thái
         /// </summary>
-        [NoUpdate]
+        [Script(isNotUpdate: true)]
         public ProblemState? State { get; set; }
         /// <summary>
         /// Giới hạn thời gian (giây)
@@ -81,7 +82,7 @@ namespace HCode.Domain
         /// <summary>
         /// Id tài khoản tạo
         /// </summary>
-        [NoUpdate]
+        [Script(isNotUpdate: true)]
         public Guid? AccountId { get; set; }
         /// <summary>
         /// Chủ đề
@@ -135,6 +136,11 @@ namespace HCode.Domain
         /// </summary>
         [NotMapped]
         public ProblemAccountState? ProblemAccountState { get; set; }
+        /// <summary>
+        /// Trạng thái của người dùng
+        /// </summary>
+        [NotMapped]
+        public Guid? ProblemAccountId { get; set; }
         #endregion
     }
 }

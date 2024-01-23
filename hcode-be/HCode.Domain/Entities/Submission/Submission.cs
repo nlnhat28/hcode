@@ -1,4 +1,6 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+
 namespace HCode.Domain
 {
     /// <summary>
@@ -11,7 +13,9 @@ namespace HCode.Domain
         /// <summary>
         /// Khoá chính
         /// </summary>
+        [Key]
         public Guid SubmissionId { get; set; }
+        [NotMapped]
         public Guid Id
         {
             get { return SubmissionId; }
@@ -32,15 +36,19 @@ namespace HCode.Domain
         /// <summary>
         /// Ngôn ngữ
         /// </summary>
-        public StatusJudge0? Status { get; set; }
+        public StatusJudge0? StatusId { get; set; }
+        /// <summary>
+        /// Ngôn ngữ
+        /// </summary>
+        public string? StatusName { get; set; }
         /// <summary>
         /// Thời gian chạy
         /// </summary>
-        public decimal? RunTime { get; set; }
+        public double? RunTime { get; set; }
         /// <summary>
         /// Bộ nhớ chạy
         /// </summary>
-        public decimal? Memory { get; set; }
+        public double? Memory { get; set; }
         /// <summary>
         /// Số testcase qua
         /// </summary>
@@ -54,10 +62,29 @@ namespace HCode.Domain
         /// </summary>
         public DateTime? CreatedTime { get; set; }
         /// <summary>
+        /// Người tạo
+        /// </summary>
+        [NotMapped]
+        [Script(isNotUpdate: true)]
+        public string? CreatedBy { get; set; }
+        /// <summary>
+        /// Ngày cập nhật
+        /// </summary>
+        [NotMapped]
+        public DateTime? ModifiedTime { get; set; }
+        /// <summary>
+        /// Người cập nhật
+        /// </summary>  
+        [NotMapped]
+        public string? ModifiedBy { get; set; }
+        /// <summary>
         /// Ngôn ngữ
         /// </summary>
         [NotMapped]
-        public Language? Language { get; set; }
+        public string? LanguageName { get; set; }
+        #endregion
+
+        #region Constructors
         #endregion
     }
 }

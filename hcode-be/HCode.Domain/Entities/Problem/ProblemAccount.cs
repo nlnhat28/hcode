@@ -7,6 +7,7 @@ namespace HCode.Domain
     /// <summary>
     /// Lớp bài toán tài khoản
     /// </summary>
+    [Table("problem_account")]
     public class ProblemAccount : BaseEntity, IHasEntityId
     {
         #region Properties
@@ -24,12 +25,12 @@ namespace HCode.Domain
         /// <summary>
         /// Tên bài toán
         /// </summary>
-        [NoUpdate]
+        [Script(isNotUpdate: true)]
         public Guid ProblemId { get; set; }
         /// <summary>
         /// Id tài khoản
         /// </summary>
-        [NoUpdate]
+        [Script(isNotUpdate: true)]
         public Guid AccountId { get; set; }
         /// <summary>
         /// Trạng thái
@@ -45,5 +46,6 @@ namespace HCode.Domain
             AccountId = accountId;
             State = state;
         }
+        #endregion
     }
 }

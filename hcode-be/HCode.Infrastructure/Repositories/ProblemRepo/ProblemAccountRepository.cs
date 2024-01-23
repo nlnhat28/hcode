@@ -10,8 +10,11 @@ namespace HCode.Infrastructure
     /// Repository ProblemAccountRepository
     /// </summary>
     /// Created by: nlnhat (17/08/2023)
-    public class ProblemAccountRepository : BaseRepository<Parameter>, IProblemAccountRepository
+    public class ProblemAccountRepository : BaseRepository<ProblemAccount>, IProblemAccountRepository
     {
+        #region Properties
+        #endregion
+
         #region Constructors
         /// <summary>
         /// Hàm tạo repository ProblemAccountRepository
@@ -24,6 +27,18 @@ namespace HCode.Infrastructure
         #endregion
 
         #region Methods
+
+        // Cập nhật theo ProblemId và AccountId
+        public async Task<int> AuditProblemAccountAsync(ProblemAccount problemAccount)
+        {
+            var proc = $"{Procedure}Audit";
+
+            var param = InfraHelper.GetParamFromEntity(problemAccount);
+
+            var result = await _unitOfWork.Connection.ExecuteAsync(
+                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+            return result;
+        }
         #endregion
     }
 }

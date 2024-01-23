@@ -296,6 +296,7 @@ export default {
     watch: {
     },
     mounted() {
+
     },
     computed: {
         checkBuildSource() {
@@ -320,6 +321,21 @@ export default {
 
             this.instance.IsPrivateState = this.instance.State == problemEnum.problemState.private.value;
             this.instance.IsPublicState = this.instance.State == problemEnum.problemState.public.value;
+
+            this.auditProblemAccount();
+        },
+        /**
+         * Tạo quan hệ bài toán tài khoản
+         */
+        auditProblemAccount() {
+            if (!this.instance.ProblemAccountState) {
+                let payload = {
+                    ProblemId: this.instance.ProblemId,
+                    State: problemEnum.problemAccountState.seen.value,
+                };
+
+                this.instanceService.auditProblemAccount(payload);
+            }
         },
         /**
          * Click nộp

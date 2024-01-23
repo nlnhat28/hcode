@@ -21,12 +21,12 @@ namespace HCode.Domain
         /// <summary>
         /// Ngày tạo
         /// </summary>
-        [NoUpdate]
+        [Script(isNotUpdate: true)]
         public DateTime? CreatedTime { get; set; }
         /// <summary>
         /// Người tạo
         /// </summary>
-        [NoUpdate]
+        [Script(isNotUpdate: true)]
         public string? CreatedBy { get; set; }
         /// <summary>
         /// Ngày cập nhật

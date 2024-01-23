@@ -50,12 +50,13 @@ namespace HCode.Infrastructure
         //    var result = dictionary.Values.ToList();
         //    return result;
         //}
-        public override async Task<Problem?> GetAsync(Guid problemId) 
+        public override async Task<Problem?> GetAsync(Guid problemId, Guid accountId) 
         {
             var proc = $"{Procedure}Get";
 
             var param = new DynamicParameters();
             param.Add($"p_{TableId}", problemId);
+            param.Add($"p_AccountId", accountId);
 
             using var multi = await _unitOfWork.Connection.QueryMultipleAsync(
                 proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);

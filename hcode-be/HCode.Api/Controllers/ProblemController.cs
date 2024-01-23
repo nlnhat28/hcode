@@ -60,11 +60,11 @@ namespace HCode.Api
         /// Submit
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
-        [HttpPost("AccountState")]
-        public async Task<IActionResult> CreateProblemAccountState(ProblemDto problemDto)
+        [HttpPost("ProblemAccount")]
+        public async Task<IActionResult> AuditProblemAccountAsync(ProblemAccount problemAccount)
         {
             var res = new ServerResponse();
-            await _service.SubmitAsync(problemDto, res);
+            await _service.AuditProblemAccountAsync(problemAccount, res);
             return StatusCode(StatusCodes.Status200OK, res);
         }
         #endregion

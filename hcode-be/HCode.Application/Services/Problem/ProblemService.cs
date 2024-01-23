@@ -36,6 +36,10 @@ namespace HCode.Application
         /// </summary>
         private readonly IProblemAccountRepository _problemAccountRepo;
         /// <summary>
+        /// Repo submission
+        /// </summary>
+        private readonly ISubmissionRepository _submissionRepo;
+        /// <summary>
         /// Cache
         /// </summary>
         /// Created by: nlnhat (13/07/2023
@@ -57,7 +61,8 @@ namespace HCode.Application
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (17/08/2023)
         public ProblemService(IProblemRepository repository, IParameterRepository parameterRepo,
-                           ITestcaseRepository testcaseRepo, IProblemAccountRepository problemAccountRepo
+                           ITestcaseRepository testcaseRepo, IProblemAccountRepository problemAccountRepo,
+                           ISubmissionRepository submissionRepo,
                            ICEService ceService, IStringLocalizer<Resource> resource, IMapper mapper,
                            IAuthService authService, IUnitOfWork unitOfWork, IMemoryCache cache)
                          : base(repository, resource, mapper, unitOfWork, authService)
@@ -66,6 +71,7 @@ namespace HCode.Application
             _testcaseRepo = testcaseRepo;
             _parameterRepo = parameterRepo;
             _problemAccountRepo = problemAccountRepo;
+            _submissionRepo = submissionRepo;
             _cache = cache;
             _ceService = ceService;
         }
@@ -75,7 +81,8 @@ namespace HCode.Application
         // Get problem by id
         public override async Task<ProblemDto> GetAsync(Guid id)
         {
-            var entity = await _repository.GetAsync(id);
+            var accountId = _authService.GetAccountId();
+            var entity = await _repository.GetAsync(id, accountId);
 
             var result = _mapper.Map<ProblemDto>(entity);
 
@@ -150,7 +157,7 @@ namespace HCode.Application
 
                     var newCode = await _repository.GetMaxCodeAsync(problemDto.State ?? ProblemState.Private, _authService.GetAccountId());
                     newCode++;
-                    problem.ProblemCode = newCode; 
+                    problem.ProblemCode = newCode;
                     await _repository.InsertAsync(problem);
                     await _parameterRepo.InsertManyAsync(parameters);
                     await _testcaseRepo.InsertManyAsync(testcases);
@@ -214,8 +221,25 @@ namespace HCode.Application
         // Submit
         public async Task SubmitAsync(ProblemDto problemDto, ServerResponse res)
         {
-            var (problem, parameters, testcases) = MapProblemDtoToEntity(problemDto, EditMode.Update);
+            var (_, _, testcases) = MapProblemDtoToEntity(problemDto, EditMode.Update);
             await _ceService.ExecuteAsync(problemDto, testcases, res);
+
+            if (res.Success)
+            {
+                try
+                {
+                    if (res.Data is SubmissionData data)
+                    {
+                        var submission = AppHelper.InitSubmission(data, problemDto);
+                        var subRes = await _submissionRepo.InsertAsync(submission);
+                        res.AddData("Successfully insert submission");
+                    }
+                }
+                catch (Exception exception)
+                {
+                    res.AddData(exception);
+                }
+            }
         }
 
         // Map
@@ -226,7 +250,7 @@ namespace HCode.Application
 
             var problem = new Problem();
 
-            switch (editMode)   
+            switch (editMode)
             {
                 case EditMode.Create:
                     problem = MapCreateDtoToEntity(problemDto);
@@ -299,22 +323,21 @@ namespace HCode.Application
 
             res.Data = result;
         }
-        
-        
+
         /// <summary>
         /// Tạo quan hệ bài toán tài khoản
         /// </summary>
         /// <returns></returns>
-        public async Task CreateProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res) {
-            var result = await _problemAccountRepo.InsertAsync(problemAccount);
-            res.Data = result;
-        }
-        /// <summary>
-        /// Cập nhật quan hệ bài toán tài khoản
-        /// </summary>
-        /// <returns></returns>
-        public async Task UpdateProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res) {
-            var result = await _problemAccountRepo.UpdateAsync(problemAccount);
+        public async Task AuditProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res)
+        {
+            if (problemAccount.ProblemAccountId == Guid.Empty)
+            {
+                problemAccount.ProblemAccountId = Guid.NewGuid();
+            }
+
+            problemAccount.AccountId = _authService.GetAccountId();
+
+            var result = await _problemAccountRepo.AuditProblemAccountAsync(problemAccount);
             res.Data = result;
         }
         #endregion

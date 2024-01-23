@@ -126,6 +126,14 @@ namespace HCode.Application
         /// </summary>
         public double? Memory { get; set; }
         /// <summary>
+        /// Số testcase qua
+        /// </summary>
+        public int? PassedCount { get; set; }
+        /// <summary>
+        /// Số testcase lỗi
+        /// </summary>
+        public int? FailedCount { get; set; }
+        /// <summary>
         /// Tính toán thời gian, bộ nhớ
         /// </summary>
         public void CalculateTimeAndMemory()
@@ -133,8 +141,14 @@ namespace HCode.Application
             RunTime = Submissions.Max(submit => Convert.ToDouble(submit.time, CultureInfo.InvariantCulture));
             Memory = Submissions.Max(submit => submit.memory);
         }
+        /// <summary>
+        /// Tính toán các kết quả
+        /// </summary>
         public void CalculateResult()
         {
+            PassedCount = 0;
+            FailedCount = 0;
+
             if (Submissions.Count > 0)
             {
                 var status = StatusJudge0.Accepted;
@@ -143,8 +157,11 @@ namespace HCode.Application
                 {
                     if (item.status_id == StatusJudge0.Accepted)
                     {
+                        PassedCount++;
                         continue;
                     }
+
+                    FailedCount++;
 
                     if (item.status_id != StatusJudge0.OverLimit || status != StatusJudge0.WrongAnswer)
                     {

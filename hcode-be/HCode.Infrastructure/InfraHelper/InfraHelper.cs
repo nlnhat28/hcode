@@ -395,12 +395,13 @@ namespace HCode.Domain
         /// <param name="index"></param>
         /// <returns></returns>
         public static (string script, DynamicParameters param) ScriptUpdate<TEntity>(
-            TEntity entity, int? index = null)
+            TEntity entity, int? index = null, string? whereClause = null)
         {
             var script = "UPDATE {0} SET\n{1}\n{2};";
             var param = new DynamicParameters();
             var entityType = typeof(TEntity);
             var expressions = new List<string>();  // Id = @p_Id
+            var whereClauses = new List<string>(); 
 
             var tableAttribute = entityType.GetCustomAttribute<TableAttribute>();
             var table = tableAttribute != null ? tableAttribute.Name : typeof(TEntity).Name;
@@ -417,17 +418,30 @@ namespace HCode.Domain
                 var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
                 if (notMapped == null)
                 {
-                    var noUpdateAttribute = property.GetCustomAttribute<NoUpdateAttribute>();
+                    var propertyName = $"p_{property.Name}{id}";  //p_Id_1
+                    var paramName = $"@{propertyName}";   // @p_Id_1
+                    var propertyValue = entity != null ? property.GetValue(entity) : null;
 
-                    if (noUpdateAttribute != null)
+                    var scriptAttribute = property.GetCustomAttribute<ScriptAttribute>();
+                    if (scriptAttribute != null)
                     {
-                        continue;
+                        if (scriptAttribute.IsWhereUpdate)
+                        {
+                            var whereExpression = $"{property.Name} = {paramName}";
+                            whereClauses.Add(whereExpression);
+                            param.Add(propertyName, propertyValue);
+
+                            if (scriptAttribute.IsNotUpdate)
+                            {
+                                continue;
+                            }
+                        }
+                        else if (scriptAttribute.IsNotUpdate)
+                        {
+                            continue;
+                        }
                     }
 
-                    var propertyName = $"p_{property.Name}{id}";
-                    var paramName = $"@{propertyName}";
-
-                    var propertyValue = entity != null ? property.GetValue(entity) : null;
                     param.Add(propertyName, propertyValue);
 
                     var keyAttribute = property.GetCustomAttribute<KeyAttribute>();
@@ -444,7 +458,14 @@ namespace HCode.Domain
                 };
             }
 
-            var whereScript = $"WHERE {tableId} = {paramId}";
+            var whereScript = whereClause;
+
+            if (whereScript == null && whereClauses.Count > 0)
+            {
+                whereScript = $"WHERE {string.Join(" AND ", whereClauses)}";
+            }
+
+            whereScript ??= $"WHERE {tableId} = {paramId}";
 
             script = string.Format(script, table, string.Join(",\n", expressions), whereScript);
 

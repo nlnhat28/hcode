@@ -148,6 +148,40 @@ namespace HCode.Infrastructure
             }
         }
         /// <summary>
+        /// Lấy đối tượng theo id và account id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Bản ghi có id được truy vấn</returns>
+        /// Created by: nlnhat (16/08/2023)
+        public virtual async Task<TEntity?> GetAsync(Guid id, Guid accountId)
+        {
+            try
+            {
+                var proc = $"{Procedure}Get";
+
+                var param = new DynamicParameters();
+                param.Add($"p_{TableId}", id);
+                param.Add($"p_AccountId", accountId);
+
+                var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(
+                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+                return result;
+            }
+            catch
+            {
+                var sql = $"SELECT * FROM {View} WHERE {TableId} = @id";
+
+                var param = new DynamicParameters();
+                param.Add("id", id);
+
+                var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(
+                    sql, param, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                return result;
+            }
+        }
+        /// <summary>
         /// Lọc nguyên vật liệu (Tìm kiếm, phân trang, sắp xếp, lọc theo cột)
         /// </summary>
         /// <param name="keySearch">Từ khoá tìm kiếm</param>

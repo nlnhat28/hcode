@@ -129,6 +129,10 @@ namespace HCode.Application
         /// </summary>
         public ProblemAccountState? ProblemAccountState { get; set; }
         /// <summary>
+        /// Trạng thái của người dùng
+        /// </summary>
+        public Guid? ProblemAccountId { get; set; }
+        /// <summary>
         /// Danh sách testcases
         /// </summary>
         [AutoMapper.Configuration.Annotations.Ignore]

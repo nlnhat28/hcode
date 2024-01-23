@@ -390,6 +390,24 @@ namespace HCode.Application
                 }
             }
         }
+        public static Submission InitSubmission(SubmissionData data, ProblemDto problemDto)
+        {
+            var submission = new Submission()
+            {
+                SubmissionId = Guid.NewGuid(),
+                PassedCount = data.PassedCount,
+                FailedCount = data.FailedCount,
+                StatusId = data.StatusId,
+                StatusName = data.StatusName,
+                RunTime = data.RunTime,
+                Memory = data.Memory,
+                CreatedTime = DateTime.UtcNow,
+                ParentId = problemDto.ProblemAccountId,
+                SourceCode = problemDto.Solution,
+                LanguageId = problemDto.SolutionLanguage?.LanguageId,
+            };
+            return submission;
+        }
         #endregion
     }
 }

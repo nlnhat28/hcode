@@ -65,6 +65,7 @@ namespace HCode.Api
             builder.Services.AddScoped<IContestProblemRepository, ContestProblemRepository>();
             builder.Services.AddScoped<IContestAccountRepository, ContestAccountRepository>();
             builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+            builder.Services.AddScoped<IProblemAccountRepository, ProblemAccountRepository>();
 
             // Add mapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
