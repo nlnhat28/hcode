@@ -128,9 +128,19 @@ export default {
     },
     async created() {
         document.title = this.$cf.documentTitle(this.documentTitle);
-        await this.initOnCreated();
-        await this.loadDataOnCreated();
-        // this.isLoading = false
+        try {
+            await this.initOnCreated();
+            await Promise.all([
+                await this.loadDataOnCreated(),
+                await this.customLoadDataOnCreated(),
+            ]);
+            await this.afterLoadDataOnCreated();
+        } catch (error) {
+            console.error(error);
+        }
+        finally {
+            // this.isLoading = false
+        }
     },
     async mounted() {
         this.firstFocus();
@@ -321,6 +331,16 @@ export default {
          */
         async loadDataOnCreated() {
             this.reloadItems();
+        },
+        /**
+         * @virtual
+         */
+        async customLoadDataOnCreated() {
+        },
+        /**
+         * @virtual
+         */
+        async afterLoadDataOnCreated() {
         },
         /**
          * Handle checkbox check all records on table in a page

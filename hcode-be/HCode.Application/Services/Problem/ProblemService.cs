@@ -224,21 +224,18 @@ namespace HCode.Application
             var (_, _, testcases) = MapProblemDtoToEntity(problemDto, EditMode.Update);
             await _ceService.ExecuteAsync(problemDto, testcases, res);
 
-            if (res.Success)
+            try
             {
-                try
+                if (res.Data is SubmissionData data)
                 {
-                    if (res.Data is SubmissionData data)
-                    {
-                        var submission = AppHelper.InitSubmission(data, problemDto);
-                        var subRes = await _submissionRepo.InsertAsync(submission);
-                        res.AddData("Successfully insert submission");
-                    }
+                    var submission = AppHelper.InitSubmission(data, problemDto);
+                    var subRes = await _submissionRepo.InsertAsync(submission);
+                    res.AddData("Successfully insert submission");
                 }
-                catch (Exception exception)
-                {
-                    res.AddData(exception);
-                }
+            }
+            catch (Exception exception)
+            {
+                res.AddData(exception);
             }
         }
 

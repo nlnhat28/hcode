@@ -86,11 +86,12 @@ export default {
         await this.initOnCreated();
         await this.loadingEffect(async () => {
             await Promise.all([
-                this.handleInstanceOnCreated(),
                 this.loadDataOnCreated(),
+                this.customLoadDataOnCreated(),
             ]);
             await this.customInstanceOnCreated();
         });
+        await this.afterLoadDataOnCreated();
     },
     mounted() {
         // Gán các refs để validate
@@ -142,20 +143,28 @@ export default {
         },
         /**
          * Load data
+         * @virtual
          */
-        async loadDataOnCreated() {
+        async customLoadDataOnCreated() {
         },
         /**
          * Custom lại instance
+         * @virtual
          */
-        customInstanceOnCreated() {
+        async afterLoadDataOnCreated() {
+        },
+        /**
+         * Custom lại instance
+         * @virtual
+         */
+        async customInstanceOnCreated() {
         },
         /**
          * Handle instance on created()
          *
          * Author: nlnhat (05/07/2023)
          */
-        async handleInstanceOnCreated() {
+        async loadDataOnCreated() {
             switch (this.mode) {
                 case this.$enums.formMode.create:
                     this.initCreateInstance();

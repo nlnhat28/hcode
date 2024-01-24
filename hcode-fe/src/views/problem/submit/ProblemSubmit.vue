@@ -201,7 +201,11 @@
                             </v-tab-panel> -->
                             <!-- Đã nộp -->
                             <v-tab-panel :header="$t('problem.submissions')">
-                                <SubmissionsList :parentId="instance.ProblemAccountId" />
+                                <SubmissionsList
+                                    :parentId="instance.ProblemAccountId"
+                                    v-if="instance.ProblemAccountId"
+                                    @selected="bindSubmission"
+                                />
                             </v-tab-panel>
                         </v-tab-view>
                     </div>
@@ -247,9 +251,7 @@
             </v-splitter>
         </div>
         <div class="problem-detail__footer">
-            <v-button-container
-                direction="row-reverse"
-            >
+            <v-button-container direction="row-reverse">
                 <!-- Nộp -->
                 <v-button
                     :label="$t('problem.submitSubmission')"
@@ -291,6 +293,7 @@ export default {
             },
             instanceService: problemService,
             problemConst: problemConst,
+            allowBuildSource: true,
         }
     },
     watch: {
@@ -300,7 +303,7 @@ export default {
     },
     computed: {
         checkBuildSource() {
-            return true || this.mode != this.$enums.formMode.update || this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
+            return this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
         },
     },
     methods: {
@@ -328,7 +331,7 @@ export default {
          * Tạo quan hệ bài toán tài khoản
          */
         auditProblemAccount() {
-            if (!this.instance.ProblemAccountState) {
+            if (!this.instance.ProblemAccountState && this.instance.ProblemId) {
                 let payload = {
                     ProblemId: this.instance.ProblemId,
                     State: problemEnum.problemAccountState.seen.value,
@@ -365,6 +368,20 @@ export default {
                 console.error(error);
             }
         },
+        /**
+         * Bind submission
+         */
+        bindSubmission(submit) {
+            let solutionLanguage = this.languages.find(l => l.LanguageId == submit.LanguageId)
+            if (solutionLanguage) {
+                this.instance.SolutionLanguage = solutionLanguage;
+                this.allowBuildSource = false;
+            }
+            if (!this.$cf.isEmptyString(submit.SourceCode)) {
+                this.instance.Solution = submit.SourceCode;
+                // this.allowBuildSource = true;
+            }
+        }
     }
 }
 </script>

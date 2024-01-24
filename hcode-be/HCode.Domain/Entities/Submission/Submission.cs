@@ -6,7 +6,7 @@ namespace HCode.Domain
     /// <summary>
     /// Lớp bài thi
     /// </summary>
-    [CanSearch("ContestCode, ContestName")]
+    [CanSearch("StatusName, LanguageName")]
     public class Submission : BaseEntity, IHasEntityId
     {
         #region Properties

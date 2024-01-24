@@ -43,28 +43,29 @@
                     :key="item[itemIdKey] ?? index"
                     :index="index"
                     :id="item[itemIdKey]"
+                    @doubleClick="onSelect(item)"
                 >
                     <template #content>
                         <!-- Ngày tạo -->
                         <v-td
-                            :content="$fm.formatDateTime(item.CreatedTIme, dateTimePattern)"
+                            :content="$fm.formatDateTime(item.CreatedTime, dateTimePattern)"
                             :style="{ textAlign: 'center' }"
                         >
                         </v-td>
                         <!-- Trạng thái -->
                         <v-td
                             :content="item.StatusName"
-                            :style="{ textAlign: 'center', color: $cv.statusJudge0ToColor(item.StatusId)}"
+                            :style="{ color: $cv.statusJudge0ToColor(item.StatusId)}"
                         >
                         </v-td>
                         <!-- Thời gian -->
                         <v-td
-                            :content="item.RunTime + 's'"
+                            :content="item.RunTime + ' s'"
                         >
                         </v-td>
                         <!-- Bộ nhớ -->
                         <v-td
-                            :content="item.Memory + 'kb'"
+                            :content="item.Memory + ' kb'"
                         >
                         </v-td>
                         <!-- Ngôn ngữ -->
@@ -95,10 +96,14 @@ import BaseList from "@/components/base/BaseList.vue";
 import { submissionService } from "@/services/services.js";
 import problemEnum from "@/enums/problem-enum.js";
 import { useLanguageStore } from "@/stores/stores";
+import { mapStores, mapState } from 'pinia';
 
 export default {
     name: "SubmissionList",
     extends: BaseList,
+    emits: [
+        'selected',
+    ],
     props: {
         parentId: {
             type: [String],
@@ -117,32 +122,32 @@ export default {
                 {
                     title: this.$t("problem.field.createdTime"),
                     textAlign: 'center',
-                    widthCell: 100,
+                    widthCell: 140,
                     name: "CreatedTime",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
                     },
                     filterConfig: {
-                        filterType: this.$enums.filterType.dateTime,
+                        filterType: this.$enums.filterType.text,
                     }
                 },
                 {
                     title: this.$t("problem.field.statusName"),
                     textAlign: 'left',
-                    widthCell: 200,
+                    widthCell: 100,
                     name: "StatusId",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
                     },
                     filterConfig: {
                         filterType: this.$enums.filterType.selectKey,
-                        selects: this.statusJudge0s,
+                        selects: this.statusJudge0s = this.$cv.enumToSelects(problemEnum.statusJudge0),
                     }
                 },
                 {
                     title: this.$t("problem.field.runTime"),
                     textAlign: 'left',
-                    widthCell: 100,
+                    widthCell: 80,
                     name: "RunTime",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -154,7 +159,7 @@ export default {
                 {
                     title: this.$t("problem.field.memory"),
                     textAlign: 'left',
-                    widthCell: 100,
+                    widthCell: 80,
                     name: "Memory",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -177,7 +182,6 @@ export default {
                     }
                 },
             ],
-            statusJudge0s: [],
             languages: [],
             dateTimePattern: 'dd/mm/yyyy hh/mm/ss',
         }
@@ -212,18 +216,27 @@ export default {
          */
         initOnCreated() {
             this.itemService = submissionService;
-            this.statusJudge0s = this.$cv.enumToSelects(problemEnum.statusJudge0);
         },
         /**
          * Lấy dữ liệu
+         * @override
          */
-         loadDataOnCreated() {
-            this.getLanguages();
+        async customLoadDataOnCreated() {
+            try {
+                await this.getLanguages();
+                let selectsLanguage = this.languages.map(l => ({
+                    key: l.LanguageId,
+                    name: l.LanguageName,
+                }));
+                this.$cf.addSelectsToColumn(selectsLanguage, this.columns, 'LanguageId');
+            } catch (error) {
+                console.error(error);
+            }
         },
         /**
          * Lấy danh sách language
          */
-         async getLanguages() {
+        async getLanguages() {
             if (this.$cf.isEmptyArray(this.languageStore.languages)) {
                 try {
                     const res = await languageService.getAll();
@@ -240,6 +253,12 @@ export default {
                 this.languages = this.$cf.cloneDeep(this.languageStore.languages);
             }
         },
+        /**
+         * Chọn item
+         */
+        onSelect(item) {
+            this.$emit('selected', item);
+        }
     }
 }
 </script>

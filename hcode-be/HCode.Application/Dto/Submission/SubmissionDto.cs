@@ -35,15 +35,23 @@ namespace HCode.Application
         /// <summary>
         /// Ngôn ngữ
         /// </summary>
-        public StatusJudge0? Status { get; set; }
+        public string? LanguageName { get; set; }
+        /// <summary>
+        /// Ngôn ngữ
+        /// </summary>
+        public StatusJudge0? StatusId { get; set; }
+        /// <summary>
+        /// Ngôn ngữ
+        /// </summary>
+        public string? StatusName { get; set; }
         /// <summary>
         /// Thời gian chạy
         /// </summary>
-        public decimal? RunTime { get; set; }
+        public double? RunTime { get; set; }
         /// <summary>
         /// Bộ nhớ chạy
         /// </summary>
-        public decimal? Memory { get; set; }
+        public double? Memory { get; set; }
         /// <summary>
         /// Số testcase qua
         /// </summary>
@@ -53,9 +61,9 @@ namespace HCode.Application
         /// </summary>
         public int? FailedCount { get; set; }
         /// <summary>
-        /// Ngôn ngữ
+        /// Thời gian tạo
         /// </summary>
-        public Language? Language { get; set; }
+        public DateTime? CreatedTime { get; set; }
         #endregion
     }
 }

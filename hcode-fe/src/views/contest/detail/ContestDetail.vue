@@ -312,7 +312,7 @@ export default {
         /**
          * Lấy danh sách problem
          */
-        async loadDataOnCreated() {
+        async customLoadDataOnCreated() {
             const res = await problemService.getForContest();
             if (this.$cf.isSuccess(res)) {
                 this.problems = res.Data;

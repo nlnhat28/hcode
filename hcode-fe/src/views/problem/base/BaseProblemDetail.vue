@@ -236,7 +236,7 @@ export default {
         /**
          * Lấy dữ liệu
          */
-        async loadDataOnCreated() {
+        async customLoadDataOnCreated() {
             await this.getLanguages();
             if (this.$cf.isEmptyObject(this.instance.SolutionLanguage) && !this.$cf.isEmptyArray(this.languages)) {
                 this.instance.SolutionLanguage ??= this.languages[0];
@@ -267,6 +267,14 @@ export default {
          */
         buildSourceCode() {
             this.instance.Solution = this.defaultSourceCode;
+        },
+        /**
+         * Thay đổi language trên combobox
+         */
+        onChangeLanguage(event) {
+            if (this.checkBuildSource) {
+                this.buildSourceCode();
+            }
         },
         /**
          * Click reset lời giải

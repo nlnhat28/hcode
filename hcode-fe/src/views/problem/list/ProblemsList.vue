@@ -50,6 +50,7 @@
                         :key="item[itemIdKey] ?? index"
                         :index="index"
                         :id="item[itemIdKey]"
+                        @doubleClick="clickRun(item.ProblemId)"
                     >
                         <!-- :isSelected="isSelected(item[itemId])" -->
                         <template #content>

@@ -231,6 +231,10 @@ const commonFuction = {
         }
         return null;
     },
+    /**
+     * Tạo route abc/xyz
+     * @returns 
+     */
     combineRoute() {
         if (arguments) {
             let args = Object.values(arguments);
@@ -244,6 +248,21 @@ const commonFuction = {
             return route;
         }
         return '';
+    },
+    /**
+     * Gán select vào filter column
+     * @param {*} selects 
+     * @param {*} columns 
+     * @param {*} name 
+     */
+    addSelectsToColumn(selects, columns, name) {
+        if (columns && Array.isArray(columns)) {
+            columns.forEach((c) => {
+                if (c.name == name && c.filterConfig) {
+                    c.filterConfig.selects = selects;
+                }
+            });
+        }
     }
 };
 export default commonFuction;
