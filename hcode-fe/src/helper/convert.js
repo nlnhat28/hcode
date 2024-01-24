@@ -47,6 +47,23 @@ const convert = {
      * @param {*} contestState
      * @returns
      */
+    statusJudge0ToColor(status) {
+        let status = problemEnum.statusJudge0;
+        switch (status) {
+            case state.Accepted.value:
+                return enums.color.green;
+            case state.OverLimit.value:
+                return enums.color.orange;
+            default:
+                return enums.color.red;
+        }
+    },
+    /**
+     * Lấy màu theo trạng thái contest
+     *
+     * @param {*} contestState
+     * @returns
+     */
     contestStateToColor(contestState) {
         let state = contestEnum.contestState;
         switch (contestState) {
@@ -145,8 +162,8 @@ const convert = {
     enumToSelects(enumObj) {
         if (enumObj) {
             const enumArray = Object.entries(enumObj).map(([key, value]) => ({
-                key: value.value,
-                name: value.label,
+                key: value.value ?? value,
+                name: value.label ?? key,
             }));
             return enumArray;
         };

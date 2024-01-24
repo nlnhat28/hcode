@@ -200,9 +200,9 @@
                                 ></v-editor>
                             </v-tab-panel> -->
                             <!-- Đã nộp -->
-                            <!-- <v-tab-panel :header="$t('problem.submissions')">
+                            <v-tab-panel :header="$t('problem.submissions')">
                                 <SubmissionsList :parentId="instance.ProblemAccountId" />
-                            </v-tab-panel> -->
+                            </v-tab-panel>
                         </v-tab-view>
                     </div>
                 </v-splitter-panel>

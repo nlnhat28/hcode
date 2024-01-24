@@ -254,7 +254,8 @@ export default {
                         this.languageStore.setLanguages(res.Data);
                     }
                 }
-                catch {
+                catch (error) {
+                    console.error(error);
                 }
             }
             else {
