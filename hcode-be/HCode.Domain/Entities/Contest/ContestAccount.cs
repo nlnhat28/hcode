@@ -1,15 +1,20 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HCode.Domain
 {
     /// <summary>
     /// Lớp bài thi tài khoản
     /// </summary>
+    [Table("contest_account")]
     public class ContestAccount : BaseEntity, IHasEntityId
     {
         #region Properties
         /// <summary>
         /// Khoá chính
         /// </summary>
+        [Key]
         public Guid ContestAccountId { get; set; }
         public Guid Id
         {
@@ -45,7 +50,7 @@ namespace HCode.Domain
             startTime = null, int? usedTime = 0) 
         {
             ContestAccountId = Guid.NewGuid();
-            ProblemId = problemId;
+            ContestId = contestId;
             AccountId = accountId;
             State = state;
             StartTime = startTime;

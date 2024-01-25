@@ -14,7 +14,7 @@ namespace HCode.Application
         /// <param name="isClone"></param>
         /// <returns></returns>
         (Contest contest, List<ContestProblem> contestProblems) MapContestDtoToEntity(
-            ProblemDto problemDto, EditMode? editMode = EditMode.Create, bool? isClone = false);
+             ContestDto problemDto, EditMode? editMode = EditMode.Create, bool? isClone = false);
         /// <summary>
         /// Join 1 bài thi
         /// </summary>

@@ -180,6 +180,25 @@ namespace HCode.Infrastructure
             return 0;
         }
         /// <summary>
+        /// Cập nhật 1 đối tượng theo cột
+        /// </summary>
+        /// <param name="entity">Thông tin mới</param>
+        /// <returns>Số lượng bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (15/08/2023)
+        public async Task<int> UpdateByColumnAsync(TEntity entity, List<string> columns)
+        {
+            if (columns.Count > 0)
+            {
+                var (sql, param) = InfraHelper.ScriptUpdateByColumn(entity, columns);
+
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    sql, param, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                return result;
+            }
+            return 0;
+        }
+        /// <summary>
         /// Xoá 1 đối tượng theo id
         /// </summary>
         /// <param name="id">Id đối tượng muốn xoá</param>

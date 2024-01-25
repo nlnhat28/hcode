@@ -224,46 +224,60 @@ namespace HCode.Application
             var (_, _, testcases) = MapProblemDtoToEntity(problemDto, EditMode.Update);
             await _ceService.ExecuteAsync(problemDto, testcases, res);
 
-            try
+            if (res.Data is SubmissionData data)
             {
-                if (res.Data is SubmissionData data)
+                // Thêm mới submission
+                try
                 {
-                    // Thêm mới submission
                     var submission = AppHelper.InitSubmission(data, problemDto);
                     var subRes = await _submissionRepo.InsertAsync(submission);
-                    res.AddData("Successfully insert submission");
-
-                    // Cập nhật ProblemAccount
-                    var problemAccountState = ProblemAccountState.Seen;
-
-                    switch (submission.StatusId)
-                    {
-                        case StatusJudge0.Accepted:
-                            problemAccountState = ProblemAccountState.Accepted;
-                            break;
-                        case StatusJudge0.InQueue:
-                        case StatusJudge0.Processing:
-                            break;
-                        default:
-                            problemAccountState = ProblemAccountState.Wrong;
-                            break;
-                    };
-
-                    var problemAccount = new ProblemAccount() 
-                    {
-                        ProblemAccountId = problemDto.ProblemAccountId,
-                        ProblemId = problemDto.ProblemId,
-                        ProblemAccountState = problemAccountState
-                    }
-
-                    var auditRes = new ServerResponse();
-                    await AuditProblemAccountAsync(problemAccount, auditRes)
-                    res.AddData(auditRes);
+                    res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));
                 }
-            }
-            catch (Exception exception)
-            {
-                res.AddData(exception);
+                catch (Exception ex)
+                {
+                    res.AddData(ex);
+                };
+
+                // Cập nhật ProblemAccount
+                try
+                {
+                    if (problemDto.ProblemAccountState != ProblemAccountState.Accepted)
+                    {
+                        var problemAccountState = problemDto.ProblemAccountState ?? ProblemAccountState.Seen;
+
+                        switch (data.StatusId)
+                        {
+                            case StatusJudge0.Accepted:
+                                problemAccountState = ProblemAccountState.Accepted;
+                                break;
+                            case StatusJudge0.InQueue:
+                            case StatusJudge0.Processing:
+                                break;
+                            default:
+                                problemAccountState = ProblemAccountState.Wrong;
+                                break;
+                        };
+
+                        if (problemAccountState != problemDto.ProblemAccountState)
+                        {
+                            var problemAccount = new ProblemAccount()
+                            {
+                                ProblemAccountId = problemDto.ProblemAccountId ?? Guid.Empty,
+                                ProblemId = problemDto.ProblemId,
+                                State = problemAccountState
+                            };
+
+                            var auditRes = new ServerResponse();
+                            await AuditProblemAccountAsync(problemAccount, auditRes);
+                            res.AddData("AuditProblemAccountAsync");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    res.AddData(ex);
+                }
+                    
             }
         }
 

@@ -67,10 +67,16 @@ export default {
             isLoading: false,
             /** Message hiện lên on toast */
             messageOnToast: null,
+            /** Title */
+            documentTitle: null,
+            /** build buildDocumentTitle hay k */
+            hasBuildDocumentTitle: true,
         };
     },
     async created() {
-        document.title = this.$cf.documentTitle(this.documentTitle);
+        if (this.hasBuildDocumentTitle) {
+            document.title = this.$cf.documentTitle(this.documentTitle);
+        }
         
         let id = this.$route.params.id;
 
@@ -228,7 +234,7 @@ export default {
         async getInstance(id) {
             if (this.instanceService) {
                 const response = await this.instanceService.get(id);
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     if (!this.$cf.isEmptyObject(response.Data)) {
                         this.instance = this.$cf.cloneDeep(response.Data);
                         this.storeOriginalInstance();
@@ -258,7 +264,7 @@ export default {
         async createInstance() {
             try {
                 const response = await this.instanceService.post(this.reformatInstance);
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     this.instanceId = response.Data;
                     this.isSuccessResponseFlag = true;
                 } else {
@@ -283,7 +289,7 @@ export default {
                     this.instanceId,
                     this.reformatInstance
                 );
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;

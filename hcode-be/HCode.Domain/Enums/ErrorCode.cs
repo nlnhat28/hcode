@@ -113,8 +113,9 @@
         /// Cập nhật bài toán bị lỗi
         /// </summary>
         ProblemUpdate = 205,
+        #endregion
 
-        #region Problem
+        #region Contest
         /// <summary>
         /// Tạo bài thi bị lỗi
         /// </summary>

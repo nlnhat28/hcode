@@ -93,6 +93,13 @@ const routes = [
     },
     {
         path: path.contest,
+        name: "contestNew",
+        components: {
+            viewApp: ContestDetail,
+        },
+    },
+    {
+        path: path.contest + ":id",
         name: "contest",
         components: {
             viewApp: ContestDetail,

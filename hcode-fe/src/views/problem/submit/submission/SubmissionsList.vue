@@ -60,12 +60,12 @@
                         </v-td>
                         <!-- Thời gian -->
                         <v-td
-                            :content="item.RunTime + ' s'"
+                            :content="item.RunTime != null ? item.RunTime + ' s' : '_'"
                         >
                         </v-td>
                         <!-- Bộ nhớ -->
                         <v-td
-                            :content="item.Memory + ' kb'"
+                            :content="item.Memory != null ? item.Memory + ' kb' : '_'"
                         >
                         </v-td>
                         <!-- Ngôn ngữ -->
@@ -112,7 +112,8 @@ export default {
     },
     data() {
         return {
-            documentTitle: this.$t("problem.problemList"),
+            // documentTitle: this.$t("problem.problemList"),
+            hasBuildDocumentTitle: false,
             itemIdKey: "ContestId",
             problemEnum: problemEnum,
             /**
@@ -240,7 +241,7 @@ export default {
             if (this.$cf.isEmptyArray(this.languageStore.languages)) {
                 try {
                     const res = await languageService.getAll();
-                    if (this.$cf.isSuccess(res)) {
+                    if (this.$res.isSuccess(res)) {
                         this.languages = this.$cf.cloneDeep(res.Data);
                         this.languageStore.setLanguages(res.Data);
                     }

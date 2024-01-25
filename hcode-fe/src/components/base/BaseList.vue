@@ -29,105 +29,63 @@ export default {
                 /** Tên phân hệ */
                 name: ''
             },
-            /**
-             * Columns
-             */
+            /** Columns */
             columns: [],
-            /**
-             * Service chính
-             */
+            /** Service chính */
             itemService: {},
-            /**
-             * List of items to show on table
-             */
+            /** List of items to show on table */
             items: [],
-            /**
-             * List of selected items
-             */
+            /** List of selected items */
             selectedItems: [],
-            /**
-             * Item showed on form to update
-             */
+            /** Item showed on form to update */
             itemUpdate: {},
-            /**
-             * Tên key id
-             */
+            /** Tên key id */
             itemIdKey: 'id',
-            /**
-             * Id of item to focus
-             */
+            /** Id of item to focus */
             focusedId: null,
-            /**
-             * Ids of item to focus
-             */
+            /** Ids of item to focus */
             focusedIds: [],
-            /**
-             * Phân trang
-             */
+            /** Phân trang */
             pagingModel: {
                 pageNumber: 1,
                 pageSize: 10,
             },
-            /**
-             * Key search
-             */
+            /** Key search */
             keySearch: '',
-            /**
-             * Total record on table
-             */
+            /** Total record on table */
             totalRecord: 0,
-            /**
-             * All record in database
-             */
+            /** All record in database */
             allRecord: 0,
-            /**
-             * Loading flag
-             */
+            /** Loading flag */
             isLoading: true,
-            /**
-             * Key of item form
-             */
+            /** Key of item form */
             formKey: 0,
-            /**
-             * Danh sách các sort model mới từ các cột
-             */
+            /** Danh sách các sort model mới từ các cột */
             sortModels: [],
-            /**
-             * Danh sách cũ các sort model từ các cột 
-             */
+            /** Danh sách cũ các sort model từ các cột */
             oldSortModels: [],
-            /**
-             * Hàng đợi sort (Sắp xếp sort model theo thứ tự chọn)
-             */
+            /** Hàng đợi sort (Sắp xếp sort model theo thứ tự chọn) */
             queueSortModels: [],
-            /**
-             * Các filter model từ các cột
-             */
+            /** Các filter model từ các cột */
             filterModels: [],
-            /**
-             * Các filter model không rỗng từ các cột
-             */
+            /** Các filter model không rỗng từ các cột */
             filterModelsClean: [],
-            /**
-             * Flag
-             */
+            /** Flag */
             isFilterSuccess: true,
-            /**
-             * Date format
-             */
+            /** Date format */
             dateFormat: 'dd/MM/yyyy',
-            /**
-             * Title
-             */
+            /** Title */
             documentTitle: null,
-            /**
-             * Ref name muốn focus đầu tiên
-             */
+            /** build buildDocumentTitle hay k */
+            hasBuildDocumentTitle: true,
+            /** Ref name muốn focus đầu tiên */
             refFocusFirst: 'refSearchBox',
         };
     },
     async created() {
-        document.title = this.$cf.documentTitle(this.documentTitle);
+        if (this.hasBuildDocumentTitle) {
+            document.title = this.$cf.documentTitle(this.documentTitle);
+        }
         try {
             await this.initOnCreated();
             await Promise.all([
@@ -400,7 +358,7 @@ export default {
         async filterItems() {
             try {
                 const response = await this.itemService.filter(this.filterComputed);
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     this.items = response.Data.Data;
                     this.totalRecord = response.Data.TotalRecord;
                     this.allRecord = response.Data.AllRecord;
@@ -1076,7 +1034,7 @@ export default {
         },
         async delete(id) {
             const response = await this.itemService.delete(id);
-            if (this.$cf.isSuccess(response)) {
+            if (this.$res.isSuccess(response)) {
                 this.$ts.success();
                 this.reloadItems();
             }

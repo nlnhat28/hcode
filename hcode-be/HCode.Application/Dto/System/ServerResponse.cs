@@ -11,10 +11,6 @@ namespace HCode.Application
     {
         #region Properties
         /// <summary>
-        /// Mã lỗi nếu có
-        /// </summary>
-        public ErrorCode? ErrorCode { get; set; }
-        /// <summary>
         /// Nhắn cho người dùng
         /// </summary>
         public string? UserMsg { get; set; }
@@ -49,9 +45,10 @@ namespace HCode.Application
         /// <summary>
         /// Thành công
         /// </summary>
-        public void OnSuccess()
+        public void OnSuccess(SuccessCode? successCode = null)
         {
             Success = true;
+            SuccessCode = successCode;
         }
         /// <summary>
         /// Thành công
@@ -234,7 +231,7 @@ namespace HCode.Application
         /// </summary>
         /// <param name="exception"></param>
         /// <returns></returns>
-        public object ExceptionToData(Exception exception)
+        public static object ExceptionToData(Exception exception)
         {
             var data = new
             {

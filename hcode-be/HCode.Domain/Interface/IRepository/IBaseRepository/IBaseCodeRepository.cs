@@ -21,7 +21,7 @@
         /// <param name="id">Mã của đối tượng</param>
         /// <returns>True nếu trùng mã nhưng không trùng id</returns>
         /// Created by: nlnhat (15/08/2023)
-        Task<bool> CheckExistedCodeAsync(string code, Guid id);
+        Task<bool> CheckExistedCodeAsync(string code, Guid? id);
         /// <summary>
         /// Lấy nhiều đối tượng theo mã
         /// </summary>

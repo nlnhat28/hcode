@@ -414,6 +414,39 @@ namespace HCode.Application
             };
             return submission;
         }
+        /// <summary>
+        /// Tạo mã ngẫu nhiên
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="includeChar"></param>
+        /// <param name="includeNumber"></param>
+        /// <returns></returns>
+        public static string GenerateRandomCode(int? length = 6, bool? includeChar = true, bool? includeNumber = true)
+        {
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            var nums = "0123456789";
+            var alls = "";
+
+            if (includeChar == true)
+            {
+                alls += chars;
+            }
+            if (includeNumber == true)
+            {
+                alls += nums;
+            }
+
+            if (string.IsNullOrWhiteSpace(alls))
+            {
+                alls += chars + nums;
+            }
+
+            var random = new Random();
+            var code = new string(Enumerable.Repeat(alls, length ?? 6)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            return code;
+        }
         #endregion
     }
 }

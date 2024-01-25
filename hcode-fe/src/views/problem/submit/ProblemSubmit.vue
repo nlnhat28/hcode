@@ -202,6 +202,7 @@
                             <!-- Đã nộp -->
                             <v-tab-panel :header="$t('problem.submissions')">
                                 <SubmissionsList
+                                    ref="refSubmissionList"
                                     :parentId="instance.ProblemAccountId"
                                     v-if="instance.ProblemAccountId"
                                     @selected="bindSubmission"
@@ -297,6 +298,15 @@ export default {
         }
     },
     watch: {
+        "instance.SolutionLanguage": {
+            handler() {
+                if (this.checkBuildSource) {
+                    this.buildSourceCode();
+                }
+                this.allowBuildSource = true;
+            },
+            deep: true
+        },
     },
     mounted() {
 
@@ -358,14 +368,27 @@ export default {
                 const response = await this.instanceService.submit(
                     this.reformatInstance
                 );
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     this.$ts.success();
                 } else {
                     this.handleError(response);
                 }
                 this.processSubmissionResponse(response);
+
+                if (this.$res.hasSuccessCode(response, this.$res.successCode.SubmissionSaved)) {
+                    this.reloadSubmissionList();
+                }
             } catch (error) {
                 console.error(error);
+            }
+        },
+        /**
+         * reload SubmissionList
+         */
+        reloadSubmissionList() {
+            let ref = this.$refs.refSubmissionList;
+            if (ref && typeof (ref.reloadItems) == 'function') {
+                ref.reloadItems();
             }
         },
         /**

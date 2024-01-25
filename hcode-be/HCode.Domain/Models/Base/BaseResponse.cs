@@ -12,6 +12,14 @@ namespace HCode.Domain
         /// </summary>
         public bool Success { get; set; } = true;
         /// <summary>
+        /// Mã lỗi nếu có
+        /// </summary>
+        public ErrorCode? ErrorCode { get; set; }
+        /// <summary>
+        /// Mã thành công nếu có
+        /// </summary>
+        public SuccessCode? SuccessCode { get; set; }
+        /// <summary>
         /// Nhắn cho dev
         /// </summary>
         public string? DevMsg { get; set; }
@@ -44,6 +52,16 @@ namespace HCode.Domain
             DevMsg = devMsg;
         }
         /// <summary>
+        /// Hàm tạo BaseResponse từ SuccessCode
+        /// </summary>
+        /// <param name="successCode">Message</param>
+        public BaseResponse(SuccessCode successCode, string? devMsg = null)
+        {
+            Success = true;
+            SuccessCode = successCode;
+            DevMsg = devMsg ?? successCode.ToString();
+        }
+        /// <summary>
         /// Hàm tạo BaseResponse từ exception
         /// </summary>
         /// <param name="exception">Exception</param>
@@ -70,6 +88,14 @@ namespace HCode.Domain
         public bool IsSuccess()
         {
             return Success == true;
+        }
+        /// <summary>
+        /// Thành công
+        /// </summary>
+        public void OnSuccess(SuccessCode? successCode = null)
+        {
+            Success = true;
+            SuccessCode = successCode;
         }
         /// <summary>
         /// Success response

@@ -148,7 +148,7 @@ export default {
         async signup(data) {
             try {
                 const response = await this.instanceService.signup(data);
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     this.instance.AccountId = response.Data;
                     this.isSuccessResponseFlag = true;
                 } else {

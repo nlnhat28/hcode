@@ -70,7 +70,7 @@ namespace HCode.Application
         /// Danh sách câu hỏi
         /// </summary>
         [AutoMapper.Configuration.Annotations.Ignore]
-        public List<ContestProblem>? ContestProblems { get; set; }
+        public List<ContestProblemDto>? ContestProblems { get; set; }
         #endregion
     }
 }

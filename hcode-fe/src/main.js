@@ -142,6 +142,7 @@ import commonFunction from "@/helper/common-function.js";
 import convert from "@/helper/convert.js";
 import format from "@/helper/format.js";
 import reformat from "@/helper/reformat.js";
+import res from "@/helper/res.js";
 import enums from "@/enums/enums.js";
 import errorCode from "@/enums/error-code.js";
 import toast from "@/components/overlay/toast/toast.js";
@@ -165,6 +166,7 @@ app.config.globalProperties.$dl = dialog;
 app.config.globalProperties.$vld = validate;
 app.config.globalProperties.$lodash = lodash;
 app.config.globalProperties.$reg = regex;
+app.config.globalProperties.$res = res;
 /**
  * Directives
  */

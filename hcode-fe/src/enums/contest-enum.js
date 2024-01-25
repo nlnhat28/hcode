@@ -8,7 +8,7 @@ const contestEnum = {
         },
         private: {
             value: 2,
-            label: t("contest.filter.private"),
+            label: t("contest.filter.mine"),
         },
         joined: {
             value: 3,

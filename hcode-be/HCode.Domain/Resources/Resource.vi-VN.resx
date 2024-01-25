@@ -157,6 +157,12 @@ Mã xác thực là: {2}. Thời gian hiệu lực: {3} phút.</value>
   <data name="AuthVerifyEmail" xml:space="preserve">
     <value>Xác thực email bị lỗi</value>
   </data>
+  <data name="ContestCreateError" xml:space="preserve">
+    <value>Lỗi khi tạo mới bài thi</value>
+  </data>
+  <data name="ContestExistedCode" xml:space="preserve">
+    <value>Mã bài thi &lt;{0}&gt; đã tồn tại</value>
+  </data>
   <data name="DifficultyEasy" xml:space="preserve">
     <value>Dễ</value>
   </data>

@@ -185,6 +185,10 @@ export default {
             documentTitle: this.$t("contest.contestList"),
             itemIdKey: "ContestId",
             contestEnum: contestEnum,
+            cfg: {
+                formPath: this.$path.contest,
+                subSysName: this.$t("contest.contest")
+            },
             /**
              * Các cột
              */

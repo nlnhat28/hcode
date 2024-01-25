@@ -249,7 +249,7 @@ export default {
             if (this.$cf.isEmptyArray(this.languageStore.languages)) {
                 try {
                     const res = await languageService.getAll();
-                    if (this.$cf.isSuccess(res)) {
+                    if (this.$res.isSuccess(res)) {
                         this.languages = this.$cf.cloneDeep(res.Data);
                         this.languageStore.setLanguages(res.Data);
                     }

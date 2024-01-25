@@ -16,9 +16,13 @@ namespace HCode.Application
         /// </summary>
         private new readonly IContestRepository _repository;
         /// <summary>
-        /// Repo contest
+        /// Repo contest account
         /// </summary>
         private new readonly IContestAccountRepository _contestAccountRepo;
+        /// <summary>
+        /// Repo contest problem
+        /// </summary>
+        private new readonly IContestProblemRepository _contestProblemRepo;
         /// <summary>
         /// Cache
         /// </summary>
@@ -42,30 +46,47 @@ namespace HCode.Application
         /// Created by: nlnhat (17/08/2023)
         public ContestService(IContestRepository repository, ICEService ceService,
                            IStringLocalizer<Resource> resource, IMapper mapper, IAuthService authService,
-                           IUnitOfWork unitOfWork, IMemoryCache cache)
+                           IUnitOfWork unitOfWork, IMemoryCache cache, IContestProblemRepository contestProblemRepo,
+                           IContestAccountRepository contestAccountRepo)
                          : base(repository, resource, mapper, unitOfWork, authService)
         {
             _repository = repository;
             _cache = cache;
             _ceService = ceService;
+            _contestProblemRepo = contestProblemRepo;
+            _contestAccountRepo = contestAccountRepo;
         }
         #endregion
 
         #region Methods
+        // Get by id
+        public override async Task<ContestDto> GetAsync(Guid id)
+        {
+            var accountId = _authService.GetAccountId();
+            var entity = await _repository.GetAsync(id, accountId);
+
+            var result = _mapper.Map<ContestDto>(entity);
+
+            result.ContestProblems = _mapper.Map<List<ContestProblemDto>>(entity?.ContestProblems);
+
+            return result;
+        }
+
         // Validate
         public override async Task ValidateAsync(Contest contest, ServerResponse res)
         {
             var existed = await _repository.CheckExistedCodeAsync(contest.ContestCode, contest.ContestId);
             if (existed) 
             {
-                res.OnError(ErrorCode.ContestExistedCode, new ErrorItem("refContestCode", _resource["ContestExistedCode"]))
+                res.OnError(ErrorCode.ContestExistedCode, new ErrorItem("refContestCode", 
+                    string.Format(_resource["ContestExistedCode"], contest.ContestCode)));
             }
         }
 
         // Create
         public override async Task CreateAsync(ContestDto contestDto, ServerResponse res)
         {
-            var (contest, contestProblems) = MapcontestDtoToEntity(contestDto);
+            var (contest, contestProblems) = MapContestDtoToEntity(contestDto);
 
             await ValidateAsync(contest, res);
 
@@ -77,6 +98,25 @@ namespace HCode.Application
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
+
+                if (string.IsNullOrWhiteSpace(contest.ContestCode))
+                {
+                    var code = AppHelper.GenerateRandomCode();
+                    var length = 6;
+
+                    while (await _repository.CheckExistedCodeAsync(code, contest.ContestId))
+                    {
+                        code = AppHelper.GenerateRandomCode(length);
+                        length++;
+                    }
+
+                    contest.ContestCode = code;
+
+                    res.Data = new Contest()
+                    {
+                        ContestCode = code,
+                    };
+                }
 
                 await _repository.InsertAsync(contest);
                 await _contestProblemRepo.InsertManyAsync(contestProblems);
@@ -94,9 +134,9 @@ namespace HCode.Application
         }
 
         // Update
-        public override async Task UpdateAsync(ContestDto contestDto, ServerResponse res)
+        public override async Task UpdateAsync(Guid contestId, ContestDto contestDto, ServerResponse res)
         {
-            var (contest, contestProblems) = MapcontestDtoToEntity(contestDto, EditMode.Update);
+            var (contest, contestProblems) = MapContestDtoToEntity(contestDto, EditMode.Update);
 
             await ValidateAsync(contest, res);
 
@@ -109,8 +149,27 @@ namespace HCode.Application
             {
                 await _unitOfWork.BeginTransactionAsync();
 
+                if (string.IsNullOrWhiteSpace(contest.ContestCode))
+                {
+                    var code = AppHelper.GenerateRandomCode();
+                    var length = 6;
+
+                    while (await _repository.CheckExistedCodeAsync(code, contest.ContestId))
+                    {
+                        code = AppHelper.GenerateRandomCode(length);
+                        length++;
+                    }
+
+                    contest.ContestCode = code;
+
+                    res.Data = new Contest()
+                    {
+                        ContestCode = code,
+                    };
+                }
+
                 await _repository.UpdateAsync(contest);
-                await _contestProblemRepo.ReplaceManyAsync(contestProblems);
+                await _contestProblemRepo.ReplaceManyAsync(contestProblems, contest.ContestId, "ContestId");
 
                 await _unitOfWork.CommitAsync();
             }
@@ -125,7 +184,7 @@ namespace HCode.Application
         }
 
          // Map
-        public (Contest contest, List<Contestcontest> contestcontests) MapContestDtoToEntity(
+        public (Contest contest, List<ContestProblem> contestProblems) MapContestDtoToEntity(
             ContestDto contestDto, EditMode? editMode = EditMode.Create, bool? isClone = false)
         {
             var clone = isClone ?? false;
@@ -162,10 +221,11 @@ namespace HCode.Application
                     }
                     else
                     {
-                        contestProblem.ContestProblemId = param.ContestProblemId != Guid.Empty ? param.ContestProblemId : Guid.NewGuid();
+                        contestProblem.ContestProblemId = contestProblem.ContestProblemId != Guid.Empty ? 
+                            contestProblem.ContestProblemId : Guid.NewGuid();
                     }
 
-                    contestProblem.contestId = contestId;
+                    contestProblem.ContestId = contestId;
                 });
                 contestProblems = _mapper.Map<List<ContestProblem>>(contestProblemDtos);
             }
@@ -177,14 +237,17 @@ namespace HCode.Application
         // Join 1 bài thi
         public async Task JoinAsync(ContestAccountDto contestAccountDto, ServerResponse res) 
         {
-            // Kiểm tra xem tồn tại hay không?
-
-                // Nếu không thì thêm mới, trạng thái chưa thi
+            var contestAccount = _mapper.Map<ContestAccount>(contestAccountDto);
+            contestAccount.ContestAccountId = Guid.NewGuid();
+            contestAccount.AccountId = _authService.GetAccountId();
+            contestAccount.State = ContestAccountState.Pending;
+            await _contestAccountRepo.InsertAsync(contestAccount);
         }
 
+        // Rời bài thi
         public async Task LeaveAsync(ContestAccountDto contestAccountDto, ServerResponse res) 
         {
-            // Xóa đi thôi
+            await _contestAccountRepo.DeleteAsync(contestAccountDto.ContestAccountId);
         }
         #endregion
     }

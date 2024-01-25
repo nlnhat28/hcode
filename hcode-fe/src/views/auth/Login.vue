@@ -92,7 +92,7 @@ export default {
         async login(data) {
             try {
                 const response = await this.instanceService.login(data);
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                     this.accountStore.setAccount(response.Data);
                 } else {

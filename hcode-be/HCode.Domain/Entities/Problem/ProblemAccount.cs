@@ -39,6 +39,9 @@ namespace HCode.Domain
         #endregion
 
         #region Constructors
+        public ProblemAccount()
+        {
+        }
         public ProblemAccount(Guid problemId, Guid accountId, ProblemAccountState state) 
         {
             ProblemAccountId = Guid.NewGuid();

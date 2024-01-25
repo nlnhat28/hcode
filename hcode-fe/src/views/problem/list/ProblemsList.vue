@@ -79,7 +79,7 @@
                                 ></v-tag>
                             </v-td>
                             <!-- Chủ đề -->
-                            <v-td :content="item.Topic">
+                            <v-td :content="item.Topic ?? '_'">
                             </v-td>
                             <!-- Độ khó-->
                             <v-td

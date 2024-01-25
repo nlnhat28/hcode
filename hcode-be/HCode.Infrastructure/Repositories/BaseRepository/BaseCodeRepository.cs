@@ -96,8 +96,13 @@ namespace HCode.Infrastructure
         }
 
         // Kiểm tra mã tồn tại không
-        public async Task<bool> CheckExistedCodeAsync(string code, Guid? entityId) 
+        public async Task<bool> CheckExistedCodeAsync(string? code, Guid? entityId) 
         {
+            if (string.IsNullOrEmpty(code))
+            {
+                return false;
+            }
+
             var id = entityId ?? Guid.NewGuid();  
 
             try
@@ -115,7 +120,7 @@ namespace HCode.Infrastructure
             }
             catch
             {
-                var sql = $"SELECT COUNT(1) FROM {View} WHERE {Table}Code LIKE '@code' AND {TableId} <> @id";
+                var sql = $"SELECT COUNT(1) FROM {Table} WHERE {Table}Code LIKE '@code' AND {TableId} <> @id";
 
                 var param = new DynamicParameters();
                 param.Add("code", code);

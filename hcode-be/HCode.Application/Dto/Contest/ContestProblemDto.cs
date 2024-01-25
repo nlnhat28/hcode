@@ -6,7 +6,7 @@ namespace HCode.Application
     /// <summary>
     /// Lớp bài thi bài toán
     /// </summary>
-    public class ContestProblemDto : BaseDto, IHasEntityId
+    public class ContestProblemDto
     {
         #region Properties
         /// <summary>

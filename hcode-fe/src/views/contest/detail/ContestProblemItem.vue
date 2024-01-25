@@ -57,6 +57,7 @@
 import { validate } from "@/mixins/mixins";
 import problemEnum from "@/enums/problem-enum";
 import contestEnum from "@/enums/contest-enum";
+import { handleError } from "vue";
 
 export default {
     name: 'ContestProblemItem',
