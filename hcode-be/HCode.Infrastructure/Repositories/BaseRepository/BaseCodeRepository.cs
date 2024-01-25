@@ -94,6 +94,39 @@ namespace HCode.Infrastructure
             }
             return new List<TEntity>();
         }
+
+        // Kiểm tra mã tồn tại không
+        public async Task<bool> CheckExistedCodeAsync(string code, Guid? entityId) 
+        {
+            var id = entityId ?? Guid.NewGuid();  
+
+            try
+            {
+                var proc = $"{Procedure}CheckExistedCode";
+
+                var param = new DynamicParameters();
+                param.Add($"p_{Table}Code", code);
+                param.Add($"p_{TableId}", id);
+
+                var count = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<int>(
+                    proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+                return count > 0;
+            }
+            catch
+            {
+                var sql = $"SELECT COUNT(1) FROM {View} WHERE {Table}Code LIKE '@code' AND {TableId} <> @id";
+
+                var param = new DynamicParameters();
+                param.Add("code", code);
+                param.Add("id", id);
+
+                var count = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<int>(
+                    sql, param, _unitOfWork.Transaction, commandType: CommandType.Text);
+
+                return count > 0;
+            }
+        }
         #endregion
     }
 }

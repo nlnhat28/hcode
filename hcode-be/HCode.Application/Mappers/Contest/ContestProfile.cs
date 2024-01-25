@@ -10,12 +10,12 @@ namespace HCode.Application
     {
         #region Constructors
         /// <summary>
-        /// Hàm tạo mapper problem
+        /// Hàm tạo mapper Contest
         /// </summary>
         /// Created by: nlnhat (13/07/2023)
         public ContestProfile() : base()
         {
-            // Problem to Dto
+            // Contest to Dto
             CreateMap<Contest, ContestDto>()
             .ForMember(dest => dest.CreatedTime, opt =>
             {
@@ -26,9 +26,19 @@ namespace HCode.Application
             {
                 opt.MapFrom(src =>
                     AppHelper.ConvertDateUtcToLocal(src.ModifiedTime));
+            })
+            .ForMember(dest => dest.StartTime, opt =>
+            {
+                opt.MapFrom(src =>
+                    AppHelper.ConvertDateUtcToLocal(src.StartTime));
+            })
+            .ForMember(dest => dest.EndTime, opt =>
+            {
+                opt.MapFrom(src =>
+                    AppHelper.ConvertDateUtcToLocal(src.EndTime));
             });
 
-            // Dto to Problem
+            // Dto to Contest
             CreateMap<ContestDto, Contest>()
             .ForMember(dest => dest.CreatedTime, opt =>
             {
@@ -39,6 +49,16 @@ namespace HCode.Application
             {
                 opt.MapFrom(src =>
                     AppHelper.ConvertDateLocalToUtc(src.ModifiedTime));
+            })
+            .ForMember(dest => dest.StartTime, opt =>
+            {
+                opt.MapFrom(src =>
+                    AppHelper.ConvertDateLocalToUtc(src.StartTime));
+            })
+            .ForMember(dest => dest.EndTime, opt =>
+            {
+                opt.MapFrom(src =>
+                    AppHelper.ConvertDateLocalToUtc(src.EndTime));
             });
         }
         #endregion

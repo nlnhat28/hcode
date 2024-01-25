@@ -24,6 +24,29 @@ namespace HCode.Infrastructure
         #endregion
 
         #region Methods
+        
+        // Get
+        public override async Task<Contest?> GetAsync(Guid contestId, Guid accountId) 
+        {
+            var proc = $"{Procedure}Get";
+
+            var param = new DynamicParameters();
+            param.Add($"p_{TableId}", contestId);
+            param.Add($"p_AccountId", accountId);
+
+            using var multi = await _unitOfWork.Connection.QueryMultipleAsync(
+                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+            var contest = await multi.ReadFirstOrDefaultAsync<Contest>();
+
+            if (contest != null)
+            {
+                contest.ContestProblems = (await multi.ReadAsync<ContestProblem>()).ToList();
+            }
+
+            return contest;
+
+        }
         #endregion
     }
 }

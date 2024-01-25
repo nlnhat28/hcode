@@ -19,10 +19,12 @@ namespace HCode.Domain
         /// <summary>
         /// Tên bài toán
         /// </summary>
+        [Script(isNotUpdate: true)]
         public Guid ContestId { get; set; }
         /// <summary>
         /// Id tài khoản
         /// </summary>
+        [Script(isNotUpdate: true)]
         public Guid AccountId { get; set; }
         /// <summary>
         /// Trạng thái
@@ -36,6 +38,19 @@ namespace HCode.Domain
         /// Thời gian sử dụng
         /// </summary>
         public int? UsedTime { get; set; }
+        #endregion
+
+        #region Constructors
+        public ContestAccount(Guid contestId, Guid accountId, ContestAccountState? state = ContestAccountState.Pending, DateTime? 
+            startTime = null, int? usedTime = 0) 
+        {
+            ContestAccountId = Guid.NewGuid();
+            ProblemId = problemId;
+            AccountId = accountId;
+            State = state;
+            StartTime = startTime;
+            UsedTime = usedTime;
+        }
         #endregion
     }
 }

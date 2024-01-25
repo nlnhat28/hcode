@@ -109,6 +109,24 @@
         /// Lỗi thực thi khác
         /// </summary>
         ProblemExecute = 204,
+        /// <summary>
+        /// Cập nhật bài toán bị lỗi
+        /// </summary>
+        ProblemUpdate = 205,
+
+        #region Problem
+        /// <summary>
+        /// Tạo bài thi bị lỗi
+        /// </summary>
+        ContestCreate = 300,
+        /// <summary>
+        /// Cập nhật bài thi bị lỗi
+        /// </summary>
+        ContestUpdate = 301,
+        /// <summary>
+        /// Trùng mã bài thi
+        /// </summary>
+        ContestExistedCode = 302,
         #endregion
     }
 }

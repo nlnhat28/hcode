@@ -209,7 +209,7 @@ namespace HCode.Application
                 }
                 catch (Exception exception)
                 {
-                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], exception);
+                    res.OnError(ErrorCode.ProblemUpdate, _resource["ProblemUpdateError"], exception);
                 }
                 finally
                 {
@@ -228,9 +228,37 @@ namespace HCode.Application
             {
                 if (res.Data is SubmissionData data)
                 {
+                    // Thêm mới submission
                     var submission = AppHelper.InitSubmission(data, problemDto);
                     var subRes = await _submissionRepo.InsertAsync(submission);
                     res.AddData("Successfully insert submission");
+
+                    // Cập nhật ProblemAccount
+                    var problemAccountState = ProblemAccountState.Seen;
+
+                    switch (submission.StatusId)
+                    {
+                        case StatusJudge0.Accepted:
+                            problemAccountState = ProblemAccountState.Accepted;
+                            break;
+                        case StatusJudge0.InQueue:
+                        case StatusJudge0.Processing:
+                            break;
+                        default:
+                            problemAccountState = ProblemAccountState.Wrong;
+                            break;
+                    };
+
+                    var problemAccount = new ProblemAccount() 
+                    {
+                        ProblemAccountId = problemDto.ProblemAccountId,
+                        ProblemId = problemDto.ProblemId,
+                        ProblemAccountState = problemAccountState
+                    }
+
+                    var auditRes = new ServerResponse();
+                    await AuditProblemAccountAsync(problemAccount, auditRes)
+                    res.AddData(auditRes);
                 }
             }
             catch (Exception exception)

@@ -390,6 +390,12 @@ namespace HCode.Application
                 }
             }
         }
+        /// <summary>
+        /// Tạo mới submission từ submissionData
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="problemDto"></param>
+        /// <returns></returns>
         public static Submission InitSubmission(SubmissionData data, ProblemDto problemDto)
         {
             var submission = new Submission()

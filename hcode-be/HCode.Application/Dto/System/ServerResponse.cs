@@ -211,7 +211,7 @@ namespace HCode.Application
             {
                 MoreData ??= new List<object>();
 
-                if (data is BaseResponse)
+                if (data is BaseResponse || data is ServerResponse)
                 {
                     MoreData.Add(data);
                 }

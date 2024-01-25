@@ -7,6 +7,10 @@ namespace HCode.Domain
     public enum ContestAccountState
     {
         /// <summary>
+        /// Đã rời đi
+        /// </summary>
+        Leave = 0,
+        /// <summary>
         /// Chưa thi
         /// </summary>
         Pending = 1,
