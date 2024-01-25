@@ -163,6 +163,9 @@ Mã xác thực là: {2}. Thời gian hiệu lực: {3} phút.</value>
   <data name="ContestExistedCode" xml:space="preserve">
     <value>Mã bài thi &lt;{0}&gt; đã tồn tại</value>
   </data>
+  <data name="ContestUpdateError" xml:space="preserve">
+    <value>Có lỗi xảy ra khi cập nhật bài thi. Vui lòng thử lại.</value>
+  </data>
   <data name="DifficultyEasy" xml:space="preserve">
     <value>Dễ</value>
   </data>

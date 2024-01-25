@@ -111,6 +111,15 @@ export default {
         index() {
             this.instance.Order = this.index + 1;
         },
+        problems: {
+            handler() {
+                if (this.problems) {
+                    const problem = this.problems.find(p => p.ProblemId == this.instance.ProblemId)
+                    this.selectedProblem = problem;
+                };
+            },
+            deep: false,
+        }
     },
     computed: {
     },

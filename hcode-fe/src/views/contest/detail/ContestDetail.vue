@@ -40,7 +40,7 @@
                                                 <v-input-text
                                                     ref="refContestCode"
                                                     v-model="instance.ContestCode"
-                                                    hasClear
+                                                    hasCopy
                                                     :maxLength="255"
                                                     :label="$t('contest.field.contestCode')"
                                                     :applyPlaceholder="false"
@@ -471,7 +471,18 @@ export default {
         processResponseCreate(response) {
             if (this.$res.isSuccess(response)) {
                 if (response.Data && response.Data.ContestCode) {
-                    this.instance.ContestCode = response.Data.Code;
+                    this.instance.ContestCode = response.Data.ContestCode;
+                }
+            }
+        },
+        /**
+         * Xử lý response updateInstance
+         * @override
+         */
+        processResponseUpdate(response) {
+            if (this.$res.isSuccess(response)) {
+                if (response.Data && response.Data.ContestCode) {
+                    this.instance.ContestCode = response.Data.ContestCode;
                 }
             }
         },
