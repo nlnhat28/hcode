@@ -391,30 +391,6 @@ namespace HCode.Application
             }
         }
         /// <summary>
-        /// Tạo mới submission từ submissionData
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="problemDto"></param>
-        /// <returns></returns>
-        public static Submission InitSubmission(SubmissionData data, ProblemDto problemDto)
-        {
-            var submission = new Submission()
-            {
-                SubmissionId = Guid.NewGuid(),
-                PassedCount = data.PassedCount,
-                FailedCount = data.FailedCount,
-                StatusId = data.StatusId,
-                StatusName = data.StatusName,
-                RunTime = data.RunTime,
-                Memory = data.Memory,
-                CreatedTime = DateTime.UtcNow,
-                ParentId = problemDto.ProblemAccountId,
-                SourceCode = problemDto.Solution,
-                LanguageId = problemDto.SolutionLanguage?.LanguageId,
-            };
-            return submission;
-        }
-        /// <summary>
         /// Tạo mã ngẫu nhiên
         /// </summary>
         /// <param name="length"></param>
@@ -425,24 +401,24 @@ namespace HCode.Application
         {
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
             var nums = "0123456789";
-            var alls = "";
+            var mixed = "";
 
             if (includeChar == true)
             {
-                alls += chars;
+                mixed += chars;
             }
             if (includeNumber == true)
             {
-                alls += nums;
+                mixed += nums;
             }
 
-            if (string.IsNullOrWhiteSpace(alls))
+            if (string.IsNullOrWhiteSpace(mixed))
             {
-                alls += chars + nums;
+                mixed += chars + nums;
             }
 
             var random = new Random();
-            var code = new string(Enumerable.Repeat(alls, length ?? 6)
+            var code = new string(Enumerable.Repeat(mixed, length ?? 6)
               .Select(s => s[random.Next(s.Length)]).ToArray());
 
             return code;

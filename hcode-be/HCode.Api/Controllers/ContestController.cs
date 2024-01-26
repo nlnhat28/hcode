@@ -33,6 +33,50 @@ namespace HCode.Api
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Join
+        /// </summary>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpPost("Join")]
+        public async Task<IActionResult> JoinAsync(ContestAccountDto contestAccountDto)
+        {
+            var res = new ServerResponse();
+            await _service.JoinAsync(contestAccountDto, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+        /// <summary>
+        /// Leave
+        /// </summary>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpGet("Leave/{id}")]
+        public async Task<IActionResult> LeaveAsync(Guid contestAccoutId)
+        {
+            var res = new ServerResponse();
+            await _service.LeaveAsync(contestAccoutId, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+        /// <summary>
+        /// Start
+        /// </summary>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpGet("Start/{id}")]
+        public async Task<IActionResult> StartAsync(Guid contestAccoutId)
+        {
+            var res = new ServerResponse();
+            await _service.StartAsync(contestAccoutId, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+        /// <summary>
+        /// Finish
+        /// </summary>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpGet("Finish/{id}")]
+        public async Task<IActionResult> FinishAsync(Guid contestAccoutId)
+        {
+            var res = new ServerResponse();
+            await _service.FinishAsync(contestAccoutId, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
         #endregion
     }
 }

@@ -492,6 +492,12 @@ export default {
             this.showExit = true;
         },
         /**
+         * Dữ liệu problem đem đi submit
+         */
+        problemSubmitDto() {
+            return this.instance;
+        },
+        /**
          * Hiển thị submission response lên tab kết quả
          */
         showSubmissionResponse(statusName, content, isSuccess) {

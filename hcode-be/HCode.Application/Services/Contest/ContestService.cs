@@ -24,6 +24,10 @@ namespace HCode.Application
         /// </summary>
         private new readonly IContestProblemRepository _contestProblemRepo;
         /// <summary>
+        /// Repo contest problem account
+        /// </summary>
+        private new readonly IContestProblemAccountRepository _cpaRepo;
+        /// <summary>
         /// Cache
         /// </summary>
         /// Created by: nlnhat (13/07/2023
@@ -33,6 +37,11 @@ namespace HCode.Application
         /// </summary>
         /// Created by: nlnhat (13/07/2023
         protected readonly ICEService _ceService;
+        /// <summary>
+        /// Service problem
+        /// </summary>
+        /// Created by: nlnhat (13/07/2023
+        protected readonly IProblemService _problemService;
         #endregion
 
         #region Constructors
@@ -47,14 +56,17 @@ namespace HCode.Application
         public ContestService(IContestRepository repository, ICEService ceService,
                            IStringLocalizer<Resource> resource, IMapper mapper, IAuthService authService,
                            IUnitOfWork unitOfWork, IMemoryCache cache, IContestProblemRepository contestProblemRepo,
-                           IContestAccountRepository contestAccountRepo)
+                           IContestAccountRepository contestAccountRepo, IProblemService problemService,
+                           IContestProblemAccountRepository cpaRepo)
                          : base(repository, resource, mapper, unitOfWork, authService)
         {
             _repository = repository;
             _cache = cache;
             _ceService = ceService;
+            _problemService = problemService;
             _contestProblemRepo = contestProblemRepo;
             _contestAccountRepo = contestAccountRepo;
+            _cpaRepo = cpaRepo;
         }
         #endregion
 
@@ -235,8 +247,19 @@ namespace HCode.Application
 
         
         // Join 1 bài thi
-        public async Task JoinAsync(ContestAccountDto contestAccountDto, ServerResponse res) 
+        public async Task JoinAsync(ContestAccountDto contestAccountDto, string password, ServerResponse res) 
         {
+            var contest = _repository.GetAsync(ContestAccountDto.ContestId);
+
+            // Kiểm tra xem có password không
+            if (contest && contest.HasPassword) {
+                if (password != contest.Password) {
+                    res.OnError(ErrorCode.ContestWrongPassword, new ErrorItem("refPassword", _resource["ContestWrongPassword"]));
+                    return;
+                }
+            }
+
+            // Khởi tạo quan hệ contest_account
             var contestAccount = _mapper.Map<ContestAccount>(contestAccountDto);
             contestAccount.ContestAccountId = Guid.NewGuid();
             contestAccount.AccountId = _authService.GetAccountId();
@@ -245,9 +268,61 @@ namespace HCode.Application
         }
 
         // Rời bài thi
-        public async Task LeaveAsync(ContestAccountDto contestAccountDto, ServerResponse res) 
+        public async Task LeaveAsync(Guid contestAccountId, ServerResponse res) 
         {
-            await _contestAccountRepo.DeleteAsync(contestAccountDto.ContestAccountId);
+            await _contestAccountRepo.DeleteAsync(contestAccountId);
+        }
+        #endregion
+
+        // Bắt đầu bài thi
+        public async Task StartAsync(Guid contestAccountId, ServerResponse res) 
+        {
+            var contestAccount = _contestAccountRepo.GetAsync(contestAccountId);
+            contestAccount.OnStart();
+            await _contestAccountRepo.UpdateAsync(contestAccount);
+        }
+
+        // Kết thúc bài thi
+        public async Task FinishAsync(Guid contestAccountId, ServerResponse res) 
+        {
+            var contestAccount = _contestAccountRepo.GetAsync(contestAccountId);
+            contestAccount.OnFinish();
+            await _contestAccountRepo.UpdateAsync(contestAccount);
+        }
+
+        // Submit 1 câu hỏi
+        public async Task SubmitAsync(Guid contestProblemId, ProblemDto problemDto, ServerResponse res) 
+        {
+            var (_, _, testcases) = _problemService.MapProblemDtoToEntity(problemDto);
+            await _ceService.ExecuteAsync(problemDto, testcases, res);
+
+            // Lưu dư thừa
+            if (res.Data is SubmissionData data)
+            {
+                // Thêm mới quan hệ contest_problem_account và submission
+                try
+                {
+                    // contest_problem_account
+                    var cpaId = Guid.NewGuid();
+                    var cpa = new ContestProblemAccount() 
+                    {
+                        ContestProblemAccountId = cpaId,
+                        ContestProblemId = contestProblemId,
+                        AccountId = _authService.GetAccountId(),
+                    };
+                    var cpaRes = await _cpaRepo.InsertAsync(cpa);
+                    res.AddData("Successfully created ContestProblemAccount");
+
+                    // submission
+                    var submission = data.InitSubmission(problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, contestProblemAccountId: cpaId);
+                    var subRes = await _submissionRepo.InsertAsync(submission);
+                    res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));
+                }
+                catch (Exception ex)
+                {
+                    res.AddData(ex);
+                };
+            }
         }
         #endregion
     }

@@ -197,8 +197,14 @@ export default {
 
              let filterPrivate = [
                 {
-                    columnName: 'ParentId',
-                    logicType: this.$enums.logicType.and,
+                    columnName: 'ProblemAccountId',
+                    logicType: this.$enums.logicType.or,
+                    compareType: this.$enums.compareType.equal,
+                    filterValue: this.parentId,
+                },
+                {
+                    columnName: 'ContestProblemAccountId',
+                    logicType: this.$enums.logicType.or,
                     compareType: this.$enums.compareType.equal,
                     filterValue: this.parentId,
                 },

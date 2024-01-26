@@ -22,9 +22,13 @@ namespace HCode.Domain
             set { SubmissionId = value; }
         }
         /// <summary>
-        /// Id cha
+        /// Id ProblemAccount
         /// </summary>
-        public Guid? ParentId { get; set; }
+        public Guid? ProblemAccountId { get; set; }
+        /// <summary>
+        /// Id ContestProblemAccount
+        /// </summary>
+        public Guid? ContestProblemAccountId { get; set; }
         /// <summary>
         /// Sourcecode
         /// </summary>

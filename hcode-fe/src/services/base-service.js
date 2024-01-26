@@ -16,6 +16,16 @@ class BaseService {
         return response;
     }
     /**
+     * View 1 data by id
+     *
+     * Author: nlnhat (03/07/2023)
+     * @return Response
+     */
+    async view(id) {
+        const response = await this.baseRequest.get(`${this.baseUrl}/View/${id}`);
+        return response;
+    }
+    /**
      * Get 1 data by id
      *
      * Author: nlnhat (03/07/2023)

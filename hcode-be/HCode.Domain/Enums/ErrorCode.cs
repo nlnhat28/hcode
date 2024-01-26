@@ -128,6 +128,10 @@
         /// Trùng mã bài thi
         /// </summary>
         ContestExistedCode = 302,
+        /// <summary>
+        /// Sai password
+        /// </summary>
+        ContestWrongPassword = 303,
         #endregion
     }
 }

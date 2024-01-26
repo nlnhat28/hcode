@@ -23,11 +23,25 @@ namespace HCode.Application
         /// <returns></returns>
         Task JoinAsync(ContestAccountDto contestAccountDto, ServerResponse res);
         /// <summary>
+        /// Bắt đầu 1 bài thi
+        /// </summary>
+        /// <param name="contestAccountDto"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        Task StartAsync(Guid contestAccountId, ServerResponse res);
+        /// <summary>
+        /// Kết thúc 1 bài thi
+        /// </summary>
+        /// <param name="contestAccountDto"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        Task FinishAsync(Guid contestAccountId, ServerResponse res);
+        /// <summary>
         /// Rời 1 bài thi
         /// </summary>
         /// <param name="contestAccountDto"></param>
         /// <param name="res"></param>
         /// <returns></returns>
-        Task LeaveAsync(ContestAccountDto contestAccountDto, ServerResponse res);
+        Task LeaveAsync(Guid contestAccountId, ServerResponse res);
     }
 }

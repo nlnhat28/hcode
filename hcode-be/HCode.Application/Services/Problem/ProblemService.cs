@@ -221,15 +221,16 @@ namespace HCode.Application
         // Submit
         public async Task SubmitAsync(ProblemDto problemDto, ServerResponse res)
         {
-            var (_, _, testcases) = MapProblemDtoToEntity(problemDto, EditMode.Update);
+            var (_, _, testcases) = MapProblemDtoToEntity(problemDto);
             await _ceService.ExecuteAsync(problemDto, testcases, res);
 
+            // Lưu dư thừa
             if (res.Data is SubmissionData data)
             {
                 // Thêm mới submission
                 try
                 {
-                    var submission = AppHelper.InitSubmission(data, problemDto);
+                    var submission = data.InitSubmission(problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, problemDto.ProblemAccountId);
                     var subRes = await _submissionRepo.InsertAsync(submission);
                     res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));
                 }

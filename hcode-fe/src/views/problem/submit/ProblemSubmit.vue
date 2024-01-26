@@ -366,7 +366,7 @@ export default {
         async submit() {
             try {
                 const response = await this.instanceService.submit(
-                    this.reformatInstance
+                    this.reformatInstance()
                 );
                 if (this.$res.isSuccess(response)) {
                     this.$ts.success();

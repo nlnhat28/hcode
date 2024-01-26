@@ -114,32 +114,6 @@ export default {
     watch: {
     },
     computed: {
-        /**
-         * Change title when change mode
-         *
-         * Author: nlnhat (02/07/2023)
-         * @return {*} New title update or create
-         */
-        titleComputed() {
-            switch (this.mode) {
-                case this.$enums.formMode.create:
-                    return this.$resources["vn"].createInstance;
-                case this.$enums.formMode.update:
-                    return this.$resources["vn"].updateInstance;
-                case this.$enums.formMode.duplicate:
-                    return this.$resources["vn"].duplicateInstance;
-                default:
-                    return this.$resources["vn"].createInstance;
-            }
-        },
-        /**
-         * Reformat instance trước khi lưu
-         *
-         * Author: nlnhat (02/07/2023)
-         */
-        reformatInstance() {
-            return this.instance;
-        },
     },
     methods: {
         /**
@@ -172,6 +146,9 @@ export default {
          */
         async loadDataOnCreated() {
             switch (this.mode) {
+                case this.$enums.formMode.view:
+                    await this.viewInstance(this.instanceId);
+                    break;
                 case this.$enums.formMode.create:
                     this.initCreateInstance();
                     this.storeOriginalInstance();
@@ -227,13 +204,14 @@ export default {
             this.originalInstance = this.$cf.cloneDeep(this.instance);
         },
         /**
-         * Lấy đối tượng theo id
+         * Load đối tượng theo id
          *
+         * @param {enum} mode Xem hay get full
          * Author: nlnhat (02/07/2023)
          */
-        async getInstance(id) {
+         async loadInstance(id, mode) {
             if (this.instanceService) {
-                const response = await this.instanceService.get(id);
+                const response = mode == formMode.view ? await this.instanceService.view(id) : await this.instanceService.get(id);
                 if (this.$res.isSuccess(response)) {
                     if (!this.$cf.isEmptyObject(response.Data)) {
                         this.instance = this.$cf.cloneDeep(response.Data);
@@ -248,13 +226,42 @@ export default {
                 else {
                     this.handleError(response, this.goCallbackPath)
                 }
-                this.processResponseGet(response);
+                mode == formMode.view ? this.processResponseView(response) : this.processResponseGet(response);
             }
+        },
+        /**
+         * Xem đối tượng theo id
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        async viewInstance(id) {
+            await this.loadInstance(id, formMode.view);
+        },
+        /**
+         * Xử lý dữ liệu trả về
+         */
+        processResponseView(response) {
+        },
+        /**
+         * Lấy đối tượng theo id
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        async getInstance(id) {
+            await this.loadInstance(id);
         },
         /**
          * Xử lý dữ liệu trả về
          */
         processResponseGet(response) {
+        },
+        /**
+         * Reformat instance trước khi lưu
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        reformatInstance() {
+            return this.instance;
         },
         /**
          * Create new instance
@@ -263,7 +270,7 @@ export default {
          */
         async createInstance() {
             try {
-                const response = await this.instanceService.post(this.reformatInstance);
+                const response = await this.instanceService.post(this.reformatInstance());
                 if (this.$res.isSuccess(response)) {
                     this.instanceId = response.Data;
                     this.isSuccessResponseFlag = true;
@@ -287,7 +294,7 @@ export default {
             try {
                 const response = await this.instanceService.put(
                     this.instanceId,
-                    this.reformatInstance
+                    this.reformatInstance()
                 );
                 if (this.$res.isSuccess(response)) {
                     this.isSuccessResponseFlag = true;
@@ -537,7 +544,7 @@ export default {
          * Author: nlnhat (26/08/2023)
          */
         onClickCloseForm() {
-            if (!this.sameObject(this.originalInstance, this.reformatInstance))
+            if (!this.sameObject(this.originalInstance, this.reformatInstance()))
                 this.showSaveConfirmDialog(this.$resources["vn"].saveChangeConfirm);
             else
                 this.closeThis();

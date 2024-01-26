@@ -57,5 +57,26 @@ namespace HCode.Domain
             UsedTime = usedTime;
         }
         #endregion
+
+        #region 
+        /// <summary>
+        /// Chuyển trạng thái bắt đầu
+        /// </summary>
+        public void OnStart() 
+        {
+            StartTime = DateTime.UtcNow();
+            State = ContestAccountState.Doing;
+        }
+        /// <summary>
+        /// Chuyển trạng thái kết thúc
+        /// </summary>
+        public void OnFinish() 
+        {
+            var duration = DateTime.UtcNow() - contestAccount.StartTime;
+            var usedTime = Convert.ToInt32(duration.TotalSeconds);
+            State = ContestAccountState.Finish;
+            UsedTime = usedTime;
+        }
+        #endregion
     }
 }

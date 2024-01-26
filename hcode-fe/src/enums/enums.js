@@ -5,11 +5,15 @@ const enums = {
      * Chế độ sử dụng form
      */
     formMode: {
-        create: 1,
-        post: 1,
-        update: 2,
-        put: 2,
-        duplicate: 3,
+        none: 0,
+        view: 1,
+        insert: 2,
+        create: 2,
+        post: 2,
+        update: 3,
+        edit: 3,
+        put: 3,
+        duplicate: 4,
     },
     /**
      * Http status
