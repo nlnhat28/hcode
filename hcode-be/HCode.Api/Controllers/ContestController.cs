@@ -38,17 +38,17 @@ namespace HCode.Api
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
         [HttpPost("Join")]
-        public async Task<IActionResult> JoinAsync(ContestAccountDto contestAccountDto)
+        public async Task<IActionResult> JoinAsync(ContestDto contestDto)
         {
             var res = new ServerResponse();
-            await _service.JoinAsync(contestAccountDto, res);
+            await _service.JoinAsync(contestDto, res);
             return StatusCode(StatusCodes.Status200OK, res);
         }
         /// <summary>
         /// Leave
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
-        [HttpGet("Leave/{id}")]
+        [HttpGet("Leave/{contestAccoutId}")]
         public async Task<IActionResult> LeaveAsync(Guid contestAccoutId)
         {
             var res = new ServerResponse();
@@ -59,7 +59,7 @@ namespace HCode.Api
         /// Start
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
-        [HttpGet("Start/{id}")]
+        [HttpGet("Start/{contestAccoutId}")]
         public async Task<IActionResult> StartAsync(Guid contestAccoutId)
         {
             var res = new ServerResponse();
@@ -70,11 +70,22 @@ namespace HCode.Api
         /// Finish
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
-        [HttpGet("Finish/{id}")]
+        [HttpGet("Finish/{contestAccoutId}")]
         public async Task<IActionResult> FinishAsync(Guid contestAccoutId)
         {
             var res = new ServerResponse();
             await _service.FinishAsync(contestAccoutId, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+        /// <summary>
+        /// Get For Submit
+        /// </summary>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpGet("ForSubmit/{id}")]
+        public async Task<IActionResult> GetForSubmitAsync(Guid id)
+        {
+            var res = new ServerResponse();
+            await _service.GetForSubmitAsync(id, res);
             return StatusCode(StatusCodes.Status200OK, res);
         }
         #endregion

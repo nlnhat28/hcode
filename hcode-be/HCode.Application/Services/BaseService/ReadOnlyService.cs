@@ -73,13 +73,27 @@ namespace HCode.Application
         /// <param name="id">Id đối tượng</param>
         /// <returns>Dto đối tượng được tìm thấy</returns>
         /// Created by: nlnhat (18/07/2023)
-        public virtual async Task<TEntityDto> GetAsync(Guid id)
+        public virtual async Task ViewAsync(Guid id, ServerResponse res)
         {
             var entity = await _repository.GetAsync(id);
 
             var result = _mapper.Map<TEntityDto>(entity);
 
-            return result;
+            res.Data = result;
+        }
+        /// <summary>
+        /// Lấy đối tượng theo id
+        /// </summary>
+        /// <param name="id">Id đối tượng</param>
+        /// <returns>Dto đối tượng được tìm thấy</returns>
+        /// Created by: nlnhat (18/07/2023)
+        public virtual async Task GetAsync(Guid id, ServerResponse res)
+        {
+            var entity = await _repository.GetAsync(id);
+
+            var result = _mapper.Map<TEntityDto>(entity);
+
+            res.Data = result;
         }
         /// <summary>
         /// Lấy đối tượng theo danh sách id

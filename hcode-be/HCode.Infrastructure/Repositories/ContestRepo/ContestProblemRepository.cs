@@ -18,16 +18,6 @@ namespace HCode.Infrastructure
         /// </summary>
         /// Created by: nlnhat (18/07/2023)
         public override string Table { get; set; } = "contest_problem";
-        /// <summary>
-        /// Tên cột khoá chính 
-        /// </summary>
-        /// Created by: nlnhat (18/07/2023)
-        public override string TableId { get; set; } = $"{typeof(ContestProblem).Name}Id";
-        /// <summary>
-        /// Tên stored procedure
-        /// </summary>
-        /// Created by: nlnhat (18/07/2023)
-        public override string Procedure { get; set; } = $"proc_{typeof(ContestProblem).Name}_";
         #region Constructors
         /// <summary>
         /// Hàm tạo repository testcase

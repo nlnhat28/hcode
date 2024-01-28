@@ -18,15 +18,19 @@ namespace HCode.Application
         /// <summary>
         /// Repo contest account
         /// </summary>
-        private new readonly IContestAccountRepository _contestAccountRepo;
+        private readonly IContestAccountRepository _contestAccountRepo;
         /// <summary>
         /// Repo contest problem
         /// </summary>
-        private new readonly IContestProblemRepository _contestProblemRepo;
+        private readonly IContestProblemRepository _contestProblemRepo;
+        /// <summary>
+        /// Repo submission
+        /// </summary>
+        private readonly ISubmissionRepository _submissionRepo;
         /// <summary>
         /// Repo contest problem account
         /// </summary>
-        private new readonly IContestProblemAccountRepository _cpaRepo;
+        private readonly IContestProblemAccountRepository _cpaRepo;
         /// <summary>
         /// Cache
         /// </summary>
@@ -57,7 +61,7 @@ namespace HCode.Application
                            IStringLocalizer<Resource> resource, IMapper mapper, IAuthService authService,
                            IUnitOfWork unitOfWork, IMemoryCache cache, IContestProblemRepository contestProblemRepo,
                            IContestAccountRepository contestAccountRepo, IProblemService problemService,
-                           IContestProblemAccountRepository cpaRepo)
+                           IContestProblemAccountRepository cpaRepo, ISubmissionRepository submissionRepo)
                          : base(repository, resource, mapper, unitOfWork, authService)
         {
             _repository = repository;
@@ -66,23 +70,77 @@ namespace HCode.Application
             _problemService = problemService;
             _contestProblemRepo = contestProblemRepo;
             _contestAccountRepo = contestAccountRepo;
+            _submissionRepo = submissionRepo;
             _cpaRepo = cpaRepo;
         }
         #endregion
 
         #region Methods
-        // Get by id
-        public override async Task<ContestDto> GetAsync(Guid id)
+        // View Contest by id
+        public async Task GetForSubmitAsync(Guid id, ServerResponse res)
         {
             var accountId = _authService.GetAccountId();
             var entity = await _repository.GetAsync(id, accountId);
 
             var result = _mapper.Map<ContestDto>(entity);
 
-            result.ContestProblems = _mapper.Map<List<ContestProblemDto>>(entity?.ContestProblems);
+            if (result != null)
+            {
+                result.ContestProblems = _mapper.Map<List<ContestProblemDto>>(entity?.ContestProblems);
+                result.ContestAccount = _mapper.Map<ContestAccountDto>(entity?.ContestAccount);
+                result.Password = string.Empty;
+            }
 
-            return result;
+            res.Data = result;
         }
+
+        // View contest by id
+        public override async Task ViewAsync(Guid id, ServerResponse res)
+        {
+            var accountId = _authService.GetAccountId();
+            var entity = await _repository.GetAsync(id, accountId);
+
+            var result = _mapper.Map<ContestDto>(entity);
+
+            if (result != null)
+            {
+                result.ContestProblems = _mapper.Map<List<ContestProblemDto>>(entity?.ContestProblems);
+                result.ContestAccount = _mapper.Map<ContestAccountDto>(entity?.ContestAccount);
+                result.Password = string.Empty;
+                result.ContestProblems?.ForEach(i => i.ProblemId = Guid.Empty);
+            }
+
+            res.Data = result;
+        }
+
+        // Get by id
+        public override async Task GetAsync(Guid id, ServerResponse res)
+        {
+            var accountId = _authService.GetAccountId();
+            var entity = await _repository.GetAsync(id, accountId);
+
+            var result = _mapper.Map<ContestDto>(entity);
+
+            if (result != null)
+            {
+                result.ContestProblems = _mapper.Map<List<ContestProblemDto>>(entity?.ContestProblems);
+            }
+
+            res.Data = result;
+        }
+
+        // Get by id for submit
+        //public override async Task<ContestDto> GetForSubmitAsync(Guid id)
+        //{
+        //    var accountId = _authService.GetAccountId();
+        //    var entity = await _repository.GetAsync(id, accountId);
+
+        //    var result = _mapper.Map<ContestDto>(entity);
+
+        //    result.ContestProblems = _mapper.Map<List<ContestProblemDto>>(entity?.ContestProblems);
+
+        //    return result;
+        //}
 
         // Validate
         public override async Task ValidateAsync(Contest contest, ServerResponse res)
@@ -247,23 +305,19 @@ namespace HCode.Application
 
         
         // Join 1 bài thi
-        public async Task JoinAsync(ContestAccountDto contestAccountDto, string password, ServerResponse res) 
+        public async Task JoinAsync(ContestDto contestDto, ServerResponse res) 
         {
-            var contest = _repository.GetAsync(ContestAccountDto.ContestId);
-
+            var contest = await _repository.GetAsync(contestDto.ContestId);
             // Kiểm tra xem có password không
-            if (contest && contest.HasPassword) {
-                if (password != contest.Password) {
+            if (contest != null && contest.HasPassword) {
+                if (contestDto.Password != contest.Password) {
                     res.OnError(ErrorCode.ContestWrongPassword, new ErrorItem("refPassword", _resource["ContestWrongPassword"]));
                     return;
                 }
             }
 
             // Khởi tạo quan hệ contest_account
-            var contestAccount = _mapper.Map<ContestAccount>(contestAccountDto);
-            contestAccount.ContestAccountId = Guid.NewGuid();
-            contestAccount.AccountId = _authService.GetAccountId();
-            contestAccount.State = ContestAccountState.Pending;
+            var contestAccount = new ContestAccount(contestDto.ContestId, _authService.GetAccountId());
             await _contestAccountRepo.InsertAsync(contestAccount);
         }
 
@@ -272,22 +326,28 @@ namespace HCode.Application
         {
             await _contestAccountRepo.DeleteAsync(contestAccountId);
         }
-        #endregion
 
         // Bắt đầu bài thi
         public async Task StartAsync(Guid contestAccountId, ServerResponse res) 
         {
-            var contestAccount = _contestAccountRepo.GetAsync(contestAccountId);
-            contestAccount.OnStart();
-            await _contestAccountRepo.UpdateAsync(contestAccount);
+            var contestAccount = await _contestAccountRepo.GetAsync(contestAccountId);
+
+            if (contestAccount != null)
+            {
+                contestAccount.OnStart();
+                await _contestAccountRepo.UpdateAsync(contestAccount);
+            }
         }
 
         // Kết thúc bài thi
         public async Task FinishAsync(Guid contestAccountId, ServerResponse res) 
         {
-            var contestAccount = _contestAccountRepo.GetAsync(contestAccountId);
-            contestAccount.OnFinish();
-            await _contestAccountRepo.UpdateAsync(contestAccount);
+            var contestAccount = await _contestAccountRepo.GetAsync(contestAccountId);
+            if (contestAccount != null)
+            {
+                contestAccount.OnFinish();
+                await _contestAccountRepo.UpdateAsync(contestAccount);
+            }
         }
 
         // Submit 1 câu hỏi
@@ -302,19 +362,56 @@ namespace HCode.Application
                 // Thêm mới quan hệ contest_problem_account và submission
                 try
                 {
-                    // contest_problem_account
-                    var cpaId = Guid.NewGuid();
-                    var cpa = new ContestProblemAccount() 
+                    var state = ProblemAccountState.Seen;
+
+                    switch (data.StatusId)
                     {
-                        ContestProblemAccountId = cpaId,
-                        ContestProblemId = contestProblemId,
-                        AccountId = _authService.GetAccountId(),
+                        case StatusJudge0.Accepted:
+                            state = ProblemAccountState.Accepted;
+                            break;
+                        case StatusJudge0.InQueue:
+                        case StatusJudge0.Processing:
+                            break;
+                        default:
+                            state = ProblemAccountState.Wrong;
+                            break;
                     };
-                    var cpaRes = await _cpaRepo.InsertAsync(cpa);
-                    res.AddData("Successfully created ContestProblemAccount");
+
+                    // contest_problem_account
+                    var accountId = _authService.GetAccountId();
+                    var existed = await _cpaRepo.GetByConstraintAsync(contestProblemId, accountId);
+                    var cpaId = existed == null ? Guid.NewGuid() : existed.ContestProblemAccountId;
+
+                    if (existed == null)
+                    {
+                        // Thêm mới
+                        var cpa = new ContestProblemAccount()
+                        {
+                            ContestProblemAccountId = cpaId,
+                            ContestProblemId = contestProblemId,
+                            AccountId = accountId,
+                            State = state
+                        };
+                        var cpaRes = await _cpaRepo.InsertAsync(cpa);
+                        res.AddData("Successfully created ContestProblemAccount");
+                    }
+                    else if (existed.State != ProblemAccountState.Accepted && existed.State != state)
+                    {
+                        // Cập nhật
+                        var cpa = new ContestProblemAccount()
+                        {
+                            ContestProblemAccountId = existed.ContestProblemAccountId,
+                            ContestProblemId = contestProblemId,
+                            AccountId = accountId,
+                            State = state
+                        };
+                        var cpaRes = await _cpaRepo.UpdateAsync(cpa);
+                        res.AddData("Successfully updated ContestProblemAccount");
+                    }
 
                     // submission
-                    var submission = data.InitSubmission(problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, contestProblemAccountId: cpaId);
+                    var submission = data.InitSubmission(
+                        problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, contestProblemAccountId: cpaId);
                     var subRes = await _submissionRepo.InsertAsync(submission);
                     res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));
                 }

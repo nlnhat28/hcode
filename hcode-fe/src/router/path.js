@@ -11,6 +11,7 @@ const path = {
     problemSubmit: "/submit/",
     contests: "/contests/",
     contest: "/contest/",
+    contestSubmit: "/contest/submit/",
 };
 
 export default path;

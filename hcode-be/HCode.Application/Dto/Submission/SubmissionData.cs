@@ -100,7 +100,7 @@ namespace HCode.Application
         /// <param name="data"></param>
         /// <param name="problemDto"></param>
         /// <returns></returns>
-        public Submission InitSubmission(string sourceCode, Guid languageId, 
+        public Submission InitSubmission(string? sourceCode, Guid? languageId, 
             Guid? problemAccountId = null, Guid? contestProblemAccountId = null)
         {
             var submission = new Submission()

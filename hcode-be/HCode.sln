@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCode.Api", "HCode.Api\HCode.Api.csproj", "{0DF5F598-8C64-4BF5-9B1D-BBD432C44F49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HCode.Api", "HCode.Api\HCode.Api.csproj", "{0DF5F598-8C64-4BF5-9B1D-BBD432C44F49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCode.Application", "HCode.Application\HCode.Application.csproj", "{9D278283-D6D6-445F-940C-FEE88B15F99F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HCode.Application", "HCode.Application\HCode.Application.csproj", "{9D278283-D6D6-445F-940C-FEE88B15F99F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCode.Infrastructure", "HCode.Infrastructure\HCode.Infrastructure.csproj", "{7F52EDBB-38A3-46DC-B7C4-793B1FF1FFAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HCode.Infrastructure", "HCode.Infrastructure\HCode.Infrastructure.csproj", "{7F52EDBB-38A3-46DC-B7C4-793B1FF1FFAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCode.Domain", "HCode.Domain\HCode.Domain.csproj", "{20BC5BA7-0D2B-41D5-B9EB-B91A6E67496C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HCode.Domain", "HCode.Domain\HCode.Domain.csproj", "{20BC5BA7-0D2B-41D5-B9EB-B91A6E67496C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

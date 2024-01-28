@@ -25,11 +25,17 @@ namespace HCode.Domain
         /// <summary>
         /// Tên bài toán
         /// </summary>
+        [Script(isNotUpdate: true)]
         public Guid ContestProblemId { get; set; }
         /// <summary>
         /// Id tài khoản
         /// </summary>
+        [Script(isNotUpdate: true)]
         public Guid AccountId { get; set; }
+        /// <summary>
+        /// State
+        /// </summary>
+        public ProblemAccountState State { get; set; }
         #endregion
     }
 }

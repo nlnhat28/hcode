@@ -25,20 +25,20 @@ export default {
             default: 'row'
         },
         /**
-         * Flex-end 
+         * Style justify-content 
          */
-        flexEnd: {
-            type: Boolean,
-            default: false
+        justifyContent: {
+            type: String,
+            default: null
         },
     },
     computed: {
         styleComputed() {
             let style = `flex-direction: ${this.direction}; column-gap: ${this.gap}px; row-gap: ${this.gap}px;`;
 
-            // Flex end
-            if (this.flexEnd) {
-                style += 'justify-content: flex-end;'
+            // Space between
+            if (this.justifyContent) {
+                style += `justify-content: ${this.justifyContent};`;
             };
 
             return style;

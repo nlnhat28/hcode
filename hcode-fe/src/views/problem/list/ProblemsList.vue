@@ -207,7 +207,7 @@ export default {
                 {
                     title: this.$t("problem.field.problemName"),
                     textAlign: 'left',
-                    widthCell: 180,
+                    widthCell: 160,
                     name: "ProblemName",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -266,7 +266,7 @@ export default {
                 {
                     title: this.$t("com.function"),
                     textAlign: 'center',
-                    widthCell: 60,
+                    widthCell: 80,
                 }
             ],
             problemStates: [],

@@ -14,7 +14,7 @@ namespace HCode.Application
         /// <summary>
         /// Repo contest
         /// </summary>
-        private new readonly IContestAccountRepository _repository;
+        private readonly IContestAccountRepository _repository;
         /// <summary>
         /// Cache
         /// </summary>

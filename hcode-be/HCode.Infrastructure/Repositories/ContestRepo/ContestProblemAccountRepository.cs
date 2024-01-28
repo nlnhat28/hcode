@@ -10,24 +10,16 @@ namespace HCode.Infrastructure
     /// Repository contest problem account
     /// </summary>
     /// Created by: nlnhat (17/08/2023)
-    public class ContestProblemAccountRepository : BaseRepository<ContestProblem>, IContestProblemRepository
+    public class ContestProblemAccountRepository : BaseRepository<ContestProblemAccount>, IContestProblemAccountRepository
     {
-
+        #region Properties
         /// <summary>
         /// Tên bảng
         /// </summary>
         /// Created by: nlnhat (18/07/2023)
-        public override string Table { get; set; } = "contest_problem_account";
-        /// <summary>
-        /// Tên cột khoá chính 
-        /// </summary>
-        /// Created by: nlnhat (18/07/2023)
-        public override string TableId { get; set; } = $"{typeof(ContestProblemAccount).Name}Id";
-        /// <summary>
-        /// Tên stored procedure
-        /// </summary>
-        /// Created by: nlnhat (18/07/2023)
-        public override string Procedure { get; set; } = $"proc_{typeof(ContestProblemAccount).Name}_";
+        public override string Table { get; set; } = "contest_problem_account"; 
+        #endregion
+
         #region Constructors
         /// <summary>
         /// Hàm tạo repository testcase
@@ -40,6 +32,20 @@ namespace HCode.Infrastructure
         #endregion
 
         #region Methods
+        // Lấy id
+        public async Task<ContestProblemAccount?> GetByConstraintAsync(Guid contestProblemId, Guid accoountId)
+        {
+            var sql = $@"SELECT {TableId} FROM {Table} WHERE ContestProblemId = @p_ContestProblemId AND AccountId = @p_AccountId";
+
+            var param = new DynamicParameters();
+            param.Add("p_ContestProblemId", contestProblemId);
+            param.Add("p_AccountId", accoountId);
+
+            var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<ContestProblemAccount>(
+                sql, param, transaction: _unitOfWork.Transaction, commandType: CommandType.Text);
+
+            return result;
+        }
         #endregion
     }
 }

@@ -20,6 +20,7 @@ const contest = {
         fullName: "Họ và tên",
         score: "Điểm",
         public: "Công khai",
+        accountFullName: "Người tạo",
     },
     contestState: {
         pending: "Chưa mở",
@@ -30,6 +31,7 @@ const contest = {
         pending: "Chưa thi",
         doing: "Đang thi",
         finish: "Hoàn thành",
+        finished: "Đã thi",
     },
     filter: {
         joined: "Đã tham gia",
@@ -51,6 +53,18 @@ const contest = {
     listParticipants: "Danh sách tham gia",
     addAtLeastProblem: "Vui lòng thêm ít nhất 1 bài toán",
     invalidProblemInQuestion: "Bài thi ở câu hỏi {question} không hợp lệ",
+    join: "Tham gia",
+    joinContest: "Tham gia bài thi",
+    joinedContest: "Đã tham gia bài thi",
+    leaveContest: "Rời bài thi",
+    leftContest: "Đã rời bài thi",
+    start: "Bắt đầu",
+    startContest: "Bắt đầu bài thi",
+    contestInfo: "Thông tin bài thi",
+    contestFinished: "Bài thi đã kết thúc",
+    noLimit: "Không giới hạn",
+    countToStartTime: "Thời điểm mở",
+    finish: "Kết thúc",
 };
 
 export default contest;

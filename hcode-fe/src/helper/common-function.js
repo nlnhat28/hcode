@@ -233,13 +233,13 @@ const commonFuction = {
     },
     /**
      * Tạo route abc/xyz
-     * @returns 
+     * @returns
      */
     combineRoute() {
         if (arguments) {
             let args = Object.values(arguments);
             let path = args
-                .filter((a) => a != null && a !== '')
+                .filter((a) => a != null && a !== "")
                 .map((a) => {
                     return a.toString().replace(/\/+$/, "");
                 });
@@ -247,13 +247,13 @@ const commonFuction = {
             let route = path?.join("/");
             return route;
         }
-        return '';
+        return "";
     },
     /**
      * Gán select vào filter column
-     * @param {*} selects 
-     * @param {*} columns 
-     * @param {*} name 
+     * @param {*} selects
+     * @param {*} columns
+     * @param {*} name
      */
     addSelectsToColumn(selects, columns, name) {
         if (columns && Array.isArray(columns)) {
@@ -263,6 +263,154 @@ const commonFuction = {
                 }
             });
         }
-    }
+    },
+    /**
+     * Đếm ngược thời gian
+     *
+     * @param {*} fixedTime Khoảng cố định (giây)
+     * @param {*} fixedTimeUnit Đơn vị thời gian cố định
+     * @param {*} toTime Thời điểm kết thúc
+     * @param {*} fromTime Thời điểm bắt đầu
+     * @param {*} showValues Những giá trị hiển thị
+     * @param {*} format long/short
+     * @param {*} isFull Hiện các giá trị ngay cả khi bằng 0
+     */
+    countDown(
+        fixedTime,
+        fromTime,
+        toTime,
+        fixedTimeUnit,
+        showValues,
+        format,
+        isFull
+    ) {
+        try {
+            if (fixedTime == null && toTime == null) {
+                throw new Error("Must have fixedTime or toTime");
+            }
+            const shows = Array.isArray(showValues) && showValues?.length > 0
+                ? showValues
+                : ["d", "h", "m", "s"];
+
+            let duration = 0; // khoảng thời gian để đếm (millisecond)
+
+            let d = 0;
+            let h = 0;
+            let m = 0;
+            let s = 0;
+
+            // Nếu mà có khoảng thời gian
+            if (fixedTime != null) {
+                const unit = enums.timeUnit;
+                switch (fixedTimeUnit) {
+                    case unit.millisecond:
+                        duration = fixedTime;
+                        break;
+                    case unit.second:
+                        duration = fixedTime * 1000;
+                        break;
+                    case unit.minute:
+                        duration = fixedTime * 60_000;
+                        break;
+                    case unit.hour:
+                        duration = fixedTime * 3_600_000;
+                        break;
+                    default: // giây
+                        duration = fixedTime * 1000;
+                        break;
+                }
+            }
+            // Dùng thời điểm khác
+            else {
+                let from = fromTime != null ? new Date(fromTime) : new Date();
+                let to = new Date(toTime);
+                duration = to - from;
+            }
+
+            duration = Math.max(duration, 0);
+
+            // Các giá trị thô
+            d = Math.max(Math.floor(duration / 86_400_000), 0);
+            h = Math.max(Math.floor((duration % 86_400_000) / 3_600_000), 0);
+            m = Math.max(Math.floor((duration % 3_600_000) / 60_000), 0);
+            s = Math.max(Math.floor((duration % 60_000) / 1000), 0);
+
+            // Xử lý theo các giá trị show
+
+            // Nếu hiện d mà không hiện h mà vẫn còn lẻ thì +1 vào d, vd: 1 ngày 2 giờ 3 phút 4 giây => 2 ngày
+            // Nếu không hiện d thì cộng dồn vào h, vd: 1 ngày 2 giờ => 26 giờ
+            // Tương tự cho h, m, s
+
+            // d
+            if (shows.includes("d") && !shows.includes("h") && h + m + s > 0) {
+                d++;
+            }
+
+            // h
+            if (shows.includes("h") && !shows.includes("m") && m + s > 0) {
+                h++;
+            }
+            if (shows.includes("h") && !shows.includes("d") && d > 0) {
+                h += d * 24;
+            }
+
+            // m
+            if (shows.includes("m") && !shows.includes("s") && s > 0) {
+                m++;
+            }
+            if (shows.includes("m") && !shows.includes("h") && d + h > 0) {
+                shows = shows.filter((i) => i != "d"); // Bỏ cả d đi
+                m += d * 24 + h * 60;
+            }
+
+            // s
+            if (shows.includes("s") && !shows.includes("m") && d + h + m > 0) {
+                shows = shows.filter((i) => i != "d" && i != "h"); // Bỏ cả d, h đi
+                m += d * 24 + h * 60 + m * 60;
+            }
+
+            let texts = [];
+            let seperator = format == "long" ? " " : ":";
+            if (shows.includes("d")) {
+                if (d > 0 || (d == 0 && isFull)) {
+                    texts.push(`${String(d).padStart(2, "0")} ${t("com.day")}`);
+                }
+            }
+            if (shows.includes("h")) {
+                if (h > 0 || (h == 0 && (isFull || d > 0))) {
+                    texts.push(
+                        `${String(h).padStart(2, "0")} ${t("com.hour")}`
+                    );
+                }
+            }
+            if (shows.includes("m")) {
+                if (m > 0 || (m == 0 && (isFull || d + h > 0))) {
+                    texts.push(
+                        `${String(m).padStart(2, "0")} ${t("com.minute")}`
+                    );
+                }
+            }
+            if (shows.includes("s")) {
+                if (s > 0 || (s == 0 && (isFull || d + h + m > 0))) {
+                    texts.push(
+                        `${String(s).padStart(2, "0")} ${t("com.second")}`
+                    );
+                }
+            }
+            let text = texts.join(seperator);
+            return {
+                day: d,
+                hour: h,
+                minute: m,
+                second: s,
+                text: text,
+                duration,
+            };
+           
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    },
 };
 export default commonFuction;

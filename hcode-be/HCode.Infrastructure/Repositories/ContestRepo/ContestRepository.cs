@@ -42,6 +42,7 @@ namespace HCode.Infrastructure
             if (contest != null)
             {
                 contest.ContestProblems = (await multi.ReadAsync<ContestProblem>()).ToList();
+                contest.ContestAccount = await multi.ReadFirstOrDefaultAsync<ContestAccount>();
             }
 
             return contest;

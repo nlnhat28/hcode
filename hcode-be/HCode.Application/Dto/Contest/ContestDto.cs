@@ -31,9 +31,13 @@ namespace HCode.Application
         /// </summary>
         public string? Alias { get; set; }
         /// <summary>
-        /// Độ khó
+        /// Mật khẩu
         /// </summary>
         public string? Password { get; set; }
+        /// <summary>
+        /// Có password k
+        /// </summary>
+        public bool? HasPassword { get; set; }
         /// <summary>
         /// Trạng thái
         /// </summary>
@@ -59,6 +63,10 @@ namespace HCode.Application
         /// </summary>
         public Guid? AccountId { get; set; }
         /// <summary>
+        /// Tên tài khoản tạo
+        /// </summary>
+        public string? AccountFullName { get; set; }
+        /// <summary>
         /// Trạng thái người dùng với bài thi
         /// </summary>
         public ContestAccountState? ContestAccountState { get; set; }
@@ -66,6 +74,11 @@ namespace HCode.Application
         /// Số lượng tham gia
         /// </summary>
         public int? JoinCount { get; set; }
+        /// <summary>
+        /// Quan hệ bài thi tài khoản
+        /// </summary>
+        [AutoMapper.Configuration.Annotations.Ignore]
+        public ContestAccountDto? ContestAccount { get; set; }
         /// <summary>
         /// Danh sách câu hỏi
         /// </summary>

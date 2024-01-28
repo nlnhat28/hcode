@@ -3,7 +3,7 @@
     max-width: 480px;
 }
 .v-dialog.p-dialog .p-dialog-header .p-dialog-title {
-    font-size: 28px;
+    font-size: 24px;
 }
 
 .v-dialog__content {
@@ -21,7 +21,9 @@
     /* padding: 0.3rem 0.7rem; */
 }
 
-.v-dialog.p-dialog .p-dialog-header,
+.v-dialog.p-dialog .p-dialog-header {
+    padding: 1.5rem 1.2rem;
+}
 .v-dialog.p-dialog .p-dialog-footer {
     padding: 1rem 1.2rem;
 }
@@ -31,4 +33,18 @@
 .v-dialog.p-dialog .p-dialog-content {
     padding: 1.2rem;
     padding-top: 0;
+}
+
+/* dark */
+
+.v-dialog.dark .p-dialog-header {
+    color: var(--color-text);
+    background-color: var(--bg-darker);
+}
+.v-dialog.dark .p-dialog-content {
+    color: var(--color-text);
+    background-color: var(--bg-dark);
+}
+.v-dialog.dark .p-dialog-footer {
+    background-color: var(--bg-darker);
 }

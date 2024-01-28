@@ -21,7 +21,7 @@ namespace HCode.Application
         /// <param name="contestAccountDto"></param>
         /// <param name="res"></param>
         /// <returns></returns>
-        Task JoinAsync(ContestAccountDto contestAccountDto, ServerResponse res);
+        Task JoinAsync(ContestDto contestDto, ServerResponse res);
         /// <summary>
         /// Bắt đầu 1 bài thi
         /// </summary>
@@ -43,5 +43,12 @@ namespace HCode.Application
         /// <param name="res"></param>
         /// <returns></returns>
         Task LeaveAsync(Guid contestAccountId, ServerResponse res);
+        /// <summary>
+        /// Lấy contest cho màn submit
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        Task GetForSubmitAsync(Guid id, ServerResponse res);
     }
 }

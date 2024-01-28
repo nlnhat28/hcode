@@ -1,11 +1,11 @@
 
-.problem-detail-container {
+.problem-submit-container {
     width: 100%;
     height: 100vh;
     overflow: hidden;
     background-color: var(--bg-color);
 }
-.problem-detail__header {
+.problem-submit__header {
     height: 56px;    
     background-color: var(--header-color);
     width: 100%;
@@ -16,33 +16,33 @@
     z-index: 4;
 }
 
-.problem-detail__header--left {
+.problem-submit__header--left {
     padding: 0 24px;
     width: 300px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.problem-detail__header--left .p-button {
+.problem-submit__header--left .p-button {
     padding: 4px;
     height: 30px;
 }
 
-.problem-detail__header--center {
+.problem-submit__header--center {
     /* position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); */
 }
-.problem-detail__header--right {
+.problem-submit__header--right {
     padding: 0 16px;
     width: 300px;
 }
 
-.problem-detail__body {
+.problem-submit__body {
     height: calc(100vh - 56px - 78px);
 }
-.problem-detail__footer {
+.problem-submit__footer {
     height: 78px;
     padding: 0 24px;
     background-color: var(--footer-color);

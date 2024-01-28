@@ -30,55 +30,21 @@ export default {
         return {
             /** build buildDocumentTitle hay k */
             hasBuildDocumentTitle: false,
+            /** Show dialog */
+            isVisible: false,
         };
     },
-    async created() {
-        await this.initOnCreated();
-        await this.loadingEffect(async () => {
-            await Promise.all([
-                this.loadDataOnCreated(),
-                this.customLoadDataOnCreated(),
-            ]);
-            await this.customInstanceOnCreated();
-        });
-        await this.afterLoadDataOnCreated();
-    },
-    unmounted() {
-    },
     emits: [
-        "emitReloadData",
-        "emitReRenderForm",
-        "emitUpdateFocusedId",
-        "emitUpdateFocusedIds",
+        "close",
+        "reset",
+        "reload",
     ],
     watch: {
     },
     computed: {
     },
     methods: {
-        /**
-         * Khởi tạo dữ liệu data
-         */
-        async initOnCreated() {
-        },
-        /**
-         * Load data
-         * @virtual
-         */
-        async customLoadDataOnCreated() {
-        },
-        /**
-         * Custom lại instance
-         * @virtual
-         */
-        async afterLoadDataOnCreated() {
-        },
-        /**
-         * Custom lại instance
-         * @virtual
-         */
-        async customInstanceOnCreated() {
-        },
+
         /**
          * Handle instance on created()
          *
@@ -111,26 +77,48 @@ export default {
             }
         },
         /**
+         * Xử lý dữ liệu trả về
+         */
+        processResponseLoad(response) {
+            if (this.$res.isSuccess(response)) {
+                this.show();
+            }
+            else {
+                this.close();
+            }
+        },
+        /**
          * Show dialog
          *
          * Author: nlnhat (04/07/2023)
          * @param {Object} config 
          */
-        showDialog(config) {
+        show(options) {
+            this.isVisible = true;
         },
         /**
          * Close dialog
          *
          * Author: nlnhat (10/07/2023)
          */
-        closeDialog() {
+        close() {
+            this.isVisible = false;
+            this.$emit("close");
+        },
+        /**
+         * Reload list 
+         * 
+         * Author: nlnhat (28/08/2023)
+         */
+        reload() {
+            this.$emit("reload");
         },
         /**
          * Reset form 
          * 
          * Author: nlnhat (28/08/2023)
          */
-        resetThis() {
+        reset() {
             this.$emit("reset");
         },
         /**
@@ -143,49 +131,6 @@ export default {
                 this.showSaveConfirmDialog(this.$resources["vn"].saveChangeConfirm);
             else
                 this.closeThis();
-        },
-        /**
-         * Handle shortcut keys
-         *
-         * Author: nlnhat (25/07/2023)
-         * @param {*} event Keydown event
-         */
-        handleShortKey(event) {
-            const code = this.$enums.keyCode;
-
-            // Ctrl + S || Ctrl + F8: Cất
-            if (
-                ((event.ctrlKey && event.keyCode == code.s) ||
-                    (event.ctrlKey && event.keyCode == code.f8)) &&
-                !event.shiftKey
-            ) {
-                event.preventDefault();
-                event.stopPropagation();
-                this.onClickSave();
-            }
-            // Ctrl + Shift + N: Cất và thêm
-            else if (event.ctrlKey && event.shiftKey && event.keyCode == code.s) {
-                event.preventDefault();
-                event.stopPropagation();
-                this.onClickSaveAdd();
-            }
-            // Esc: Đóng form
-            else if (event.keyCode == code.esc) {
-                event.preventDefault();
-                event.stopPropagation();
-                this.onClickCloseForm();
-            }
-            // F1: Help
-            else if (event.keyCode == code.f1) {
-                event.preventDefault();
-                event.stopPropagation();
-                this.onClickHelp();
-            }
-        },
-        /**
-         * Ẩn form
-         */
-        closeThis() {
         },
     },
 };

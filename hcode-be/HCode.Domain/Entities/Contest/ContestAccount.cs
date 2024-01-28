@@ -16,6 +16,7 @@ namespace HCode.Domain
         /// </summary>
         [Key]
         public Guid ContestAccountId { get; set; }
+        [NotMapped]
         public Guid Id
         {
             get { return ContestAccountId; }
@@ -43,9 +44,31 @@ namespace HCode.Domain
         /// Thời gian sử dụng
         /// </summary>
         public int? UsedTime { get; set; }
+        /// <summary>
+        /// Thời gian tạo
+        /// </summary>
+        [NotMapped]
+        public DateTime? CreatedTime { get; set; }
+        /// <summary>
+        /// Người tạo
+        /// </summary>
+        [NotMapped]
+        public string? CreatedBy { get; set; }
+        /// <summary>
+        /// Ngày cập nhật
+        /// </summary>
+        [NotMapped]
+        public DateTime? ModifiedTime { get; set; }
+        /// <summary>
+        /// Người cập nhật
+        /// </summary>  
+        [NotMapped]
+        public string? ModifiedBy { get; set; }
         #endregion
 
         #region Constructors
+        public ContestAccount() {
+        }
         public ContestAccount(Guid contestId, Guid accountId, ContestAccountState? state = ContestAccountState.Pending, DateTime? 
             startTime = null, int? usedTime = 0) 
         {
@@ -64,18 +87,21 @@ namespace HCode.Domain
         /// </summary>
         public void OnStart() 
         {
-            StartTime = DateTime.UtcNow();
+            StartTime = DateTime.UtcNow;
             State = ContestAccountState.Doing;
         }
         /// <summary>
         /// Chuyển trạng thái kết thúc
         /// </summary>
-        public void OnFinish() 
+        public void OnFinish()
         {
-            var duration = DateTime.UtcNow() - contestAccount.StartTime;
-            var usedTime = Convert.ToInt32(duration.TotalSeconds);
-            State = ContestAccountState.Finish;
-            UsedTime = usedTime;
+            if (StartTime != null)
+            {
+                var duration = DateTime.UtcNow - (DateTime)StartTime;
+                var usedTime = (int)duration.TotalSeconds;
+                State = ContestAccountState.Finish;
+                UsedTime = usedTime;
+            }
         }
         #endregion
     }

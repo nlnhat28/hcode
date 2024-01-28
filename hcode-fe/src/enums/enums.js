@@ -90,6 +90,7 @@ const enums = {
         cyan: "#00f2fa",
         white: "#ffffff",
         text: "#e0e0e0",
+        grey: "#9e9e9e",
     },
     /**
      * Type of sort
@@ -188,6 +189,14 @@ const enums = {
         second: {
             value: 4,
             label: "second",
+        },
+        minute: {
+            value: 5,
+            label: "minute",
+        },
+        hour: {
+            value: 5,
+            label: "hour",
         },
     },
     /**

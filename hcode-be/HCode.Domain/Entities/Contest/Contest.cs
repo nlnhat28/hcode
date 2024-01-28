@@ -59,6 +59,16 @@ namespace HCode.Domain
         [Script(isNotUpdate: true)]
         public Guid? AccountId { get; set; }
         /// <summary>
+        /// Tên người tạo
+        /// </summary>
+        [NotMapped]
+        public string? AccountFullName { get; set; }
+        /// <summary>
+        /// Quan hệ contest account
+        /// </summary>
+        [NotMapped]
+        public ContestAccount? ContestAccount { get; set; }
+        /// <summary>
         /// Danh sách problem
         /// </summary>
         [NotMapped]

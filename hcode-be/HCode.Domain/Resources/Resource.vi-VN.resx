@@ -166,6 +166,9 @@ Mã xác thực là: {2}. Thời gian hiệu lực: {3} phút.</value>
   <data name="ContestUpdateError" xml:space="preserve">
     <value>Có lỗi xảy ra khi cập nhật bài thi. Vui lòng thử lại.</value>
   </data>
+  <data name="ContestWrongPassword" xml:space="preserve">
+    <value>Mật khẩu không đúng</value>
+  </data>
   <data name="DifficultyEasy" xml:space="preserve">
     <value>Dễ</value>
   </data>

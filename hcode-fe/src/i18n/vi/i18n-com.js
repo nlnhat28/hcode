@@ -58,10 +58,13 @@ const com = {
     filterValue: "Giá trị lọc",
     reload: "Làm mới",
     value: "Giá trị",
+    day: "ngày",
+    hour: "giờ",
     minute: "phút",
     second: "giây",
     function: "Chức năng",
     submit: "Nộp",
+    collapse: "Thu gọn",
 };
 
 export default com;

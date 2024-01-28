@@ -53,14 +53,29 @@ namespace HCode.Api
         /// <param name="id">Id của đối tượng</param>
         /// <returns>Đối tượng có id được truy vấn</returns>
         /// Created by: nlnhat (17/08/2023)
+        [HttpGet("View/{id}")]
+        public async Task<IActionResult> ViewAsync(Guid id)
+        {
+            var res = new ServerResponse();
+
+            await _service.ViewAsync(id, res);
+
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+        /// <summary>
+        /// Lấy đối tượng theo id
+        /// </summary>
+        /// <param name="id">Id của đối tượng</param>
+        /// <returns>Đối tượng có id được truy vấn</returns>
+        /// Created by: nlnhat (17/08/2023)
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(Guid id)
         {
-            var result = new ServerResponse();
+            var res = new ServerResponse();
 
-            result.Data = await _service.GetAsync(id);
+            await _service.GetAsync(id, res);
 
-            return StatusCode(StatusCodes.Status200OK, result);
+            return StatusCode(StatusCodes.Status200OK, res);
         }
         /// <summary>
         /// Lấy đối tượng theo id

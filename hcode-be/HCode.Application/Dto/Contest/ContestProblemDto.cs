@@ -34,6 +34,11 @@ namespace HCode.Application
         /// Thứ tự
         /// </summary>
         public int? Order { get; set; }
+        /// <summary>
+        /// Quan hệ bài thi bài toán tài khoản 
+        /// </summary>
+        [AutoMapper.Configuration.Annotations.Ignore]
+        public ProblemAccountState? ContestProblemAccountState { get; set; }
         #endregion
     }
 }

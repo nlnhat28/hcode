@@ -11,6 +11,7 @@ import ProblemDetail from "@/views/problem/detail/ProblemDetail.vue";
 import ProblemSubmit from "@/views/problem/submit/ProblemSubmit.vue";
 import ContestsList from "@/views/contest/list/ContestList.vue";
 import ContestDetail from "@/views/contest/detail/ContestDetail.vue";
+import ContestSubmit from "@/views/contest/submit/ContestSubmit.vue";
 import cf from "@/helper/common-function.js";
 
 const routes = [
@@ -96,6 +97,13 @@ const routes = [
         name: "contestNew",
         components: {
             viewApp: ContestDetail,
+        },
+    },
+    {
+        path: path.contestSubmit + ":id",
+        name: "contestSubmit",
+        components: {
+            viewApp: ContestSubmit,
         },
     },
     {

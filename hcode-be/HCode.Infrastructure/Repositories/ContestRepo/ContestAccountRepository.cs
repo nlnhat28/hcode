@@ -1,8 +1,5 @@
 ﻿using Dapper;
 using HCode.Domain;
-using System.Data;
-using System.Text.Json;
-using static Dapper.SqlMapper;
 
 namespace HCode.Infrastructure
 {
@@ -12,6 +9,14 @@ namespace HCode.Infrastructure
     /// Created by: nlnhat (17/08/2023)
     public class ContestAccountRepository : BaseRepository<ContestAccount>, IContestAccountRepository
     {
+        #region Properties
+        /// <summary>
+        /// Tên bảng
+        /// </summary>
+        /// Created by: nlnhat (18/07/2023)
+        public override string Table { get; set; } = "contest_account";
+        #endregion
+
         #region Constructors
         /// <summary>
         /// Hàm tạo repository testcase

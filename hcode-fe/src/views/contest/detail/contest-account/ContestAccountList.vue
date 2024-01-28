@@ -148,7 +148,6 @@ export default {
             contestStates: [],
             contestFilters: [],
             selectedContestFilter: null,
-            dateTimePattern: 'dd/mm/yyyy hh/mm',
         }
     },
     computed: {

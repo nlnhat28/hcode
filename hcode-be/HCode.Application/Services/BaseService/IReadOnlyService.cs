@@ -28,7 +28,14 @@ namespace HCode.Application
         /// <param name="id">Id đối tượng</param>
         /// <returns>Dto đối tượng có id được truy vấn</returns>
         /// Created by: nlnhat (13/07/2023)
-        Task<TEntityDto> GetAsync(Guid id);
+        Task ViewAsync(Guid id, ServerResponse res);
+        /// <summary>
+        /// Lấy đối tượng theo id
+        /// </summary>
+        /// <param name="id">Id đối tượng</param>
+        /// <returns>Dto đối tượng có id được truy vấn</returns>
+        /// Created by: nlnhat (13/07/2023)
+        Task GetAsync(Guid id, ServerResponse res);
         /// <summary>
         /// Lọc (Tìm kiếm, phân trang, sắp xếp, lọc theo cột)
         /// </summary>

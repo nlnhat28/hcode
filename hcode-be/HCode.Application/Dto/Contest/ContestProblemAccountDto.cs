@@ -26,6 +26,10 @@ namespace HCode.Application
         /// Id tài khoản
         /// </summary>
         public Guid AccountId { get; set; }
+        /// <summary>
+        /// State
+        /// </summary>
+        public ProblemAccountState State { get; set; }
         #endregion
     }
 }

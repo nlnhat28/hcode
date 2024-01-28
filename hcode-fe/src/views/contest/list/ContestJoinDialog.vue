@@ -1,188 +1,285 @@
 <template>
     <v-dialog
         class="v-dialog"
-        v-model:visible="dialog.visible"
+        v-model:visible="isVisible"
         modal
-        :header="dialog.header"
+        :header="headerComputed"
         :draggable="false"
+        @hide="close"
+        style="width: 600px;"
     >
         <template #closeIcon>
             <v-icon icon="far fa-circle-xmark" />
         </template>
         <div class="v-dialog__content">
-            <v-icon
-                class="v-dialog__icon"
-                :icon="dialog.icon.icon"
-                :color="dialog.icon.color"
-                :size="36"
-            />
-            <div class="v-dialog__message">
-                <span v-html="dialog.message"></span>
-                <!-- {{ dialog.message }} -->
+            <div class="w-full flex-column row-gap-20 p-20">
+                <div class="flex-column row-gap-20">
+                    <div
+                        class="contest-info flex w-full"
+                        v-for="(info, index) in infoComputed"
+                        :key="index"
+                    >
+                        <div
+                            class="contest-info__field"
+                            style="width: 160px"
+                        >
+                            {{ info.field }}:
+                        </div>
+                        <div class="flex-1 font-bold">
+                            {{ info.value }}
+                        </div>
+                    </div>
+                </div>
+                <div v-if="instance.HasPassword && isShowJoinButton">
+                    <!-- Mật khẩu -->
+                    <v-form-item
+                        style="width: 90%;"
+                        :label="$t('contest.field.password')"
+                        isRequired
+                    >
+                        <v-password
+                            ref="refPassword"
+                            v-model="password"
+                            hasClear
+                            isRequired
+                            isFocused
+                            :maxLength="255"
+                            :label="$t('contest.field.password')"
+                            :applyPlaceholder="false"
+                        >
+                        </v-password>
+                    </v-form-item>
+                </div>
             </div>
         </div>
         <template #footer>
-            <v-button-container flexEnd>
-                <v-button
-                    v-for="(button, index) in dialog.buttons"
-                    :key="index"
-                    :label=button.label
-                    :icon=button.icon
-                    :severity="button.severity"
-                    :text="button.text ?? false"
-                    :outlined="button.outlined ?? false"
-                    :autofocus="button.autofocus || index == dialog.buttons.length - 1"
-                    :loading="button.loading"
-                    :disabled="disabledAllButton"
-                    size="small"
-                    @click="onClickButton(button)"
-                />
+            <v-mask-loading v-if="isLoading" />
+            <v-button-container justifyContent="space-between">
+                <!-- Các nút bên trái -->
+                <div>
+                    <!-- Rời -->
+                    <v-button
+                        v-if="isShowLeaveButton"
+                        icon="far fa-right-from-bracket"
+                        severity="danger"
+                        :label="$t('contest.leaveContest')"
+                        @click="loadingEffect(leaveContest)"
+                    ></v-button>
+                </div>
+                <!-- Các nút bên phải -->
+                <div class="flex col-gap-8">
+                    <!-- Tham gia -->
+                    <v-button
+                        v-if="!0"
+                        outlined
+                        :label="$t('com.cancel')"
+                        @click="close"
+                    ></v-button>
+                    <v-button
+                        v-if="isShowJoinButton"
+                        icon="far fa-check"
+                        autofocus
+                        :label="$t('contest.join')"
+                        @click="onClick(joinContest)"
+                    ></v-button>
+                    <!-- Bắt đầu -->
+                    <v-button
+                        v-if="isShowStartButton"
+                        icon="fa fa-play"
+                        autofocus
+                        :label="$t('contest.start')"
+                        @click="loadingEffect(startContest)"
+                    ></v-button>
+                </div>
             </v-button-container>
         </template>
     </v-dialog>
 </template>
 
 <script>
+import BaseFormDialog from '@/components/base/BaseFormDialog.vue';
+import { contestService } from "@/services/services.js";
+import contestEnum from "@/enums/contest-enum.js";
+
 export default {
     name: "ContestJoinDialog",
+    extends: BaseFormDialog,
     data() {
         return {
-            /**
-             * Object dialog
-             */
-            dialog: {
-                visible: false,
-                header: null,
-                icon: null,
-                message: null,
-                buttons: [],
-                callback: null,
-            },
+            instanceService: contestService,
+            contestEnum: contestEnum,
             /**
              * Disable các button khi đang loading
              */
             disabledAllButton: false,
+            password: null,
+            dateTimePattern: 'dd/mm/yyyy hh/mm',
         }
     },
     computed: {
+        headerComputed() {
+            if (this.instance) {
+                if (this.instance.State == contestEnum.contestState.finish.value) {
+                    return this.$t('contest.contestFinished')
+                }
+                const caEnum = contestEnum.contestAccountState;
+                switch (this.instance.ContestAccountState) {
+                    case caEnum.pending.value:
+                        return this.$t('contest.startContest')
+                    case caEnum.finish.value:
+                        return this.$t('contest.contestAccountState.finished')
+                    default:
+                        return this.$t('contest.joinContest')
+                }
+            }
+            return '';
+        },
+        infoComputed() {
+            try {
+                if (this.instance) {
+                    const i = this.instance;
+                    let infos = [
+                        {
+                            field: this.$t('contest.field.contestName'),
+                            value: i.ContestName,
+                        },
+                        {
+                            field: this.$t('contest.field.accountFullName'),
+                            value: i.AccountFullName,
+                        },
+                        {
+                            field: this.$t('contest.field.timeToDo'),
+                            value: i.TimeToDo ? `${i.TimeToDo} ${this.$t('com.minute')}` : this.$t('contest.noLimit'),
+                        },
+                    ]
 
+                    return infos;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+            return [];
+        },
+        /** Bài thi đã kết thúc */
+        finishedContest() {
+            if (this.instance) {
+                return this.instance.State == contestEnum.contestState.finish.value;
+            }
+            return false;
+        },
+        /** Show nút tham gia */
+        isShowJoinButton() {
+            if (this.instance) {
+                return this.instance.ContestAccountState == null
+                    && !this.finishedContest;
+            }
+            return false;
+        },
+        /** Show nút rời bài thi */
+        isShowLeaveButton() {
+            if (this.instance && this.instance.ContestAccountState) {
+                return this.instance.ContestAccountState == contestEnum.contestAccountState.pending.value
+                    && !this.finishedContest;
+            }
+            return false;
+        },
+        /** Show nút bắt đầu bài thi */
+        isShowStartButton() {
+            if (this.instance && this.instance.ContestAccountState) {
+                return this.instance.ContestAccountState == contestEnum.contestAccountState.pending.value
+                    && !this.finishedContest;
+            }
+            return false;
+        },
     },
-    created() {
-        this.$emitter.on("dialogError", (message, callback, header) => {
-            this.assignDialog(message, callback, header, null, this.$enums.dialogType.error)
-        });
-        this.$emitter.on("dialogInfo", (message, header) => {
-            this.assignDialog(message, callback, header, null, this.$enums.dialogType.info)
-        });
-        this.$emitter.on("dialogWarn", (message, buttons, header) => {
-            this.assignDialog(message, null, header, buttons, this.$enums.dialogType.warn)
-        });
-        this.$emitter.on("dialogConfirm", (message, buttons, header) => {
-            this.assignDialog(message, null, header, buttons, this.$enums.dialogType.confirm)
-        });
-    },
-    unmounted() {
-        this.$emitter.off("dialogError");
-        this.$emitter.off("dialogWarn");
-        this.$emitter.off("dialogInfo");
-        this.$emitter.off("dialogConfirm");
+    mounted() {
+        this.refs = [
+            this.$refs.refPassword,
+        ]
     },
     methods: {
         /**
-         * Gán thông tin dialog
-         * @param {*} header Tiêu để
-         * @param {*} message Nội dung
-         * @param {*} dialogType 
+         * @override
          */
-        assignDialog(message, callback, header, buttons, dialogType) {
-            switch (dialogType) {
-                // Nếu dialog thông báo lỗi
-                case this.$enums.dialogType.error:
-                    this.dialog.header = header ?? this.$t("com.error");
-                    this.dialog.icon = {
-                        icon: "fa fa-circle-exclamation",
-                        color: "error"
-                    };
-                    this.dialog.buttons = [
-                        {
-                            label: this.$t("com.gotIt"),
-                            icon: "fa fa-check",
-                            click: callback,
-                        }
-                    ]
-                    break;
-                // Nếu dialog thông báo
-                case this.$enums.dialogType.info:
-                    this.dialog.header = header ?? this.$t("com.info");
-                    this.dialog.icon = {
-                        icon: "fa fa-circle-exclamation",
-                        color: "info"
-                    };
-                    this.dialog.buttons = [
-                        {
-                            label: this.$t("com.gotIt"),
-                            icon: "fa fa-check",
-                            click: callback,
-                        }
-                    ]
-                    break;
-                // Nếu dialog cảnh báo
-                case this.$enums.dialogType.warn:
-                    this.dialog.header = header ?? this.$t("com.warn");
-                    this.dialog.icon = {
-                        icon: "fa fa-triangle-exclamation",
-                        color: "warn"
-                    };
-                    this.dialog.buttons = buttons ? buttons : [
-                        {
-                            label: this.$t("com.gotIt"),
-                            icon: "fa fa-check",
-                            click: callback,
-                        }
-                    ]
-                    break;
-                // Nếu dialog xác nhận
-                case this.$enums.dialogType.confirm:
-                    this.dialog.header = header ?? this.$t("com.confirm");
-                    this.dialog.icon = {
-                        icon: "fa fa-circle-question",
-                        color: "info"
-                    };
-                    this.dialog.buttons = buttons ? buttons : [
-                        {
-                            label: this.$t("com.ok"),
-                            icon: "fa fa-check",
-                            click: callback,
-                        }
-                    ]
-                    break;
-                default:
-                    break;
-            };
-            this.dialog.message = message;
-            this.dialog.visible = true;
+        beforeValidate() {
+            this.refs = [
+                this.$refs.refPassword,
+            ]
         },
         /**
-         * Xử lý click button
-         * @param {*} button 
+         * Join
          */
-        async onClickButton(button) {
-            if (button.click) {
-                try {
-                    this.disabledAllButton = true;
-                    button.loading = true;
-                    await button.click();
+        async joinContest() {
+            if (this.instanceService) {
+                const res = await this.instanceService.join({
+                    ContestId: this.instance.ContestId,
+                    Password: this.password,
+                });
+
+                if (this.$res.isSuccess(res)) {
+                    this.reloadContest();
+                    this.reload();
+                    this.$ts.success(this.$t('contest.joinedContest'));
                 }
-                finally {
-                    button.loading = false;
-                    this.disabledAllButton = false;
+                else {
+                    this.handleError(res);
                 }
             }
-            this.dialog.visible = false;
+        },
+        /**
+         * Leave
+         */
+        async leaveContest() {
+            if (this.instanceService && this.instance.ContestAccountState) {
+                const res = await this.instanceService.leave(this.instance.ContestAccount.ContestAccountId);
+
+                if (this.$res.isSuccess(res)) {
+                    this.reloadContest();
+                    this.reload();
+                    this.$ts.success(this.$t('contest.leftContest'));
+                }
+                else {
+                    this.handleError(res);
+                }
+            }
+        },
+        /**
+         * Start
+         */
+        async startContest() {
+            // if (this.instanceService && this.instance.ContestAccountState) {
+            //     const res = await this.instanceService.leave(this.instance.ContestAccount.ContestAccountId);
+
+            //     if (this.$res.isSuccess(res)) {
+            //         this.reloadContest();
+            //         this.reload();
+            //         this.$ts.success(this.$t('contest.leftContest'));
+            //     }
+            //     else {
+            //         this.handleError(res);
+            //     }
+            // }
+            this.$router.push(this.$cf.combineRoute(this.$path.contestSubmit, this.instance.ContestId));
+        },
+        /**
+         * Load lại contest
+         */
+        async reloadContest() {
+            const response = await this.instanceService.view(this.instanceId);
+            if (this.$res.isSuccess(response)) {
+                if (!this.$cf.isEmptyObject(response.Data)) {
+                    this.instance = this.$cf.cloneDeep(response.Data);
+                    this.storeOriginalInstance();
+                }
+                else {
+                    this.close();
+                }
+            }
+            else {
+                this.close();
+            }
         },
     }
 };
 </script>
-<style>
-@import "./dialog.css";
-</style>
+<style scoped></style>

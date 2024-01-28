@@ -82,9 +82,9 @@
                             </v-td>
                             <!-- Trạng thái -->
                             <v-td
-                                :content="$cv.enumToResource(item.State, contestEnum.contestState)"
+                                :content="$cv.enumToResource(contestState(item), contestEnum.contestState)"
                                 :style="{
-                                    color: $cv.contestStateToColor(item.State),
+                                    color: $cv.contestStateToColor(contestState(item)),
                                     fontWeight: 700,
                                 }"
                             >
@@ -100,10 +100,10 @@
                                 :style="{ textAlign: 'center' }"
                             ></v-td>
                             <!-- Thời gian làm -->
-                            <v-td
+                            <!-- <v-td
                                 :content="(item.TimeToDo ? `${item.TimeToDo} ${$t('com.minute')}` : '')"
                                 :style="{ textAlign: 'center' }"
-                            ></v-td>
+                            ></v-td> -->
                             <!-- Đã tham gia -->
                             <v-td :style="{
                                 textAlign: 'center'
@@ -120,13 +120,13 @@
                             }">
                                 <div class="flex-align-center col-gap-4">
                                     <v-button
-                                        v-if="item.IsDraft == false"
-                                        icon="far fa-code"
+                                        v-if="1"
+                                        icon="far fa-arrow-right-to-bracket"
                                         severity="info"
                                         text
                                         raised
                                         rounded
-                                        :title="$t('problem.practice')"
+                                        :title="$t('contest.join')"
                                         @click="clickJoin(item.ContestId)"
                                     />
                                     <v-button
@@ -165,21 +165,34 @@
                 </template>
             </v-table>
         </div>
-        <div class="contests-list__right">
+        <!-- <div class="contests-list__right">
             <div class="contests-list__stat">
 
             </div>
-        </div>
+        </div> -->
     </div>
+    <ContestJoinDialog
+        v-if="joinDialog.isShow"
+        :ref="joinDialog.ref"
+        :id="joinDialog.id"
+        :useObject="false"
+        :formMode="$enums.formMode.view"
+        @reload="reloadItems"
+        @close="closeJoinDialog"
+    ></ContestJoinDialog>
 </template>
 <script>
 import BaseList from "@/components/base/BaseList.vue";
 import { contestService } from "@/services/services.js";
 import contestEnum from "@/enums/contest-enum.js";
+import ContestJoinDialog from "./ContestJoinDialog.vue"
 
 export default {
     name: "ContestsList",
     extends: BaseList,
+    components: {
+        ContestJoinDialog
+    },
     data() {
         return {
             documentTitle: this.$t("contest.contestList"),
@@ -196,7 +209,7 @@ export default {
                 {
                     title: this.$t("contest.field.contestAccountState"),
                     textAlign: 'left',
-                    widthCell: 100,
+                    widthCell: 80,
                     name: "ContestAccountState",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -209,7 +222,7 @@ export default {
                 {
                     title: this.$t("contest.field.contestCode"),
                     textAlign: 'left',
-                    widthCell: 100,
+                    widthCell: 80,
                     name: "ContestCode",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -221,7 +234,7 @@ export default {
                 {
                     title: this.$t("contest.field.contestName"),
                     textAlign: 'left',
-                    widthCell: 160,
+                    widthCell: 120,
                     name: "ContestName",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -264,22 +277,22 @@ export default {
                         filterType: this.$enums.filterType.text,
                     }
                 },
-                {
-                    title: this.$t("contest.field.timeToDo"),
-                    textAlign: 'center',
-                    widthCell: 100,
-                    name: "TimeToDo",
-                    sortConfig: {
-                        sortType: this.$enums.sortType.blur,
-                    },
-                    filterConfig: {
-                        filterType: this.$enums.filterType.number,
-                    }
-                },
+                // {
+                //     title: this.$t("contest.field.timeToDo"),
+                //     textAlign: 'center',
+                //     widthCell: 100,
+                //     name: "TimeToDo",
+                //     sortConfig: {
+                //         sortType: this.$enums.sortType.blur,
+                //     },
+                //     filterConfig: {
+                //         filterType: this.$enums.filterType.number,
+                //     }
+                // },
                 {
                     title: this.$t("contest.field.joinCount"),
                     textAlign: 'center',
-                    widthCell: 100,
+                    widthCell: 80,
                     name: "JoinCount",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -291,13 +304,18 @@ export default {
                 {
                     title: this.$t("com.function"),
                     textAlign: 'center',
-                    widthCell: 60,
+                    widthCell: 80,
                 }
             ],
+            dateTimePattern: 'dd/mm/yyyy hh/mm',
             contestStates: [],
             contestFilters: [],
             selectedContestFilter: null,
-            dateTimePattern: 'dd/mm/yyyy hh/mm',
+            joinDialog: {
+                ref: 'refDialog',
+                isShow: false,
+                id: '',
+            }
         }
     },
     computed: {
@@ -343,6 +361,9 @@ export default {
 
             return filters;
         },
+        dateTimeNow() {
+            return new Date();
+        }
     },
     mounted() {
     },
@@ -368,6 +389,36 @@ export default {
         onSelectedContestFilter() {
             this.reloadItems();
         },
+        /**
+         * Click join
+         */
+        clickJoin(id) {
+            this.joinDialog.id = id;
+            this.joinDialog.isShow = true;
+        },
+        /**
+         * Đóng join dialog
+         */
+        closeJoinDialog() {
+            this.joinDialog.isShow = false;
+        },
+        /**
+         * Contest state
+         * @param {*} item 
+         */
+        contestState(item) {
+
+            let start = item.StartTime != null ? new Date(item.StartTime) : -Infinity;
+            let end = item.EndTime != null ? new Date(item.EndTime) : Infinity;
+
+            if (new Date() < start) {
+                return contestEnum.contestState.pending.value;
+            }
+            if (new Date() > end) {
+                return contestEnum.contestState.finish.value;
+            }
+            return contestEnum.contestState.goingOn.value;
+        }
     }
 }
 </script>

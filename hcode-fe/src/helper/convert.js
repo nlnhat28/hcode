@@ -39,7 +39,7 @@ const convert = {
             let state = contestEnum.contestAccountState;
             switch (contestAccountState) {
                 case state.pending.value:
-                    return enums.color.text;
+                    return enums.color.grey;
                 case state.doing.value:
                     return enums.color.cyan;
                 case state.finish.value:
@@ -85,7 +85,7 @@ const convert = {
             let state = contestEnum.contestState;
             switch (contestState) {
                 case state.pending.value:
-                    return enums.color.text;
+                    return enums.color.grey;
                 case state.goingOn.value:
                     return enums.color.green;
                 case state.finish.value:

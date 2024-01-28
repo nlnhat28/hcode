@@ -77,6 +77,12 @@
 .row-gap-20 {
     row-gap: 20px;
 }
+.row-gap-24 {
+    row-gap: 24px;
+}
+.row-gap-28 {
+    row-gap: 28px;
+}
 
 /* position */
 .p-relative {
@@ -109,20 +115,21 @@
     padding: 64px;
 }
 
-.pr-4 {
-    padding-right: 4px;
+
+.pt-4 {
+    padding-top: 4px;
 }
-.pr-8 {
-    padding-right: 8px;
+.pt-8 {
+    padding-top: 8px;
 }
-.pr-12 {
-    padding-right: 12px;
+.pt-12 {
+    padding-top: 12px;
 }
-.pr-16 {
-    padding-right: 16px;
+.pt-16 {
+    padding-top: 16px;
 }
-.pr-20 {
-    padding-right: 20px;
+.pt-20 {
+    padding-top: 20px;
 }
 
 .pb-4 {

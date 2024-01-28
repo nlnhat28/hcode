@@ -1,3 +1,4 @@
+using AutoMapper;
 using HCode.Domain;
 
 namespace HCode.Application
@@ -6,14 +7,14 @@ namespace HCode.Application
     /// Tạo mapper contest
     /// </summary>
     /// Created by: nlnhat (13/07/2023)
-    public class ContestAccountProfile : BaseProfile<ContestAccountDto, ContestAccount>
+    public class ContestAccountProfile : Profile
     {
         #region Constructors
         /// <summary>
         /// Hàm tạo mapper problem
         /// </summary>
         /// Created by: nlnhat (13/07/2023)
-        public ContestAccountProfile() : base()
+        public ContestAccountProfile()
         {
             // Problem to Dto
             CreateMap<ContestAccount, ContestAccountDto>()

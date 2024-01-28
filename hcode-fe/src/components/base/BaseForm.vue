@@ -19,9 +19,11 @@ export default {
          */
         formMode: {
             type: Number,
-            default: enums.formMode.create,
+            default: null,
             validator: (value) => {
                 return [
+                    enums.formMode.none,
+                    enums.formMode.view,
                     enums.formMode.create,
                     enums.formMode.update,
                     enums.formMode.duplicate
@@ -71,23 +73,16 @@ export default {
             documentTitle: null,
             /** build buildDocumentTitle hay k */
             hasBuildDocumentTitle: true,
+            /** show close button */
+            isShowClose: false,
         };
     },
     async created() {
         if (this.hasBuildDocumentTitle) {
             document.title = this.$cf.documentTitle(this.documentTitle);
         }
-        
-        let id = this.$route.params.id;
 
-        if (id == null) {
-            this.mode = formMode.create;
-            this.instance = {};
-        }
-        else {
-            this.mode = formMode.update;
-            this.instanceId = id;
-        }
+        this.initMode();
 
         await this.initOnCreated();
         await this.loadingEffect(async () => {
@@ -117,6 +112,25 @@ export default {
     },
     methods: {
         /**
+         * Init Mode
+         */
+        initMode() {
+            let id = this.$route.params.id;
+
+            if (id == null) {
+                if (this.mode == null) {
+                    this.mode = formMode.create;
+                }
+                this.instance = {};
+            }
+            else {
+                if (this.mode == null) {
+                    this.mode = formMode.update;
+                }
+                this.instanceId = id;
+            }
+        },
+        /**
          * Khởi tạo dữ liệu data
          */
         async initOnCreated() {
@@ -138,6 +152,19 @@ export default {
          * @virtual
          */
         async customInstanceOnCreated() {
+        },
+        /**
+         * Load lại instance
+         */
+        async reloadInstance() {
+            await this.loadingEffect(async () => {
+                await Promise.all([
+                    this.loadDataOnCreated(),
+                    this.customLoadDataOnCreated(),
+                ]);
+                await this.customInstanceOnCreated();
+            });
+            await this.afterLoadDataOnCreated();
         },
         /**
          * Handle instance on created()
@@ -188,11 +215,9 @@ export default {
             if (this.cfg.formPath) {
                 this.$router.push(this.$cf.combineRoute(this.cfg.formPath));
             }
-            else if (this.cfg.callbackPath) {
-                this.$router.push(this.cfg.callbackPath);
-            }
             else {
-                console.warning("DEV chưa cấu hình cfg.callbackPath")
+                console.warning("DEV chưa cấu hình cfg.formPath")
+                this.goCallbackPath();
             }
         },
         /**
@@ -209,15 +234,18 @@ export default {
          * @param {enum} mode Xem hay get full
          * Author: nlnhat (02/07/2023)
          */
-         async loadInstance(id, mode) {
+        async loadInstance(id, mode) {
             if (this.instanceService) {
                 const response = mode == formMode.view ? await this.instanceService.view(id) : await this.instanceService.get(id);
                 if (this.$res.isSuccess(response)) {
                     if (!this.$cf.isEmptyObject(response.Data)) {
                         this.instance = this.$cf.cloneDeep(response.Data);
                         this.storeOriginalInstance();
-                        this.documentTitle = this.instance[`${this.cfg.entity}Name`] + " - " + this.cfg.subSysName;
-                        document.title = this.$cf.documentTitle(this.documentTitle);
+
+                        if (this.hasBuildDocumentTitle) {
+                            this.documentTitle = this.instance[`${this.cfg.entity}Name`] + " - " + this.cfg.subSysName;
+                            document.title = this.$cf.documentTitle(this.documentTitle);
+                        };
                     }
                     else {
                         this.$dl.error(this.$t('msg.cannotFindRecord'), this.goFormPath)
@@ -227,6 +255,7 @@ export default {
                     this.handleError(response, this.goCallbackPath)
                 }
                 mode == formMode.view ? this.processResponseView(response) : this.processResponseGet(response);
+                this.processResponseLoad(response);
             }
         },
         /**
@@ -254,6 +283,11 @@ export default {
          * Xử lý dữ liệu trả về
          */
         processResponseGet(response) {
+        },
+        /**
+         * Sau khi load instance
+         */
+        processResponseLoad(response) {
         },
         /**
          * Reformat instance trước khi lưu
@@ -388,6 +422,22 @@ export default {
                 console.error(error);
                 this.messageValidate == null
                 return false;
+            }
+        },
+        /**
+         * Khi click function cần validate
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        async onClick(func) {
+            try {
+                if (await this.isValidForm()) {
+                    await this.loadingEffect(func);
+                } else {
+                    this.$dl.error(this.messageValidate, this.focusRefError);
+                }
+            } catch (error) {
+                console.error(error);
             }
         },
         /**

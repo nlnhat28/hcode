@@ -22,7 +22,7 @@
             </div>
         </div>
         <template #footer>
-            <v-button-container flexEnd>
+            <v-button-container justifyContent="flex-end">
                 <v-button
                     v-for="(button, index) in dialog.buttons"
                     :key="index"

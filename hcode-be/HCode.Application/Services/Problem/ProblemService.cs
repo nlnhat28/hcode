@@ -78,20 +78,40 @@ namespace HCode.Application
         #endregion
 
         #region Methods
-        // Get problem by id
-        public override async Task<ProblemDto> GetAsync(Guid id)
+        // View problem by id
+        public override async Task ViewAsync(Guid id, ServerResponse res)
         {
             var accountId = _authService.GetAccountId();
             var entity = await _repository.GetAsync(id, accountId);
 
             var result = _mapper.Map<ProblemDto>(entity);
 
-            result.Testcases = _mapper.Map<List<TestcaseDto>>(entity?.Testcases);
-            result.Parameters = _mapper.Map<List<ParameterDto>>(entity?.Parameters);
+            if (result != null)
+            {
+                result.Solution = string.Empty;
+                result.Testcases = _mapper.Map<List<TestcaseDto>>(entity?.Testcases);
+                result.Parameters = _mapper.Map<List<ParameterDto>>(entity?.Parameters);
+            }
 
-            return result;
+            res.Data = result;
         }
 
+        // Get problem by id
+        public override async Task GetAsync(Guid id, ServerResponse res)
+        {
+            var accountId = _authService.GetAccountId();
+            var entity = await _repository.GetAsync(id, accountId);
+
+            var result = _mapper.Map<ProblemDto>(entity);
+
+            if (result != null)
+            {
+                result.Testcases = _mapper.Map<List<TestcaseDto>>(entity?.Testcases);
+                result.Parameters = _mapper.Map<List<ParameterDto>>(entity?.Parameters);
+            }
+
+            res.Data = result;
+        }
 
         // Tạo problem mới
         public override async Task CreateAsync(ProblemDto problemDto, ServerResponse res)

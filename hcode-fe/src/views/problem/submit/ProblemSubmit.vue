@@ -1,9 +1,9 @@
 <template>
-    <div class="problem-detail-container">
+    <div class="problem-submit-container">
         <!-- Loading -->
         <v-mask-loading v-if="isLoading" />
-        <div class="problem-detail__header">
-            <div class="problem-detail__header--left flex-align-center">
+        <div class="problem-submit__header">
+            <div class="problem-submit__header--left flex-align-center">
                 <v-button
                     text
                     severity="secondary"
@@ -12,16 +12,16 @@
                     @click="$router.push($path.problems)"
                 ></v-button>
             </div>
-            <div class="problem-detail__header--center flex-center col-gap-12">
+            <div class="problem-submit__header--center flex-center col-gap-12">
                 <div class="font-bold font-20 yellow-300">
                     {{ centerTitle }}
                 </div>
             </div>
-            <div class="problem-detail__header--right">
+            <div class="problem-submit__header--right">
 
             </div>
         </div>
-        <div class="problem-detail__body">
+        <div class="problem-submit__body">
             <v-splitter>
                 <v-splitter-panel class="flex-center">
                     <div class="wh-full p-32">
@@ -101,32 +101,6 @@
                                                 </div>
                                             </v-form-item>
                                         </v-form-group>
-                                        <div class="flex col-gap-24">
-                                            <div class="checkbox-item">
-                                                <!-- Trạng thái lưu -->
-                                                <div class="label cursor-pointer">
-                                                    {{ $t('problem.problemState.public') }}
-                                                </div>
-                                                <v-checkbox
-                                                    v-model="instance.IsPublicState"
-                                                    binary
-                                                    :disabled="mode == $enums.formMode.update"
-                                                >
-                                                </v-checkbox>
-                                            </div>
-                                            <div class="checkbox-item">
-                                                <!-- Trạng thái lưu -->
-                                                <div class="label cursor-pointer">
-                                                    {{ $t('problem.problemState.private') }}
-                                                </div>
-                                                <v-checkbox
-                                                    v-model="instance.IsPrivateState"
-                                                    binary
-                                                    :disabled="mode == $enums.formMode.update"
-                                                >
-                                                </v-checkbox>
-                                            </div>
-                                        </div>
                                     </v-form-column>
                                 </v-form-body>
                             </v-tab-panel>
@@ -251,7 +225,7 @@
                 </v-splitter-panel>
             </v-splitter>
         </div>
-        <div class="problem-detail__footer">
+        <div class="problem-submit__footer">
             <v-button-container direction="row-reverse">
                 <!-- Nộp -->
                 <v-button
@@ -323,6 +297,8 @@ export default {
         async initOnCreated() {
             this.difficulties = this.$cv.enumToSelects(enums.difficulty);
             this.dataTypes = this.$cv.enumToSelects(problemEnum.dataType);
+
+            this.mode = formMode.view;
         },
         /** 
          * @override
@@ -409,5 +385,5 @@ export default {
 }
 </script>
 <style scoped>
-@import './problem-detail.css';
+@import './problem-submit.css';
 </style>
