@@ -13,7 +13,7 @@
                 ></v-button>
             </div>
             <div class="problem-detail__header--center flex-center col-gap-12">
-                <div class="font-bold font-20 yellow-300">
+                <div class="label-20-yellow-300">
                     {{ centerTitle }}
                 </div>
                 <v-tag

@@ -98,6 +98,12 @@
     /* height: 40px; */
 }
 
+.contest-submit__countdown {
+    background-color: var(--dark-200);
+    height: 42px;
+    width: 100px;
+}
+
 /* Contest sidebar */
 .contest-sidebar {
     display: block;

@@ -1,17 +1,18 @@
 <template>
-    <div class="contest-problem-item">
-        <div class="flex align-center justify-between col-gap-12 flex-1">
-            <div class="contest-problem__name flex-center">
-                {{ nameComputed }}
+    <div :class="['contest-problem-item', {'selected': isSelected}]" @click="selectItem">
+        <div class="flex align-center col-gap-12 flex-1">
+            <div :class="['contest-problem__name']">
+                {{ `${index + 1}. ${$t('problem.problem')} ${index + 1}` }}
+            </div>
+            <div class="contest-problem__score">
+                {{ `(${instance.Score} ${$t('contest.score')})` }}
             </div>
         </div>
         <div class="contest-problem__function flex-center">
             <v-icon
-                icon="far fa-circle-xmark"
-                color="danger"
-                applyPointer
-                :title="$t('com.delete')"
-                @click="clickDelete"
+                :icon="$cv.problemAccountStateToIcon(instance.ContestProblemAccountState)"
+                :color="$cv.problemAccountStateToColor(instance.ContestProblemAccountState)"
+                :tooltip="$cv.enumToResource(instance.ContestProblemAccountState, problemEnum.problemAccountState)"
             />
         </div>
     </div>
@@ -37,13 +38,19 @@ export default {
             type: Object,
             default: {}
         },
+        /** Đang được chọn */
+        isSelected: {
+            type: Boolean,
+            default: false,
+        }
     },
     data() {
         return {
             instance: {},
+            problemEnum: problemEnum,
         }
     },
-    emits: ['onDelete'],
+    emits: ['selected'],
     created() {
         this.assignInstance();
     },
@@ -59,12 +66,6 @@ export default {
         },
     },
     computed: {
-        nameComputed() {
-            let name = `${index + 1}. ${this.$t('problem.problem')}`
-            if (this.instance && this.instance.Score) {
-                name += `${this.instance.Score} ${this.$t('contest.score')}}`
-            }
-        }
     },
     methods: {
         /**
@@ -75,10 +76,10 @@ export default {
             this.instance.Order = this.index + 1;
         },
         /**
-         * Click xoá
+         * Click chọn
          */
-        clickDelete() {
-            this.$emit('onDelete', this.contestProblem);
+        selectItem() {
+            this.$emit('selected', this.instance);
         },
     }
 }
@@ -92,6 +93,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     background-color: var(--dark-400);
+    color: var(--grey-400);
     border-radius: 8px;
     transition: background-color 0.2s;
     cursor: pointer;
@@ -104,15 +106,16 @@ export default {
 .contest-problem-item:hover {
     background-color: var(--dark-200);
 }
-
+.contest-problem-item.selected {
+    color: var(--orange-400);
+}
 .contest-problem__name {
     font-weight: 700;
-    color: var(--grey-400);
-    padding-left: 12px;
+    width: 124px;
+    padding-left: 20px;
 }
-
 .contest-problem__score {
-    width: 120px;
+    /* font-weight: 700; */
     height: 100%;
 }
 

@@ -5,7 +5,7 @@
     ]">
         <v-mask-loading v-if="isLoading"></v-mask-loading>
         <div :class="['contest-sidebar__body']">
-            <div class="font-bold font-20 yellow-300 p-relative">
+            <div class="label-20-yellow-300 p-relative">
                 {{ instance.ContestName }}
             </div>
             <div class="w-full flex-column row-gap-28 pt-20">
@@ -13,11 +13,11 @@
                     <div
                         v-for="(info, index) in infoComputed"
                         :key="index"
-                        :class="['contest-info flex w-full  p-relative']"
+                        :class="['contest-info flex w-full p-relative']"
                     >
                         <div
                             class="contest-info__field"
-                            style="width: 160px"
+                            style="width: 100px"
                         >
                             {{ info.field }}:
                         </div>
@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="flex-1 flex-column row-gap-16">
-                    <div class="font-bold color-text flex-center">
+                    <div class="color-text flex-center">
                         {{ $t('contest.problems') }}
                     </div>
                     <div
@@ -35,10 +35,12 @@
                         v-if="!$cf.isEmptyArray(instance.ContestProblems)"
                     >
                         <ContestProblemItem
-                            v-for="(problem, index) in instance.ContestProblems"
-                            :key="problem.ContestProblemId"
+                            v-for="(item, index) in instance.ContestProblems"
+                            :key="item.ContestProblemId"
                             :index="index"
-                            :contestProblem="problem"
+                            :contestProblem="item"
+                            :isSelected="item.ProblemId==problemId"
+                            @selected="selectedItem"
                         ></ContestProblemItem>
                     </div>
                 </div>
@@ -53,7 +55,7 @@
                 <!-- Nộp -->
                 <v-button
                     :label="$t('contest.finish')"
-                    @click="clickSubmit"
+                    @click="onClick(finishContest)"
                 />
                 <!-- Reload -->
                 <v-button
@@ -85,6 +87,13 @@ export default {
     extends: BaseForm,
     components: {
         ContestProblemItem,
+    },
+    emits: ['selected', 'afterLoad'],
+    props: {
+        problemId: {
+            type: String,
+            default: null
+        }
     },
     data() {
         return {
@@ -120,15 +129,15 @@ export default {
                             value: i.AccountFullName,
                         },
                         {
-                            field: this.$t('contest.field.startTime'),
+                            field: this.$t('contest.field.start'),
                             value: this.$fm.formatDateTime(i.StartTime, this.dateTimePattern),
                         },
                         {
-                            field: this.$t('contest.field.endTime'),
+                            field: this.$t('contest.field.end'),
                             value: this.$fm.formatDateTime(i.EndTime, this.dateTimePattern),
                         },
                         {
-                            field: this.$t('contest.field.timeToDo'),
+                            field: this.$t('contest.field.time'),
                             value: i.TimeToDo ? `${i.TimeToDo} ${this.$t('com.minute')}` : this.$t('contest.noLimit'),
                         },
                     ]
@@ -147,6 +156,19 @@ export default {
          */
         async loadDataOnCreated() {
             await this.getForSubmit(this.instanceId);
+        },
+        /**
+         * @override
+         */
+        customInstanceOnCreated() {
+            if (this.instance) {
+                this.instance.ContestAccount.StartTime = '2024-01-28T09:48:01+07:00';
+            }
+            if (!this.$cf.isEmptyArray(this.instance?.ContestProblems)
+                && (!this.problemId || this.problemId == 0)) {
+                this.selectedItem(this.instance.ContestProblems[0]);
+            };
+            this.$emit('afterLoad', this.instance);
         },
         /**
          * Lấy thông tin contest
@@ -181,7 +203,19 @@ export default {
          */
         toggle() {
             this.collapseContestSidebar = !this.collapseContestSidebar;
-        }
+        },
+        /**
+         * Chọn câu hỏi
+         */
+        selectedItem(item) {
+            this.$emit('selected', item);
+        },
+        /**
+         * Finish
+         */
+        async finishContest() {
+
+        },
     }
 }
 </script>

@@ -241,10 +241,10 @@ const commonFuction = {
             let path = args
                 .filter((a) => a != null && a !== "")
                 .map((a) => {
-                    return a.toString().replace(/\/+$/, "");
+                    return a.toString().replace(/\//g, "");
                 });
 
-            let route = path?.join("/");
+            let route = "/" + path?.join("/");
             return route;
         }
         return "";

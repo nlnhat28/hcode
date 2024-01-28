@@ -11,6 +11,7 @@ const path = {
     problemSubmit: "/submit/",
     contests: "/contests/",
     contest: "/contest/",
+    submit: "/submit/",
     contestSubmit: "/contest/submit/",
 };
 

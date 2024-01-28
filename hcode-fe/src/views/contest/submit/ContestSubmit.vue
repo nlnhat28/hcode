@@ -1,21 +1,27 @@
 <template>
     <div class="contest-submit-container flex">
-        <!-- Loading -->
-        <v-mask-loading v-if="isLoading" />
-        <ContestSiderbar ref="refSidebar"></ContestSiderbar>
-        <div class="flex-1">
+        <ContestSiderbar
+            ref="refSidebar"
+            :id="contestId"
+            :problemId="instanceId"
+            @selected="selectedItem"
+            @afterLoad="afterLoadContest"
+        ></ContestSiderbar>
+        <div class="flex-1 p-relative">
+            <!-- Loading -->
+            <v-mask-loading v-if="isLoading" />
             <div class="contest-submit__header">
                 <div class="contest-submit__header--left flex-align-center">
                     <v-button
                         text
                         severity="secondary"
                         icon="far fa-angle-left"
-                        :label="$t('problem.problemList')"
-                        @click="$router.push($path.problems)"
+                        :label="$t('contest.contestList')"
+                        @click="$router.push($path.contests)"
                     ></v-button>
                 </div>
                 <div class="contest-submit__header--center flex-center col-gap-12">
-                    <div class="font-bold font-20 yellow-300">
+                    <div class="label-20-yellow-300">
                         {{ centerTitle }}
                     </div>
                 </div>
@@ -238,14 +244,23 @@
                         :label="$t('problem.submitSubmission')"
                         @click="clickSubmit"
                     />
-                    <!-- toggle ContestSidebar -->
-                    <v-button
-                        severity="secondary"
-                        outlined
-                        :icon="'fa fa-grid'"
-                        :title="$t('contest.contestInfo')"
-                        @click="toggleContestSidebar"
-                    />
+                    <v-button-container
+                        direction="row-reverse"
+                        :gap="20"
+                    >
+                        <!-- toggle ContestSidebar -->
+                        <div class="contest-submit__countdown">
+
+                        </div>
+                        <!-- toggle ContestSidebar -->
+                        <v-button
+                            severity="secondary"
+                            outlined
+                            :icon="'fa fa-grid'"
+                            :title="$t('contest.contestInfo')"
+                            @click="toggleContestSidebar"
+                        />
+                    </v-button-container>
                 </v-button-container>
             </div>
         </div>
@@ -284,10 +299,14 @@ export default {
                 entity: 'Contest',
                 subSysName: this.$t('contest.contest'),
             },
-            instanceService: null,
+            instanceService: problemService,
             problemConst: problemConst,
             allowBuildSource: true,
             collapseContestSidebar: false,
+            contestId: null,
+            contestProblem: null,
+            contestProblems: null,
+            hasBuildDocumentTitle: false,
         }
     },
     watch: {
@@ -308,6 +327,16 @@ export default {
         checkBuildSource() {
             return this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
         },
+        centerTitle() {
+            let title = this.instance?.ProblemName;
+            if (!this.$cf.isEmptyArray(this.contestProblems)) {
+                let order = this.contestProblems.find(p => p.ProblemId == this.instanceId)?.Order;
+                if (order) {
+                    title = `${order}. ${title}`;
+                }
+            };
+            return title;
+        }
     },
     methods: {
         /**
@@ -316,41 +345,21 @@ export default {
         async initOnCreated() {
             this.difficulties = this.$cv.enumToSelects(enums.difficulty);
             this.dataTypes = this.$cv.enumToSelects(problemEnum.dataType);
-
             this.mode = formMode.view;
+        },
+        /**
+         * 
+         */
+        initMode() {
+            this.contestId = this.$route.params.contestId;
+            this.instanceId = this.$route.params.problemId;
         },
         /**
          * @override
          */
         async loadDataOnCreated() {
-            await this.getForSubmit(this.instanceId);
-        },
-        /**
-         * Lấy thông tin contest
-         * @param {*} id 
-         */
-        async getForSubmit(id) {
-            if (this.instanceService) {
-                const response = await this.instanceService.getForSubmit(id);
-                if (this.$res.isSuccess(response)) {
-                    if (!this.$cf.isEmptyObject(response.Data)) {
-                        this.instance = this.$cf.cloneDeep(response.Data);
-                        this.storeOriginalInstance();
-
-                        if (this.hasBuildDocumentTitle) {
-                            this.documentTitle = this.instance[`${this.cfg.entity}Name`] + " - " + this.cfg.subSysName;
-                            document.title = this.$cf.documentTitle(this.documentTitle);
-                        };
-                    }
-                    else {
-                        this.$dl.error(this.$t('msg.cannotFindRecord'))
-                    }
-                }
-                else {
-                    // this.handleError(response, this.goCallbackPath)
-                    this.handleError(response)
-                }
-                this.processResponseGet(response);
+            if (this.instanceId && this.instanceId !== '0') {
+                await this.viewInstance(this.instanceId);
             }
         },
         /** 
@@ -360,24 +369,6 @@ export default {
             this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
             this.selectedOutputType = this.$cv.enumKeyToSelected(this.instance.OutputType, this.dataTypes, 0);
             this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
-
-            this.instance.IsPrivateState = this.instance.State == problemEnum.problemState.private.value;
-            this.instance.IsPublicState = this.instance.State == problemEnum.problemState.public.value;
-
-            this.auditProblemAccount();
-        },
-        /**
-         * Tạo quan hệ bài toán tài khoản
-         */
-        auditProblemAccount() {
-            if (!this.instance.ProblemAccountState && this.instance.ProblemId) {
-                let payload = {
-                    ProblemId: this.instance.ProblemId,
-                    State: problemEnum.problemAccountState.seen.value,
-                };
-
-                this.instanceService.auditProblemAccount(payload);
-            }
         },
         /**
          * Click nộp
@@ -441,7 +432,23 @@ export default {
             if (this.$refs.refSidebar) {
                 this.$refs.refSidebar.toggle();
             }
-        }
+        },
+        /**
+         * Chọn câu hỏi
+         * @param {*} item 
+         */
+        async selectedItem(item) {
+            this.instanceId = item.ProblemId;
+            this.$router.push(this.$cf.combineRoute(
+                this.$path.contest, this.contestId, this.$path.submit, this.instanceId));
+            await this.reloadInstance();
+        },
+        /**
+         * Sau khi load xong contest thì bắn ra danh sách contest problem
+         */
+        afterLoadContest(contest) {
+            this.contestProblems = this.$cf.cloneDeep(contest?.ContestProblems);
+        },
     }
 }
 </script>

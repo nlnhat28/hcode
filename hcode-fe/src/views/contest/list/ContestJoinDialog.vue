@@ -259,7 +259,9 @@ export default {
             //         this.handleError(res);
             //     }
             // }
-            this.$router.push(this.$cf.combineRoute(this.$path.contestSubmit, this.instance.ContestId));
+            // let problemId = 
+            this.$router.push(this.$cf.combineRoute(
+                this.$path.contest, this.instance.ContestId, this.$path.submit, '0'));
         },
         /**
          * Load lại contest

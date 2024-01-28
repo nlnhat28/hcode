@@ -107,7 +107,7 @@ namespace HCode.Application
                 result.ContestProblems = _mapper.Map<List<ContestProblemDto>>(entity?.ContestProblems);
                 result.ContestAccount = _mapper.Map<ContestAccountDto>(entity?.ContestAccount);
                 result.Password = string.Empty;
-                result.ContestProblems?.ForEach(i => i.ProblemId = Guid.Empty);
+                result.ContestProblems?.Skip(1).ToList().ForEach(i => i.ProblemId = Guid.Empty);
             }
 
             res.Data = result;

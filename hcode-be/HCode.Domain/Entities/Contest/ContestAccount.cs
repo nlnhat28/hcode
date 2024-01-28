@@ -104,39 +104,5 @@ namespace HCode.Domain
             }
         }
         #endregion
-
-        #region Constructors
-        public ContestAccount(Guid contestId, Guid accountId, ContestAccountState? state = ContestAccountState.Pending, DateTime? 
-            startTime = null, int? usedTime = 0) 
-        {
-            ContestAccountId = Guid.NewGuid();
-            ContestId = contestId;
-            AccountId = accountId;
-            State = state;
-            StartTime = startTime;
-            UsedTime = usedTime;
-        }
-        #endregion
-
-        #region 
-        /// <summary>
-        /// Chuyển trạng thái bắt đầu
-        /// </summary>
-        public void OnStart() 
-        {
-            StartTime = DateTime.UtcNow();
-            State = ContestAccountState.Doing;
-        }
-        /// <summary>
-        /// Chuyển trạng thái kết thúc
-        /// </summary>
-        public void OnFinish() 
-        {
-            var duration = DateTime.UtcNow() - contestAccount.StartTime;
-            var usedTime = Convert.ToInt32(duration.TotalSeconds);
-            State = ContestAccountState.Finish;
-            UsedTime = usedTime;
-        }
-        #endregion
     }
 }

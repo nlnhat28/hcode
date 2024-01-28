@@ -282,6 +282,11 @@
     font-weight: 700;
     font-size: 16px;
 }
+.label-20-yellow-300 {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--yellow-300);
+}
 
 /* wrap */
 .space-nowrap {

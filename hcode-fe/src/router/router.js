@@ -100,7 +100,7 @@ const routes = [
         },
     },
     {
-        path: path.contestSubmit + ":id",
+        path: path.contest + ":contestId" + path.submit + ":problemId",
         name: "contestSubmit",
         components: {
             viewApp: ContestSubmit,
