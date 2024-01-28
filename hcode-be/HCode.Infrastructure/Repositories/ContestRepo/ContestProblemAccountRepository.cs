@@ -17,7 +17,12 @@ namespace HCode.Infrastructure
         /// Tên bảng
         /// </summary>
         /// Created by: nlnhat (18/07/2023)
-        public override string Table { get; set; } = "contest_problem_account"; 
+        public override string Table { get; set; } = "contest_problem_account";
+        /// <summary>
+        /// Tên view
+        /// </summary>
+        /// Created by: nlnhat (18/07/2023)
+        public override string View { get; set; } = "view_contest_problem_account";
         #endregion
 
         #region Constructors

@@ -52,6 +52,9 @@ export default {
 
                     this.$dl.error(userMsg, callback);
                 }
+                else {
+                    this.$dl.error(userMsg, callback);
+                }
             }
         },
         /**

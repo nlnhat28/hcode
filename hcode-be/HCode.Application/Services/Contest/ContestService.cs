@@ -339,6 +339,20 @@ namespace HCode.Application
             }
         }
 
+        // Tiếp tục bài thi
+        public async Task ContinueAsync(Guid contestAccountId, ServerResponse res)
+        {
+            var contestAccount = await _contestAccountRepo.GetAsync(contestAccountId);
+
+            if (contestAccount != null && contestAccount.State == ContestAccountState.Finish)
+            {
+                var contest = await _repository.GetAsync(contestAccount.ContestId);
+                contestAccount.OnFinish(contest?.TimeToDo);
+                await _contestAccountRepo.UpdateAsync(contestAccount);
+                res.OnError(ErrorCode.ContestAccountFinish, _resource["ContestAccountFinish"]);
+            }
+        }
+
         // Kết thúc bài thi
         public async Task FinishAsync(Guid contestAccountId, ServerResponse res) 
         {

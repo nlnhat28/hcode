@@ -8,6 +8,19 @@ class ContestService extends BaseService {
         super("Contest");
     }
     /**
+     * Nộp
+     *
+     * Author: nlnhat (17/08/2023)
+     * @return
+     */
+    async submit(data) {
+        const response = await this.baseRequest.post(
+            this.baseUrl + "/Submit",
+            data
+        );
+        return response;
+    }
+    /**
      * Tạo quan hệ bài toán, người dùng
      *
      * Author: nlnhat (17/08/2023)
@@ -21,6 +34,18 @@ class ContestService extends BaseService {
         return response;
     }
     /**
+     * Tiếp tục bài thi
+     *
+     * Author: nlnhat (17/08/2023)
+     * @return
+     */
+    async continue(contestAccountId) {
+        const response = await this.baseRequest.get(
+            `${this.baseUrl}/Continue/${contestAccountId}`
+        );
+        return response;
+    }
+    /**
      * Rời bài thi
      *
      * Author: nlnhat (17/08/2023)
@@ -29,6 +54,18 @@ class ContestService extends BaseService {
     async leave(contestAccountId) {
         const response = await this.baseRequest.get(
             `${this.baseUrl}/Leave/${contestAccountId}`
+        );
+        return response;
+    }
+    /**
+     * Bắt đầu bài thi
+     *
+     * Author: nlnhat (17/08/2023)
+     * @return
+     */
+    async start(contestAccountId) {
+        const response = await this.baseRequest.get(
+            `${this.baseUrl}/Start/${contestAccountId}`
         );
         return response;
     }

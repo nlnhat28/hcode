@@ -93,14 +93,20 @@ namespace HCode.Domain
         /// <summary>
         /// Chuyển trạng thái kết thúc
         /// </summary>
-        public void OnFinish()
+        public void OnFinish(int? usedTime = null)
         {
             if (StartTime != null)
             {
-                var duration = DateTime.UtcNow - (DateTime)StartTime;
-                var usedTime = (int)duration.TotalSeconds;
+                if (usedTime != null)
+                {
+                    UsedTime = usedTime;
+                }
+                else
+                {
+                    var duration = DateTime.UtcNow - (DateTime)StartTime;
+                    UsedTime = (int)duration.TotalSeconds;
+                }
                 State = ContestAccountState.Finish;
-                UsedTime = usedTime;
             }
         }
         #endregion

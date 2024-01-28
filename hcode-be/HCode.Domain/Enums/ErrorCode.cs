@@ -132,6 +132,10 @@
         /// Sai password
         /// </summary>
         ContestWrongPassword = 303,
+        /// <summary>
+        /// Người thi đã hoàn thành
+        /// </summary>
+        ContestAccountFinish = 304,
         #endregion
     }
 }

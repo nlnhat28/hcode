@@ -161,9 +161,6 @@ export default {
          * @override
          */
         customInstanceOnCreated() {
-            if (this.instance) {
-                this.instance.ContestAccount.StartTime = '2024-01-28T09:48:01+07:00';
-            }
             if (!this.$cf.isEmptyArray(this.instance?.ContestProblems)
                 && (!this.problemId || this.problemId == 0)) {
                 this.selectedItem(this.instance.ContestProblems[0]);

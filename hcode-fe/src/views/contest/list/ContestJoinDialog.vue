@@ -68,13 +68,14 @@
                 </div>
                 <!-- Các nút bên phải -->
                 <div class="flex col-gap-8">
-                    <!-- Tham gia -->
+                    <!-- Đóng -->
                     <v-button
                         v-if="!0"
                         outlined
                         :label="$t('com.cancel')"
                         @click="close"
                     ></v-button>
+                    <!-- Tham gia -->
                     <v-button
                         v-if="isShowJoinButton"
                         icon="far fa-check"
@@ -89,6 +90,14 @@
                         autofocus
                         :label="$t('contest.start')"
                         @click="loadingEffect(startContest)"
+                    ></v-button>
+                    <!-- Tiếp tục bài thi -->
+                    <v-button
+                        v-if="isShowContinueButton"
+                        icon="fa fa-play"
+                        autofocus
+                        :label="$t('contest.continue')"
+                        @click="loadingEffect(continueContest)"
                     ></v-button>
                 </div>
             </v-button-container>
@@ -126,6 +135,8 @@ export default {
                 switch (this.instance.ContestAccountState) {
                     case caEnum.pending.value:
                         return this.$t('contest.startContest')
+                    case caEnum.doing.value:
+                        return this.$t('contest.continueContest')
                     case caEnum.finish.value:
                         return this.$t('contest.contestAccountState.finished')
                     default:
@@ -171,6 +182,14 @@ export default {
         isShowJoinButton() {
             if (this.instance) {
                 return this.instance.ContestAccountState == null
+                    && !this.finishedContest;
+            }
+            return false;
+        },
+        /** Show nút tiếp tục bài thi */
+        isShowContinueButton() {
+            if (this.instance && this.instance.ContestAccountState) {
+                return this.instance.ContestAccountState == contestEnum.contestAccountState.doing.value
                     && !this.finishedContest;
             }
             return false;
@@ -247,21 +266,34 @@ export default {
          * Start
          */
         async startContest() {
-            // if (this.instanceService && this.instance.ContestAccountState) {
-            //     const res = await this.instanceService.leave(this.instance.ContestAccount.ContestAccountId);
-
-            //     if (this.$res.isSuccess(res)) {
-            //         this.reloadContest();
-            //         this.reload();
-            //         this.$ts.success(this.$t('contest.leftContest'));
-            //     }
-            //     else {
-            //         this.handleError(res);
-            //     }
-            // }
-            // let problemId = 
-            this.$router.push(this.$cf.combineRoute(
-                this.$path.contest, this.instance.ContestId, this.$path.submit, '0'));
+            if (this.instanceService && this.instance.ContestAccountState) {
+                const res = await this.instanceService.start(this.instance.ContestAccount.ContestAccountId);
+                if (this.$res.isSuccess(res)) {
+                    this.$ts.success(this.$t('contest.startContest'));
+                    this.$router.push(this.$cf.combineRoute(
+                        this.$path.contest, this.instance.ContestId, this.$path.submit, '0'));
+                }
+                else {
+                    this.handleError(res);
+                }
+            }
+        },
+        /**
+         * Tiếp tục
+         */
+        async continueContest() {
+            if (this.instanceService && this.instance.ContestAccountState) {
+                const res = await this.instanceService.continue(this.instance.ContestAccount.ContestAccountId);
+                if (this.$res.isSuccess(res)) {
+                    this.$router.push(this.$cf.combineRoute(
+                        this.$path.contest, this.instance.ContestId, this.$path.submit, '0'));
+                }
+                else {
+                    this.reload();
+                    this.close();
+                    this.handleError(res);
+                }
+            }
         },
         /**
          * Load lại contest

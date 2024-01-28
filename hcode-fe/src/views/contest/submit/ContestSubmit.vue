@@ -248,9 +248,17 @@
                         direction="row-reverse"
                         :gap="20"
                     >
-                        <!-- toggle ContestSidebar -->
-                        <div class="contest-submit__countdown">
-
+                        <!-- countdown -->
+                        <div
+                            class="contest-submit__countdown"
+                            v-if="this.contestAccount && timeToDo"
+                        >
+                            <div class="pb-4">
+                                <v-icon icon="far fa-stopwatch" color="light"/>
+                            </div>
+                            <div class=" font-18">
+                                {{ countdownText }}
+                            </div>
                         </div>
                         <!-- toggle ContestSidebar -->
                         <v-button
@@ -302,11 +310,13 @@ export default {
             instanceService: problemService,
             problemConst: problemConst,
             allowBuildSource: true,
+            hasBuildDocumentTitle: false,
             collapseContestSidebar: false,
             contestId: null,
-            contestProblem: null,
             contestProblems: null,
-            hasBuildDocumentTitle: false,
+            contestAccount: null,
+            countdownText: null,
+            timeToDo: null,
         }
     },
     watch: {
@@ -385,9 +395,12 @@ export default {
         },
         async submit() {
             try {
-                const response = await this.instanceService.submit(
-                    this.reformatInstance()
-                );
+                let contestProblemId = this.contestProblems.find(p => p.ProblemId == this.instanceId)?.ContestProblemId;
+                let payload = {
+                    ContestProblemId: contestProblemId,
+                    ProblemDto: this.reformatInstance()
+                }
+                const response = await contestService.submit(payload);
                 if (this.$res.isSuccess(response)) {
                     this.$ts.success();
                 } else {
@@ -448,6 +461,24 @@ export default {
          */
         afterLoadContest(contest) {
             this.contestProblems = this.$cf.cloneDeep(contest?.ContestProblems);
+            this.contestAccount = this.$cf.cloneDeep(contest?.ContestAccount);
+            this.timeToDo = contest?.TimeToDo;
+
+            if (this.contestAccount && contest.TimeToDo) {
+                setInterval(() => {
+                    let starTime = new Date(this.contestAccount.StartTime);
+                    let endTime = starTime.setMinutes(starTime.getMinutes() + contest.TimeToDo);
+                    this.countdownText = this.$cf.countdown(
+                        null,
+                        new Date(),
+                        endTime,
+                        null,
+                        ["m", "s"],
+                        "short",
+                        true
+                    ).text;
+                }, 1000)
+            }
         },
     }
 }

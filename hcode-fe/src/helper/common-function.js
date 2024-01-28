@@ -275,7 +275,7 @@ const commonFuction = {
      * @param {*} format long/short
      * @param {*} isFull Hiện các giá trị ngay cả khi bằng 0
      */
-    countDown(
+    countdown(
         fixedTime,
         fromTime,
         toTime,
@@ -288,7 +288,7 @@ const commonFuction = {
             if (fixedTime == null && toTime == null) {
                 throw new Error("Must have fixedTime or toTime");
             }
-            const shows = Array.isArray(showValues) && showValues?.length > 0
+            let shows = Array.isArray(showValues) && showValues?.length > 0
                 ? showValues
                 : ["d", "h", "m", "s"];
 
@@ -373,27 +373,37 @@ const commonFuction = {
             let seperator = format == "long" ? " " : ":";
             if (shows.includes("d")) {
                 if (d > 0 || (d == 0 && isFull)) {
-                    texts.push(`${String(d).padStart(2, "0")} ${t("com.day")}`);
+                    texts.push(
+                        `${String(d).padStart(2, "0")}${
+                            format == "long" ? ` ${t("com.day")}` : ""
+                        }`
+                    );
                 }
             }
             if (shows.includes("h")) {
                 if (h > 0 || (h == 0 && (isFull || d > 0))) {
                     texts.push(
-                        `${String(h).padStart(2, "0")} ${t("com.hour")}`
+                        `${String(h).padStart(2, "0")}${
+                            format == "long" ? ` ${t("com.hour")}` : ""
+                        }`
                     );
                 }
             }
             if (shows.includes("m")) {
                 if (m > 0 || (m == 0 && (isFull || d + h > 0))) {
                     texts.push(
-                        `${String(m).padStart(2, "0")} ${t("com.minute")}`
+                        `${String(m).padStart(2, "0")}${
+                            format == "long" ? ` ${t("com.minute")}` : ""
+                        }`
                     );
                 }
             }
             if (shows.includes("s")) {
                 if (s > 0 || (s == 0 && (isFull || d + h + m > 0))) {
                     texts.push(
-                        `${String(s).padStart(2, "0")} ${t("com.second")}`
+                        `${String(s).padStart(2, "0")}${
+                            format == "long" ? ` ${t("com.second")}` : ""
+                        }`
                     );
                 }
             }

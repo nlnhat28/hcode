@@ -65,9 +65,12 @@ const contest = {
     startContest: "Bắt đầu bài thi",
     contestInfo: "Thông tin bài thi",
     contestFinished: "Bài thi đã kết thúc",
+    continueContest: "Tiếp tục bài thi",
+    continue: "Tiếp tục",
     noLimit: "Không giới hạn",
     countToStartTime: "Thời điểm mở",
     finish: "Kết thúc",
+    countdown: "Thời gian còn lại",
 };
 
 export default contest;

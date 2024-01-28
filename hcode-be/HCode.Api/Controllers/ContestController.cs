@@ -67,6 +67,17 @@ namespace HCode.Api
             return StatusCode(StatusCodes.Status200OK, res);
         }
         /// <summary>
+        /// Continue
+        /// </summary>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpGet("Continue/{contestAccoutId}")]
+        public async Task<IActionResult> ContinueAsync(Guid contestAccoutId)
+        {
+            var res = new ServerResponse();
+            await _service.ContinueAsync(contestAccoutId, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+        /// <summary>
         /// Finish
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
@@ -86,6 +97,17 @@ namespace HCode.Api
         {
             var res = new ServerResponse();
             await _service.GetForSubmitAsync(id, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+        /// <summary>
+        /// Submit
+        /// </summary>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpPost("Submit")]
+        public async Task<IActionResult> SubmitAsync(ContestSubmitDto submitDto)
+        {
+            var res = new ServerResponse();
+            await _service.SubmitAsync(submitDto.ContestProblemId, submitDto.ProblemDto, res);
             return StatusCode(StatusCodes.Status200OK, res);
         }
         #endregion

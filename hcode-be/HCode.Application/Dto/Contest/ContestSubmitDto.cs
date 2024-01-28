@@ -4,19 +4,19 @@ using HCode.Domain;
 namespace HCode.Application
 {
     /// <summary>
-    /// Param join contest
+    /// Param submit contest
     /// </summary>
-    public class ContestJoinDto
+    public class ContestSubmitDto
     {
         #region Properties
         /// <summary>
-        /// Bài thi tài khoản
+        /// Bài thi bài toán
         /// </summary>
-        public Guid ContestId { get; set; }
+        public Guid ContestProblemId { get; set; }
         /// <summary>
-        /// Mật khẩu
+        /// Lời giải
         /// </summary>
-        public string? Password { get; set; }
+        public ProblemDto ProblemDto { get; set; }
         #endregion
     }
 }

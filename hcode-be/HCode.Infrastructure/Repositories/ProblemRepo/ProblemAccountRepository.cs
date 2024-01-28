@@ -13,6 +13,16 @@ namespace HCode.Infrastructure
     public class ProblemAccountRepository : BaseRepository<ProblemAccount>, IProblemAccountRepository
     {
         #region Properties
+        /// <summary>
+        /// Tên bảng
+        /// </summary>
+        /// Created by: nlnhat (18/07/2023)
+        public override string Table { get; set; } = "problem_account";
+        /// <summary>
+        /// Tên view
+        /// </summary>
+        /// Created by: nlnhat (18/07/2023)
+        public override string View { get; set; } = "problem_account";
         #endregion
 
         #region Constructors

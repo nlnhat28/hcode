@@ -215,6 +215,9 @@
 .color-info {
     color: var(--blue-500);
 }
+.color-primary {
+    color: var(--primary-500);
+}
 .color-placeholder {
     color: var(--color-placeholder);
 }

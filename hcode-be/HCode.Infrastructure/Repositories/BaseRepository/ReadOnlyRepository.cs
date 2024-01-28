@@ -77,7 +77,6 @@ namespace HCode.Infrastructure
 
                 return result;
             }
-
         }
         /// <summary>
         /// Lấy đối tượng theo danh sách id

@@ -25,14 +25,21 @@ namespace HCode.Application
         /// <summary>
         /// Bắt đầu 1 bài thi
         /// </summary>
-        /// <param name="contestAccountDto"></param>
+        /// <param name="contestAccountId"></param>
         /// <param name="res"></param>
         /// <returns></returns>
         Task StartAsync(Guid contestAccountId, ServerResponse res);
         /// <summary>
+        /// Tiếp tục 1 bài thi
+        /// </summary>
+        /// <param name="contestAccountId"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        Task ContinueAsync(Guid contestAccountId, ServerResponse res);
+        /// <summary>
         /// Kết thúc 1 bài thi
         /// </summary>
-        /// <param name="contestAccountDto"></param>
+        /// <param name="contestAccountId"></param>
         /// <param name="res"></param>
         /// <returns></returns>
         Task FinishAsync(Guid contestAccountId, ServerResponse res);
@@ -50,5 +57,13 @@ namespace HCode.Application
         /// <param name="res"></param>
         /// <returns></returns>
         Task GetForSubmitAsync(Guid id, ServerResponse res);
+        /// <summary>
+        /// Submit bài toán trong bài thi
+        /// </summary>
+        /// <param name="contestProblemId"></param>
+        /// <param name="problemDto"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        Task SubmitAsync(Guid contestProblemId, ProblemDto problemDto, ServerResponse res);
     }
 }
