@@ -161,6 +161,7 @@ export default {
                     title: this.$t("problem.field.memory"),
                     textAlign: 'left',
                     widthCell: 80,
+                    widthCell: 80,
                     name: "Memory",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
