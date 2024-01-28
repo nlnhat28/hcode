@@ -48,6 +48,7 @@ import VInputGroup from "@/components/elements/input/VInputGroup.vue";
 import VLogoHCode from "@/components/elements/logo/VLogoHcode.vue";
 import VMaskDialog from "@/components/elements/mask/VMaskDialog.vue";
 import VMaskLoading from "@/components/elements/mask/VMaskLoading.vue";
+import VMenu from "@/components/elements/menu/VMenu.vue";
 import VNoContent from "@/components/elements/mask/VNoContent.vue";
 import VNav from "@/components/elements/nav/VNav.vue";
 import VNavItem from "@/components/elements/nav/VNavItem.vue";
@@ -105,6 +106,7 @@ app.component("v-input-text", VInputText);
 app.component("v-logo-hcode", VLogoHCode);
 app.component("v-mask-loading", VMaskLoading);
 app.component("v-mask-dialog", VMaskDialog);
+app.component("v-menu", VMenu);
 app.component("v-no-content", VNoContent);
 app.component("v-nav", VNav);
 app.component("v-nav-item", VNavItem);
@@ -140,6 +142,7 @@ import commonFunction from "@/helper/common-function.js";
 import convert from "@/helper/convert.js";
 import format from "@/helper/format.js";
 import reformat from "@/helper/reformat.js";
+import res from "@/helper/res.js";
 import enums from "@/enums/enums.js";
 import errorCode from "@/enums/error-code.js";
 import toast from "@/components/overlay/toast/toast.js";
@@ -163,6 +166,7 @@ app.config.globalProperties.$dl = dialog;
 app.config.globalProperties.$vld = validate;
 app.config.globalProperties.$lodash = lodash;
 app.config.globalProperties.$reg = regex;
+app.config.globalProperties.$res = res;
 /**
  * Directives
  */

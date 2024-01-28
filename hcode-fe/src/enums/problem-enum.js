@@ -113,13 +113,13 @@ const problemEnum = {
             label: "int[]",
         },
         // Số thực
-        decimal: {
+        double: {
             value: 7,
-            label: "decimal",
+            label: "double",
         },
-        decimals: {
+        doubles: {
             value: 8,
-            label: "decimal[]",
+            label: "double[]",
         },
         /**
          * Bool
@@ -191,8 +191,8 @@ const problemEnum = {
                     default:
                         return "";
                 }
-            // Kiểu decimal
-            case this.dataType.decimal.value:
+            // Kiểu double
+            case this.dataType.double.value:
                 switch (judgeId) {
                     case this.language.c:
                     case this.language.cpp:
@@ -202,8 +202,8 @@ const problemEnum = {
                     default:
                         return "";
                 }
-            // Kiểu decimal[]
-            case this.dataType.decimals.value:
+            // Kiểu double[]
+            case this.dataType.doubles.value:
                 switch (judgeId) {
                     case this.language.cpp:
                         return "vector<double>";
@@ -244,11 +244,12 @@ const problemEnum = {
         }
     },
     statusJudge0: {
+        Accepted: 3,
+        WrongAnswer: 4,
+        OverLimit: 50,
         Error: 0,
         InQueue: 1,
         Processing: 2,
-        Accepted: 3,
-        WrongAnswer: 4,
         TimeLimitExceeded: 5,
         CompilationError: 6,
         RuntimeErrorSIGSEGV: 7,
@@ -259,7 +260,6 @@ const problemEnum = {
         RuntimeErrorOther: 12,
         InternalError: 13,
         ExecFormatError: 14,
-        OverLimit: 50,
     },
 };
 

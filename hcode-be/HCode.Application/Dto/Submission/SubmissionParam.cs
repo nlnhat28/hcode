@@ -33,11 +33,11 @@ namespace HCode.Application
         /// <summary>
         /// Giới hạn thời gian (second)
         /// </summary>
-        public decimal? cpu_time_limit { get; set; }
+        public double? cpu_time_limit { get; set; }
         /// <summary>
         /// Giới hạn bộ nhớ (kilobyte)
         /// </summary>
-        public decimal? memory_limit { get; set; }
+        public double? memory_limit { get; set; }
         #endregion
 
         #region Methods

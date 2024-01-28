@@ -102,13 +102,12 @@
                     </div>
                 </div>
                 <div class="testcase__input">
-                    <div class="testcase__parameter-name">
+                    <div class="testcase__parameter-name color-error">
                         {{ $t('problem.output') }}
                     </div>
                     <div class="testcase__parameter-input">
                         <v-input-text
                             isReadOnly
-                            hasCopy
                             :modelValue="stdOutput"
                         ></v-input-text>
                     </div>
@@ -177,6 +176,8 @@ export default {
     created() {
         this.instance = this.testcase;
 
+        this.instance.TestcaseOrder ??= this.index + 1;
+
         this.instance.AllowView ??= true;
 
         this.instance.Inputs ??= [];
@@ -188,6 +189,10 @@ export default {
     watch: {
         testcase() {
             this.instance = this.testcase;
+            this.instance.TestcaseOrder = this.index + 1;
+        },
+        index() {
+            this.instance.TestcaseOrder = this.index + 1;
         },
         testcases: {
             handler() {
@@ -213,7 +218,8 @@ export default {
          */
         isShowWrongAnswerDetail() {
             if (this.instance && this.instance.Status) {
-                return this.instance.Status.status_name == problemEnum.statusJudge0.WrongAnswer;
+                return this.instance.Status.status_id == problemEnum.statusJudge0.WrongAnswer
+                    // this.instance.Status.status_id == problemEnum.statusJudge0.Accepted;
             }
             return false;
         },
@@ -223,11 +229,11 @@ export default {
         severityStatusButton() {
             if (this.instance && this.instance.Status) {
                 const statusJudge0 = problemEnum.statusJudge0;
-                switch (this.instance.Status.status_name) {
+                switch (this.instance.Status.status_id) {
                     case statusJudge0.Accepted:
                         return 'success';
                     case statusJudge0.OverLimit:
-                        return 'warning;';
+                        return 'warning';
                     default:
                         return 'danger';
                 }
@@ -237,22 +243,39 @@ export default {
         logStatus() {
             let log = '';
             if (this.instance && this.instance.Status) {
-                let logs = [
-                    this.instance.Status.compile_output,
-                    this.instance.Status.stderr,
-                    this.instance.Status.message,
-                ];
+                switch (this.instance.Status.status_id) {
+                    case problemEnum.statusJudge0.Accepted:
+                    case problemEnum.statusJudge0.OverLimit:
+                        let t = this.$t("problem.field.runTime")
+                        let m = this.$t("problem.field.usedMemory")
 
-                logs = this.$cf.removeNullOrEmpty(logs);
+                        let time = this.instance.Status.time
+                        let memory = this.instance.Status.memory
 
+                        let timeMsg = `${t}: <span style="color: red">${time}</span> ${this.$t('com.second')}`
+                        let memoryMsg = `${m}: <span style="color: red">${memory}</span> kilobytes`
 
-                if (!this.$cf.isEmptyArray(logs)) {
-                    logs.forEach(item => item.replace(/\n/g, "<br>"))
-                    log = logs.join("<br>");
+                        log = [timeMsg, memoryMsg].join('<br><br>');
+
+                        break;
+
+                    default:
+                        let logs = [
+                            this.instance.Status.stdout,
+                            this.instance.Status.compile_output,
+                            this.instance.Status.stderr,
+                            this.instance.Status.message,
+                        ];
+
+                        logs = this.$cf.removeNullOrEmpty(logs);
+
+                        if (!this.$cf.isEmptyArray(logs)) {
+                            logs.forEach(item => item.replace(/\n/g, "<br>"))
+                            log = logs.join("<br>");
+                        }
+                        break;
                 }
-
                 return log;
-
             };
             return log;
         },

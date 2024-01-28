@@ -3,6 +3,7 @@
  */
 const msg = {
     cannotNull: "không được để trống",
+    labelCannotNull: "{label} không được để trống",
     mustLessEqualLength: "không được vượt quá {length} ký tự",
     mustMoreEqual: "phải lớn hơn hoặc bằng {minValue}",
     mustLessEqual: "phải nhỏ hơn hoặc bằng {maxValue}",
@@ -20,6 +21,7 @@ const msg = {
     createSuccess: "Tạo mới thành công",
     duplicateSuccess: "Nhân bản thành công",
     updateSuccess: "Cập nhật thành công",
+    cannotFindRecord: "Không tìm thấy bản ghi",
 };
 
 export default msg;

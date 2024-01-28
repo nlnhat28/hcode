@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using Org.BouncyCastle.Asn1.Mozilla;
 using System;
 using System.Data;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -25,11 +26,19 @@ namespace HCode.Application
         /// <summary>
         /// Repo parameter
         /// </summary>
-        private new readonly IParameterRepository _parameterRepo;
+        private readonly IParameterRepository _parameterRepo;
         /// <summary>
         /// Repo testcase
         /// </summary>
-        private new readonly ITestcaseRepository _testcaseRepo;
+        private readonly ITestcaseRepository _testcaseRepo;
+        /// <summary>
+        /// Repo ProblemAccount
+        /// </summary>
+        private readonly IProblemAccountRepository _problemAccountRepo;
+        /// <summary>
+        /// Repo submission
+        /// </summary>
+        private readonly ISubmissionRepository _submissionRepo;
         /// <summary>
         /// Cache
         /// </summary>
@@ -52,14 +61,17 @@ namespace HCode.Application
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (17/08/2023)
         public ProblemService(IProblemRepository repository, IParameterRepository parameterRepo,
-                           ITestcaseRepository testcaseRepo, ICEService ceService,
-                           IStringLocalizer<Resource> resource, IMapper mapper, IAuthService authService,
-                           IUnitOfWork unitOfWork, IMemoryCache cache)
+                           ITestcaseRepository testcaseRepo, IProblemAccountRepository problemAccountRepo,
+                           ISubmissionRepository submissionRepo,
+                           ICEService ceService, IStringLocalizer<Resource> resource, IMapper mapper,
+                           IAuthService authService, IUnitOfWork unitOfWork, IMemoryCache cache)
                          : base(repository, resource, mapper, unitOfWork, authService)
         {
             _repository = repository;
             _testcaseRepo = testcaseRepo;
             _parameterRepo = parameterRepo;
+            _problemAccountRepo = problemAccountRepo;
+            _submissionRepo = submissionRepo;
             _cache = cache;
             _ceService = ceService;
         }
@@ -69,7 +81,8 @@ namespace HCode.Application
         // Get problem by id
         public override async Task<ProblemDto> GetAsync(Guid id)
         {
-            var entity = await _repository.GetAsync(id);
+            var accountId = _authService.GetAccountId();
+            var entity = await _repository.GetAsync(id, accountId);
 
             var result = _mapper.Map<ProblemDto>(entity);
 
@@ -83,7 +96,7 @@ namespace HCode.Application
         // Tạo problem mới
         public override async Task CreateAsync(ProblemDto problemDto, ServerResponse res)
         {
-            var (problem, parameters, testcases) = MapCreateProblemDtoToEntity(problemDto);
+            var (problem, parameters, testcases) = MapProblemDtoToEntity(problemDto);
 
             await ValidateAsync(problem, res);
 
@@ -93,137 +106,9 @@ namespace HCode.Application
             }
 
             // Lưu thật
-            if (problemDto.State == ProblemState.Public || problemDto.State == ProblemState.Private)
+            if (problemDto.IsDraft == false)
             {
-                var parames = BuildSubmissionParams(problemDto, problemDto.SolutionLanguage?.JudgeId);
-
-                var resCreateBatch = await _ceService.CreateBatchAsync(parames);
-
-                if (resCreateBatch.Success)
-                {
-                    var submissionResponses = resCreateBatch.Data as List<SubmissionResponse>;
-                    var tokens = submissionResponses?.Select(r => r.token).ToList() ?? new List<string>();
-
-                    var allResponses = new List<SubmissionResponse>();
-                    var processingTokens = new List<string>(tokens);
-                    var count = 0;
-                    var limitCount = 3;
-                    var resError = new object();
-
-                    while (processingTokens.Count > 0 && count < limitCount)
-                    {
-                        count++;
-
-                        await Task.Delay(2000);
-
-                        var _res = await _ceService.GetBatchAsync(processingTokens);
-
-                        processingTokens.Clear();
-
-                        if ((object)_res.Data is List<SubmissionResponse> _data && _data.Count > 0)
-                        {
-                            // Lần cuối rồi thì Add hết
-                            if (count >= limitCount)
-                            {
-                                allResponses.AddRange(_data);
-                            }
-                            else
-                            {
-                                foreach (var item in _data)
-                                {
-                                    if (item.status_id == StatusJudge0.InQueue && item.status_id == StatusJudge0.Processing)
-                                    {
-                                        processingTokens.Add(item.token);
-                                    }
-                                    else
-                                    {
-                                        allResponses.Add(item);
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            resError = _res;
-                        }
-                    }
-
-
-                    if (allResponses.Count > 0)
-                    {
-                        var submissionData = new SubmissionResponseData()
-                        {
-                            Submissions = allResponses
-                        };
-
-                        foreach (var subRes in allResponses)
-                        {
-                            var index = allResponses.IndexOf(subRes);
-
-                            if (index >= 0 && index < testcases.Count && testcases[index] != null)
-                            {
-                                subRes.testcase_id = testcases[index].TestcaseId;
-                            }
-
-                            switch (subRes.status_id)
-                            {
-                                case StatusJudge0.Accepted:
-                                    break;
-                                case StatusJudge0.Error:
-                                case StatusJudge0.InQueue:
-                                case StatusJudge0.Processing:
-                                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemTryAgain"], submissionData);
-                                    break;
-                                case StatusJudge0.WrongAnswer:
-                                    // Lỗi quá tài nguyên
-                                    var time = Convert.ToDecimal(subRes.time);
-                                    var memory = subRes.memory;
-                                    var errors = new List<string>();
-
-                                    if (problem.LimitTime != null && problem.LimitTime > 0 && time > problem.LimitTime)
-                                    {
-                                        var msg = string.Format(_resource["ProblemOverLimitTime"], time + "s");
-                                        errors.Add(msg);
-                                    }
-                                    if (problem.LimitMemory != null && problem.LimitMemory > 0 && memory > problem.LimitMemory)
-                                    {
-                                        var msg = string.Format(_resource["ProblemOverLimitMemory"], memory + "kb");
-                                        errors.Add(msg);
-                                    }
-
-                                    if (errors?.Count > 0)
-                                    {
-                                        var userMsg = string.Join(" ", errors);
-                                        subRes.status_id = StatusJudge0.OverLimit;
-                                        subRes.user_msg = userMsg;
-                                    }
-
-                                    res.OnError(ErrorCode.ProblemTestcaseCreate, _resource["ProblemTestcaseCreateError"], submissionData);
-                                    break;
-                                case StatusJudge0.TimeLimitExceeded:
-                                    res.OnError(ErrorCode.ProblemTimeLimitExceeded, _resource["ProblemTimeLimitExceeded"], submissionData);
-                                    break;
-                                default:
-                                    res.OnError(ErrorCode.ProblemSourceCode, _resource["ProblemSourceCodeError"], submissionData);
-                                    break;
-                            }
-                        };
-
-                        if (res.Success)
-                        {
-                            submissionData.CalculateAverage();
-                            res.Data = submissionData;
-                        }
-                    }
-                    else
-                    {
-                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resError);
-                    }
-                }
-                else
-                {
-                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resCreateBatch);
-                }
+                await _ceService.ExecuteAsync(problemDto, testcases, res);
             }
 
             // Nếu thành công thì lưu vào db
@@ -234,7 +119,7 @@ namespace HCode.Application
                 {
                     problem.State = ProblemState.Private;
 
-                    var (problemPublic, paramPublic, testcasePublic) = MapCreateProblemDtoToEntity(problemDto);
+                    var (problemPublic, paramPublic, testcasePublic) = MapProblemDtoToEntity(problemDto, isClone: true);
                     problemPublic.State = ProblemState.Public;
 
                     try
@@ -265,14 +150,15 @@ namespace HCode.Application
                     return;
                 }
 
-                // Không thì lưu đúng chế độ
+                // Lưu đúng chế độ
                 try
                 {
                     await _unitOfWork.BeginTransactionAsync();
 
-                    var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
+                    var newCode = await _repository.GetMaxCodeAsync(problemDto.State ?? ProblemState.Private, _authService.GetAccountId());
                     newCode++;
-                    problem.ProblemCode = newCode; await _repository.InsertAsync(problem);
+                    problem.ProblemCode = newCode;
+                    await _repository.InsertAsync(problem);
                     await _parameterRepo.InsertManyAsync(parameters);
                     await _testcaseRepo.InsertManyAsync(testcases);
 
@@ -292,7 +178,7 @@ namespace HCode.Application
         // Cập nhật problem
         public override async Task UpdateAsync(Guid problemId, ProblemDto problemDto, ServerResponse res)
         {
-            var (problem, parameters, testcases) = MapCreateProblemDtoToEntity(problemDto);
+            var (problem, parameters, testcases) = MapProblemDtoToEntity(problemDto, EditMode.Update);
 
             await ValidateAsync(problem, res);
 
@@ -302,153 +188,28 @@ namespace HCode.Application
             }
 
             // Lưu thật
-            if (problemDto.State == ProblemState.Public || problemDto.State == ProblemState.Private)
+            if (problemDto.IsDraft == false)
             {
-                var parames = BuildSubmissionParams(problemDto, problemDto.SolutionLanguage?.JudgeId);
-
-                var resCreateBatch = await _ceService.CreateBatchAsync(parames);
-
-                if (resCreateBatch.Success)
-                {
-                    var submissionResponses = resCreateBatch.Data as List<SubmissionResponse>;
-                    var tokens = submissionResponses?.Select(r => r.token).ToList() ?? new List<string>();
-
-                    var resGetBatch = await _ceService.GetBatchAsync(tokens);
-
-                    res.Data = resGetBatch;
-
-                    if (resGetBatch.Data is List<SubmissionResponse> data && data.Count > 0)
-                    {
-                        var submissionData = new SubmissionResponseData()
-                        {
-                            Submissions = data
-                        };
-
-                        foreach (var subRes in data)
-                        {
-                            var index = data.IndexOf(subRes);
-
-                            if (index >= 0 && index < testcases.Count && testcases[index] != null)
-                            {
-                                subRes.testcase_id = testcases[index].TestcaseId;
-                            }
-
-                            switch (subRes.status_id)
-                            {
-                                case StatusJudge0.Accepted:
-                                    break;
-                                case StatusJudge0.Error:
-                                case StatusJudge0.InQueue:
-                                case StatusJudge0.Processing:
-                                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemTryAgain"], submissionData);
-                                    break;
-                                case StatusJudge0.WrongAnswer:
-                                    // Lỗi quá tài nguyên
-                                    var time = Convert.ToDecimal(subRes.time);
-                                    var memory = subRes.memory;
-                                    var errors = new List<string>();
-
-                                    if (problem.LimitTime != null && problem.LimitTime > 0 && time > problem.LimitTime)
-                                    {
-                                        var msg = string.Format(_resource["ProblemOverLimitTime"], time + "s");
-                                        errors.Add(msg);
-                                    }
-                                    if (problem.LimitMemory != null && problem.LimitMemory > 0 && memory > problem.LimitMemory)
-                                    {
-                                        var msg = string.Format(_resource["ProblemOverLimitMemory"], memory + "kb");
-                                        errors.Add(msg);
-                                    }
-
-                                    if (errors?.Count > 0)
-                                    {
-                                        var userMsg = string.Join(" ", errors);
-                                        subRes.status_id = StatusJudge0.OverLimit;
-                                        subRes.user_msg = userMsg;
-                                    }
-
-                                    res.OnError(ErrorCode.ProblemTestcaseCreate, _resource["ProblemTestcaseCreateError"], submissionData);
-                                    break;
-                                case StatusJudge0.TimeLimitExceeded:
-                                    res.OnError(ErrorCode.ProblemTimeLimitExceeded, _resource["ProblemTimeLimitExceeded"], submissionData);
-                                    break;
-                                default:
-                                    res.OnError(ErrorCode.ProblemSourceCode, _resource["ProblemSourceCodeError"], submissionData);
-                                    break;
-                            }
-                        };
-
-                        if (res.Success)
-                        {
-                            submissionData.CalculateAverage();
-                            res.Data = submissionData;
-                        }
-                    }
-                    else
-                    {
-                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resGetBatch);
-                    }
-                }
-                else
-                {
-                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], resCreateBatch);
-                }
+                await _ceService.ExecuteAsync(problemDto, testcases, res);
             }
 
             // Nếu thành công thì lưu vào db
-            if (res.Success && false)
+            if (res.Success)
             {
-                // Nếu mà lưu ở 2 chế độ công khai và riêng tư
-                if (problemDto.IsPrivateState == true && problemDto.IsPublicState == true)
-                {
-                    problem.State = ProblemState.Private;
-
-                    var (problemPublic, paramPublic, testcasePublic) = MapCreateProblemDtoToEntity(problemDto);
-                    problemPublic.State = ProblemState.Public;
-
-                    try
-                    {
-                        await _unitOfWork.BeginTransactionAsync();
-
-                        var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
-                        newCode++;
-                        problemPublic.ProblemCode = newCode;
-                        await _repository.InsertAsync(problemPublic);
-                        await _parameterRepo.InsertManyAsync(paramPublic);
-                        await _testcaseRepo.InsertManyAsync(testcasePublic);
-
-                        await _unitOfWork.CommitAsync();
-                    }
-                    catch (Exception exception)
-                    {
-                        res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], exception);
-                    }
-                    finally
-                    {
-                        await _unitOfWork.RollbackAsync();
-                    }
-                }
-
-                if (!res.Success)
-                {
-                    return;
-                }
-
-                // Không thì lưu đúng chế độ
+                // Lưu đúng chế độ
                 try
                 {
                     await _unitOfWork.BeginTransactionAsync();
 
-                    var newCode = await _repository.GetMaxCodeAsync(ProblemState.Public, _authService.GetAccountId());
-                    newCode++;
-                    problem.ProblemCode = newCode; await _repository.InsertAsync(problem);
-                    await _parameterRepo.InsertManyAsync(parameters);
-                    await _testcaseRepo.InsertManyAsync(testcases);
+                    await _repository.UpdateAsync(problem);
+                    await _parameterRepo.ReplaceManyAsync(parameters, problemId, "ProblemId");
+                    await _testcaseRepo.ReplaceManyAsync(testcases, problemId, "ProblemId");
 
                     await _unitOfWork.CommitAsync();
                 }
                 catch (Exception exception)
                 {
-                    res.OnError(ErrorCode.ProblemCreate, _resource["ProblemCreateError"], exception);
+                    res.OnError(ErrorCode.ProblemUpdate, _resource["ProblemUpdateError"], exception);
                 }
                 finally
                 {
@@ -460,55 +221,87 @@ namespace HCode.Application
         // Submit
         public async Task SubmitAsync(ProblemDto problemDto, ServerResponse res)
         {
+            var (_, _, testcases) = MapProblemDtoToEntity(problemDto);
+            await _ceService.ExecuteAsync(problemDto, testcases, res);
 
-        }
-
-        // Build submission params 
-        private List<SubmissionParam> BuildSubmissionParams(ProblemDto problemDto, int? judgeId)
-        {
-            var parames = new List<SubmissionParam>();
-
-            var testcases = problemDto.Testcases;
-            var parameters = problemDto.Parameters;
-
-            var limitTime = problemDto.LimitTime;
-            var limitMemory = problemDto.LimitMemory;
-
-            var languageId = judgeId;
-            var sourceCode = BuildFullSourceCode(problemDto.Solution, parameters, (LanguageId)(languageId ?? 0));
-
-            if (testcases != null && parameters != null)
+            // Lưu dư thừa
+            if (res.Data is SubmissionData data)
             {
-                for (int i = 0; i < testcases.Count; i++)
+                // Thêm mới submission
+                try
                 {
-                    var stdin = testcases[i].SerializeInputs();
-                    var expectedOutput = testcases[i].ExpectedOutput?.ToString();
-
-                    var submissison = new SubmissionParam()
-                    {
-                        source_code = sourceCode,
-                        language_id = (int)(languageId ?? 0),
-                        stdin = stdin,
-                        expected_output = expectedOutput,
-                        cpu_time_limit = limitTime,
-                        memory_limit = limitMemory,
-                    };
-
-                    parames.Add(submissison);
+                    var submission = data.InitSubmission(problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, problemDto.ProblemAccountId);
+                    var subRes = await _submissionRepo.InsertAsync(submission);
+                    res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));
                 }
+                catch (Exception ex)
+                {
+                    res.AddData(ex);
+                };
 
+                // Cập nhật ProblemAccount
+                try
+                {
+                    if (problemDto.ProblemAccountState != ProblemAccountState.Accepted)
+                    {
+                        var problemAccountState = problemDto.ProblemAccountState ?? ProblemAccountState.Seen;
+
+                        switch (data.StatusId)
+                        {
+                            case StatusJudge0.Accepted:
+                                problemAccountState = ProblemAccountState.Accepted;
+                                break;
+                            case StatusJudge0.InQueue:
+                            case StatusJudge0.Processing:
+                                break;
+                            default:
+                                problemAccountState = ProblemAccountState.Wrong;
+                                break;
+                        };
+
+                        if (problemAccountState != problemDto.ProblemAccountState)
+                        {
+                            var problemAccount = new ProblemAccount()
+                            {
+                                ProblemAccountId = problemDto.ProblemAccountId ?? Guid.Empty,
+                                ProblemId = problemDto.ProblemId,
+                                State = problemAccountState
+                            };
+
+                            var auditRes = new ServerResponse();
+                            await AuditProblemAccountAsync(problemAccount, auditRes);
+                            res.AddData("AuditProblemAccountAsync");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    res.AddData(ex);
+                }
+                    
             }
-            return parames;
         }
 
-        // Clone 
-        public (Problem problem, List<Parameter> parameters, List<Testcase> testcases) MapCreateProblemDtoToEntity(
-            ProblemDto problemDto, bool? isClone = false)
+        // Map
+        public (Problem problem, List<Parameter> parameters, List<Testcase> testcases) MapProblemDtoToEntity(
+            ProblemDto problemDto, EditMode? editMode = EditMode.Create, bool? isClone = false)
         {
             var clone = isClone ?? false;
 
-            var problem = MapCreateDtoToEntity(problemDto);
-            problem.AccountId = _authService.GetAccountId();
+            var problem = new Problem();
+
+            switch (editMode)
+            {
+                case EditMode.Create:
+                    problem = MapCreateDtoToEntity(problemDto);
+                    problem.AccountId = _authService.GetAccountId();
+                    break;
+                case EditMode.Update:
+                    problem = MapUpdateDtoToEntity(problemDto);
+                    break;
+                default:
+                    break;
+            }
 
             var problemId = problem.ProblemId;
 
@@ -559,7 +352,6 @@ namespace HCode.Application
             return (problem, parameters, testcases);
         }
 
-
         // Lấy danh sách bài toán cho bài thi
         public async Task GetForContestAsync(ServerResponse res)
         {
@@ -572,103 +364,21 @@ namespace HCode.Application
             res.Data = result;
         }
 
-        // Build full source code
-        public string BuildFullSourceCode(string? sourceCode, List<ParameterDto>? param, LanguageId languageId)
+        /// <summary>
+        /// Tạo quan hệ bài toán tài khoản
+        /// </summary>
+        /// <returns></returns>
+        public async Task AuditProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res)
         {
-            var userCode = sourceCode ?? string.Empty;
-            var full = userCode;
-            switch (languageId)
+            if (problemAccount.ProblemAccountId == Guid.Empty)
             {
-                case LanguageId.C:
-                    break;
-                case LanguageId.Csharp:
-                    var arg = RenderArgument(param, languageId);
-                    full = ReplaceCode(SourceCode.CSharp, arg, userCode);
-                    break;
-                case LanguageId.Cpp:
-                    break;
-                case LanguageId.Js:
-                    break;
-                case LanguageId.Php:
-                    break;
-                case LanguageId.Java:
-                    break;
-                case LanguageId.Python:
-                    break;
-                default:
-                    break;
-            };
-
-            return full;
-        }
-
-        // Ốp arg vs userCode vào
-        public string ReplaceCode(string sysCode, string args, string userCode)
-        {
-            var result = sysCode.Replace("{args}", args).Replace("{userCode}", userCode);
-            return result;
-        }
-
-        // Build argument
-        public string RenderArgument(List<ParameterDto>? param, LanguageId languageId)
-        {
-            var result = string.Empty;
-
-            if (param?.Count > 0)
-            {
-                var args = new List<string>();
-
-                for (int i = 0; i < param.Count; i++)
-                {
-                    var p = param[i];
-                    var exp = Explicit(p.DataType, languageId);
-                    args.Add(string.Format(exp, $"a[{i}]"));
-                }
-
-                result = string.Join(", ", args);
+                problemAccount.ProblemAccountId = Guid.NewGuid();
             }
 
-            return result;
-        }
+            problemAccount.AccountId = _authService.GetAccountId();
 
-        // Build explicit
-        public static string Explicit(DataType dataType, LanguageId languageId)
-        {
-            var res = string.Empty;
-
-            switch (languageId)
-            {
-                case LanguageId.C:
-                    break;
-                case LanguageId.Csharp:
-                    res = dataType switch
-                    {
-                        DataType.String => "(string)",
-                        DataType.Strings => "(List<string>)",
-                        DataType.Int => "Convert.ToInt32({0})",
-                        DataType.Ints => "(List<int>)",
-                        DataType.Decimal => "(double)",
-                        DataType.Decimals => "(List<double>)",
-                        DataType.Bool => "(bool)",
-                        DataType.Bools => "(List<bool>)",
-                        _ => ""
-                    };
-                    break;
-                case LanguageId.Cpp:
-                    break;
-                case LanguageId.Js:
-                    break;
-                case LanguageId.Php:
-                    break;
-                case LanguageId.Java:
-                    break;
-                case LanguageId.Python:
-                    break;
-                default:
-                    break;
-            };
-
-            return res;
+            var result = await _problemAccountRepo.AuditProblemAccountAsync(problemAccount);
+            res.Data = result;
         }
         #endregion
     }

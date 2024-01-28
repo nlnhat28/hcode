@@ -25,37 +25,14 @@ namespace HCode.Infrastructure
         #endregion
 
         #region Methods
-        //public override async Task<IEnumerable<Problem>> GetDataFilterAsync(string proc, object? param)
-        //{
-        //    var data = new List<Problem>();
-        //    var dictionary = new Dictionary<Guid, Problem>();
-        //    var problems = await _unitOfWork.Connection.QueryAsync<Problem, Topic, Problem>(proc, (problem, topic) =>
-        //    {
-        //        if (!dictionary.TryGetValue(problem.ProblemId, out var currentProblem))
-        //        {
-        //            currentProblem = problem;
-        //            dictionary.Add(currentProblem.ProblemId, currentProblem);
-        //        }
-        //        currentProblem.Topics ??= new List<Topic>();
-        //        if (topic != null)
-        //            currentProblem.Topics.Add(topic);
-
-        //        return currentProblem;
-        //    },
-        //    param: param,
-        //    transaction: _unitOfWork.Transaction,
-        //    splitOn: "TopicId",
-        //    commandType: CommandType.StoredProcedure);
-
-        //    var result = dictionary.Values.ToList();
-        //    return result;
-        //}
-        public override async Task<Problem?> GetAsync(Guid problemId) 
+        // Get
+        public override async Task<Problem?> GetAsync(Guid problemId, Guid accountId) 
         {
             var proc = $"{Procedure}Get";
 
             var param = new DynamicParameters();
             param.Add($"p_{TableId}", problemId);
+            param.Add($"p_AccountId", accountId);
 
             using var multi = await _unitOfWork.Connection.QueryMultipleAsync(
                 proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
@@ -72,13 +49,7 @@ namespace HCode.Infrastructure
 
         }
 
-        //
-        /// <summary>
-        /// Lấy mã lớn nhất
-        /// </summary>
-        /// <param name="state">Công khai hay riêng tư</param>
-        /// <param name="AccountId"></param>
-        /// <returns></returns>
+        // Lấy mã lớn nhất
         public async Task<int> GetMaxCodeAsync(ProblemState state, Guid AccountId)
         {
             var proc = $"{Procedure}GetMaxCode";
@@ -87,8 +58,8 @@ namespace HCode.Infrastructure
             param.Add($"p_State", state);
             param.Add($"p_AccountId", AccountId);
 
-            var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure) ?? 0;
+            var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<int>(
+                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
             return result;
         }

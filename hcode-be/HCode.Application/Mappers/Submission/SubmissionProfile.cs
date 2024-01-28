@@ -16,7 +16,7 @@ namespace HCode.Application
         public SubmissionProfile() : base()
         {
             // Problem to Dto
-            CreateMap<Contest, ContestDto>()
+            CreateMap<Submission, SubmissionDto>()
             .ForMember(dest => dest.CreatedTime, opt =>
             {
                 opt.MapFrom(src =>
@@ -24,7 +24,7 @@ namespace HCode.Application
             });
 
             // Dto to Problem
-            CreateMap<ContestDto, Contest>()
+            CreateMap<SubmissionDto, Submission>()
             .ForMember(dest => dest.CreatedTime, opt =>
             {
                 opt.MapFrom(src =>

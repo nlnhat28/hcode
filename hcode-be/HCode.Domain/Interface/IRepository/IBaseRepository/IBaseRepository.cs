@@ -36,6 +36,13 @@
         /// Created by: nlnhat (15/08/2023)
         Task<int> UpdateManyAsync(IEnumerable<TEntity>? entities);
         /// <summary>
+        /// Cập nhật 1 đối tượng theo cột
+        /// </summary>
+        /// <param name="entity">Thông tin mới</param>
+        /// <returns>Số lượng bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (15/08/2023)
+        Task<int> UpdateByColumnAsync(TEntity entity, List<string> columns);
+        /// <summary>
         /// Xoá 1 đối tượng
         /// </summary>
         /// <param name="id">Id đối tượng muốn xoá</param>
@@ -55,5 +62,12 @@
         /// <returns>Số lượng bản ghi bị ảnh hưởng</returns>
         /// Created by: nlnhat (15/08/2023)
         Task<int> DeleteAllAsync();
+        /// <summary>
+        /// Thay thế các testcase
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="problemId"></param>
+        /// <returns></returns>
+        Task<int> ReplaceManyAsync(IEnumerable<TEntity>? entities, Guid masterId, string masterColumn);
     }
 }

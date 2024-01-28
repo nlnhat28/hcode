@@ -20,11 +20,12 @@ const problem = {
         limitMemory: "Giới hạn bộ nhớ (kilobyte)",
         limitMemoryLabel: "Giới hạn bộ nhớ",
         solution: "Lời giải",
-        createdTime: "Thời gian",
+        createdTime: "Thời gian nộp",
         result: "Kết quả",
         statusName: "Kết quả",
         runTime: "Thời gian",
         memory: "Bộ nhớ",
+        usedMemory: "Bộ nhớ sử dụng",
         languageName: "Ngôn ngữ",
         seen: "Đã xem",
         acceptedRate: "Tỉ lệ đúng"
@@ -68,6 +69,10 @@ const problem = {
     showOrHideTestcase: "Ẩn/Hiện testcase",
     result: "Kết quả",
     submissions: "Đã nộp",
+    practice: "Thực hành",
+    draft: "Nháp",
+    cannotView: "Không thể xem",
+    submitSubmission: "Nộp lời giải",
 };
 
 export default problem;

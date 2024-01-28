@@ -34,5 +34,12 @@ namespace HCode.Application
         /// <param name="tokens"></param>
         /// <returns></returns>
         Task<BaseResponse> GetBatchAsync(List<string> tokens);
+        /// <summary>
+        /// Thực thi bài toán
+        /// </summary>
+        /// <param name="problemDto"></param>
+        /// <param name="testcases"></param>
+        /// <returns></returns>
+        Task ExecuteAsync(ProblemDto problemDto, List<Testcase> testcases, ServerResponse res);
     }
 }

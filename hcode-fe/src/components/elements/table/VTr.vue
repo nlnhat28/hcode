@@ -3,7 +3,7 @@
         tabindex="0"
         :class="{ 'tr--selected': isSelected, 'tr--dark': index % 2 != 0 && applyDark, 'tr--focused': isFocusedComputed }"
         @keydown="onKeyDown"
-        @dblclick="onUpdate"
+        @dblclick="$emit('doubleClick')"
         @click="onClick"
         @focus="onFocus"
         @contextmenu="onContextMenu"
@@ -107,7 +107,7 @@ export default {
     emits: [
         'emitUpdate',
         'emitDelete',
-        'emitDuplicate',
+        'doubleClick',
         'emitCreate',
         'emitExport',
         'emitReload',

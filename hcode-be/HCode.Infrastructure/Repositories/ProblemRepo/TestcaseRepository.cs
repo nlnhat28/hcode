@@ -10,7 +10,7 @@ namespace HCode.Infrastructure
     /// Repository testcase
     /// </summary>
     /// Created by: nlnhat (17/08/2023)
-    public class TestcaseRepository : BaseCodeRepository<Testcase>, ITestcaseRepository
+    public class TestcaseRepository : BaseRepository<Testcase>, ITestcaseRepository
     {
         #region Constructors
         /// <summary>

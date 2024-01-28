@@ -5,13 +5,13 @@ import enums from "@/enums/enums.js";
  */
 export default {
     methods: {
-        async handleError(response) {
+        async handleError(response, action) {
             if (response && !response.Success) {
                 
                 let userMsg = response.UserMsg;
                 let errorItems = [];
                 let refFocus = null;
-                let callback = null;
+                let callback = action;
 
                 const Data = response.Data;
                 const ErrorKey = response.ErrorKey;

@@ -4,8 +4,7 @@
     /// Repo Parameter
     /// </summary>
     /// Created by: nlnhat (16/08/2023)
-    public interface IParameterRepository : IBaseCodeRepository<Parameter>
+    public interface IParameterRepository : IBaseRepository<Parameter>
     {
-        
     }
 }

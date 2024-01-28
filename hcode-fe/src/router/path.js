@@ -8,6 +8,7 @@ const path = {
     home: "/home/",
     problems: "/problems/",
     problem: "/problem/",
+    problemSubmit: "/submit/",
     contests: "/contests/",
     contest: "/contest/",
 };

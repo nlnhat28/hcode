@@ -43,36 +43,37 @@
                     :key="item[itemIdKey] ?? index"
                     :index="index"
                     :id="item[itemIdKey]"
+                    @doubleClick="onSelect(item)"
                 >
-                    <!-- :isSelected="isSelected(item[itemId])" -->
                     <template #content>
-                        <!-- Trạng thái thi -->
-                        <!-- <v-td
-                            :content="$cv.enumToResource(item.ContestAccountState, problemEnum.problemAccountState)"
-                            :style="{
-                                color: $cv.problemAccountStateToColor(item.ContestAccountState),
-                                fontWeight: 700,
-                            }"
+                        <!-- Ngày tạo -->
+                        <v-td
+                            :content="$fm.formatDateTime(item.CreatedTime, dateTimePattern)"
+                            :style="{ textAlign: 'center' }"
                         >
-                        </v-td> -->
-                        <!-- Mã -->
-                        <!-- <v-td
-                            :style="{
-                                color: $enums.color.yellow,
-                                fontWeight: 700,
-                            }"
-                            :content="item.ContestCode"
+                        </v-td>
+                        <!-- Trạng thái -->
+                        <v-td
+                            :content="item.StatusName"
+                            :style="{ color: $cv.statusJudge0ToColor(item.StatusId)}"
                         >
-                        </v-td> -->
-                        <!-- Tên -->
-                        <!-- <v-td
-                            :style="{
-                                color: $enums.color.yellow,
-                                fontWeight: 700,
-                            }"
-                            :content="item.ContestName"
+                        </v-td>
+                        <!-- Thời gian -->
+                        <v-td
+                            :content="item.RunTime != null ? item.RunTime + ' s' : '_'"
                         >
-                        </v-td> -->
+                        </v-td>
+                        <!-- Bộ nhớ -->
+                        <v-td
+                            :content="item.Memory != null ? item.Memory + ' kb' : '_'"
+                        >
+                        </v-td>
+                        <!-- Ngôn ngữ -->
+                        <v-td
+                            :content="item.LanguageName"
+                        >
+                        </v-td>
+                        
                     </template>
                 </v-tr>
             </template>
@@ -94,10 +95,15 @@
 import BaseList from "@/components/base/BaseList.vue";
 import { submissionService } from "@/services/services.js";
 import problemEnum from "@/enums/problem-enum.js";
+import { useLanguageStore } from "@/stores/stores";
+import { mapStores, mapState } from 'pinia';
 
 export default {
     name: "SubmissionList",
     extends: BaseList,
+    emits: [
+        'selected',
+    ],
     props: {
         parentId: {
             type: [String],
@@ -106,7 +112,8 @@ export default {
     },
     data() {
         return {
-            documentTitle: this.$t("problem.problemList"),
+            // documentTitle: this.$t("problem.problemList"),
+            hasBuildDocumentTitle: false,
             itemIdKey: "ContestId",
             problemEnum: problemEnum,
             /**
@@ -115,8 +122,8 @@ export default {
             columns: [
                 {
                     title: this.$t("problem.field.createdTime"),
-                    textAlign: 'left',
-                    widthCell: 100,
+                    textAlign: 'center',
+                    widthCell: 140,
                     name: "CreatedTime",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -128,19 +135,20 @@ export default {
                 {
                     title: this.$t("problem.field.statusName"),
                     textAlign: 'left',
-                    widthCell: 200,
-                    name: "StatusName",
+                    widthCell: 100,
+                    name: "StatusId",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
                     },
                     filterConfig: {
-                        filterType: this.$enums.filterType.text,
+                        filterType: this.$enums.filterType.selectKey,
+                        selects: this.statusJudge0s = this.$cv.enumToSelects(problemEnum.statusJudge0),
                     }
                 },
                 {
                     title: this.$t("problem.field.runTime"),
                     textAlign: 'left',
-                    widthCell: 100,
+                    widthCell: 80,
                     name: "RunTime",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -152,7 +160,7 @@ export default {
                 {
                     title: this.$t("problem.field.memory"),
                     textAlign: 'left',
-                    widthCell: 100,
+                    widthCell: 80,
                     name: "Memory",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -165,31 +173,38 @@ export default {
                     title: this.$t("problem.field.languageName"),
                     textAlign: 'left',
                     widthCell: 100,
-                    name: "LanguageName",
+                    name: "LanguageId",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
                     },
                     filterConfig: {
-                        filterType: this.$enums.filterType.text,
+                        filterType: this.$enums.filterType.selectKey,
+                        selects: this.languages,
                     }
                 },
             ],
-            problemStates: [],
-            problemFilters: [],
-            dateTimePattern: 'dd/mm/yyyy hh/mm',
+            languages: [],
+            dateTimePattern: 'dd/mm/yyyy hh/mm/ss',
         }
     },
     computed: {
+        ...mapStores(useLanguageStore),
         /**
-         * Thêm lọc theo State
+         * Thêm lọc theo ParentId
          */
         addFilterModelsComputed() {
             let filters = [];
 
              let filterPrivate = [
                 {
-                    columnName: 'ParentId',
-                    logicType: this.$enums.logicType.and,
+                    columnName: 'ProblemAccountId',
+                    logicType: this.$enums.logicType.or,
+                    compareType: this.$enums.compareType.equal,
+                    filterValue: this.parentId,
+                },
+                {
+                    columnName: 'ContestProblemAccountId',
+                    logicType: this.$enums.logicType.or,
                     compareType: this.$enums.compareType.equal,
                     filterValue: this.parentId,
                 },
@@ -208,21 +223,49 @@ export default {
          */
         initOnCreated() {
             this.itemService = submissionService;
-            this.problemFilters = this.$cv.enumToSelects(problemEnum.problemFilter);
-            this.selectedContestFilter = this.problemFilters[0];
         },
         /**
-         * Click vào nút tạo mới
+         * Lấy dữ liệu
+         * @override
          */
-        clickCreate() {
-            this.$router.push(this.$path.problem)
+        async customLoadDataOnCreated() {
+            try {
+                await this.getLanguages();
+                let selectsLanguage = this.languages.map(l => ({
+                    key: l.LanguageId,
+                    name: l.LanguageName,
+                }));
+                this.$cf.addSelectsToColumn(selectsLanguage, this.columns, 'LanguageId');
+            } catch (error) {
+                console.error(error);
+            }
         },
         /**
-         * Chọn problem state
+         * Lấy danh sách language
          */
-        onSelectedContestFilter() {
-            this.reloadItems();
+        async getLanguages() {
+            if (this.$cf.isEmptyArray(this.languageStore.languages)) {
+                try {
+                    const res = await languageService.getAll();
+                    if (this.$res.isSuccess(res)) {
+                        this.languages = this.$cf.cloneDeep(res.Data);
+                        this.languageStore.setLanguages(res.Data);
+                    }
+                }
+                catch (error) {
+                    console.error(error);
+                }
+            }
+            else {
+                this.languages = this.$cf.cloneDeep(this.languageStore.languages);
+            }
         },
+        /**
+         * Chọn item
+         */
+        onSelect(item) {
+            this.$emit('selected', item);
+        }
     }
 }
 </script>

@@ -10,7 +10,7 @@ namespace HCode.Infrastructure
     /// Repository parameter
     /// </summary>
     /// Created by: nlnhat (17/08/2023)
-    public class ParameterRepository : BaseCodeRepository<Parameter>, IParameterRepository
+    public class ParameterRepository : BaseRepository<Parameter>, IParameterRepository
     {
         #region Constructors
         /// <summary>

@@ -39,9 +39,8 @@
                                             >
                                                 <v-input-text
                                                     ref="refContestCode"
-                                                    isRequired
                                                     v-model="instance.ContestCode"
-                                                    hasClear
+                                                    hasCopy
                                                     :maxLength="255"
                                                     :label="$t('contest.field.contestCode')"
                                                     :applyPlaceholder="false"
@@ -210,8 +209,15 @@
         </div>
         <div class="contest-detail__footer">
             <v-button-container direction="row-reverse">
+                <!-- Đóng -->
+                <v-button
+                    v-if="showExit"
+                    :label="$t('com.close')"
+                    @click="$router.push($path.contests)"
+                />
                 <!-- Lưu -->
                 <v-button
+                    v-else
                     :label="$t('com.save')"
                     @click="onClickSave"
                 />
@@ -227,7 +233,6 @@ import { mapStores, mapState } from 'pinia';
 import contestEnum from "@/enums/contest-enum";
 import contestConst from "@/consts/contest-const.js";
 import ContestProblemItem from "./ContestProblemItem.vue";
-import TestcaseItem from "./TestcaseItem.vue";
 import enums from "@/enums/enums";
 import { problemService } from "@/services/services.js";
 import ContestAccountList from "./contest-account/ContestAccountList.vue";
@@ -239,15 +244,21 @@ export default {
     extends: BaseForm,
     components: {
         ContestProblemItem,
-        TestcaseItem,
         ContestAccountList
     },
     data() {
         return {
+            cfg: {
+                formPath: this.$path.contest,
+                callbackPath: this.$path.contests,
+                entity: 'Contest',
+                subSysName: this.$t('contest.contest'),
+            },
             instanceService: contestService,
             contestConst: contestConst,
             problems: [],
-            dateTimeFormat: 'dd/mm/yy'
+            dateTimeFormat: 'dd/mm/yy',
+            showExit: false,
         }
     },
     watch: {
@@ -314,9 +325,9 @@ export default {
         /**
          * Lấy danh sách problem
          */
-        async loadDataOnCreated() {
+        async customLoadDataOnCreated() {
             const res = await problemService.getForContest();
-            if (this.$cf.isSuccess(res)) {
+            if (this.$res.isSuccess(res)) {
                 this.problems = res.Data;
             };
         },
@@ -410,10 +421,26 @@ export default {
         customValidate() {
             // Validate testcase
             if (this.messageValidate == null) {
-                if (this.instance.StartTime && this.instance.EndTime)
+                if (this.instance.StartTime && this.instance.EndTime) {
                     if (this.instance.StartTime >= this.instance.EndTime) {
                         this.messageValidate = this.$t("contest.endTimeMoreThanStartTime");
+                        return;
                     }
+                }
+                if (this.instance.ContestProblems && this.instance.ContestProblems.length > 0) {
+                    let invalidQuestions = this.instance.ContestProblems
+                        .filter(item => !item.ProblemId)
+                        .map(item => item.Order);
+
+                    if (!this.$cf.isEmptyArray(invalidQuestions)) {
+                        this.messageValidate = this.$t("contest.invalidProblemInQuestion", {
+                            question: invalidQuestions.join(", ")
+                        });
+                    }
+                }
+                else {
+                    this.messageValidate = this.$t("contest.addAtLeastProblem");
+                }
             };
         },
         /**
@@ -438,27 +465,24 @@ export default {
             this.activeTab = tabViewIndex;
         },
         /**
-         * Map submission vào testcases
-         */
-        processSubmissionResponse(submissions) {
-            if (!this.$cf.isEmptyArray(submissions) && !this.$cf.isEmptyArray(this.instance.Testcases)) {
-                for (let testcase of this.instance.Testcases) {
-                    let sub = submissions.find(item => item.testcase_id == testcase.TestcaseId)
-                    if (sub) {
-                        testcase.Status = { ...sub };
-                    }
-                }
-            }
-        },
-        /**
          * Xử lý response createInstance
          * @override
          */
         processResponseCreate(response) {
-            if (response) {
-                if (!this.$cf.isSuccess(response) && response.Data) {
-                    const submissions = this.$cf.cloneDeep(response.Data.Submissions);
-                    this.processSubmissionResponse(submissions)
+            if (this.$res.isSuccess(response)) {
+                if (response.Data && response.Data.ContestCode) {
+                    this.instance.ContestCode = response.Data.ContestCode;
+                }
+            }
+        },
+        /**
+         * Xử lý response updateInstance
+         * @override
+         */
+        processResponseUpdate(response) {
+            if (this.$res.isSuccess(response)) {
+                if (response.Data && response.Data.ContestCode) {
+                    this.instance.ContestCode = response.Data.ContestCode;
                 }
             }
         },
@@ -467,22 +491,7 @@ export default {
          */
         afterSaveSuccess() {
             this.$ts.success(this.messageOnToast);
-        },
-        /**
-         * Hiển thị submission response lên tab kết quả
-         */
-        showSubmissionResponse(statusName, content, isSuccess) {
-            let title = statusName;
-            let body = content;
-            let divide = '<p><hr></p>';
-            let color = isSuccess == true ? '#00ff00' : '#ff0000';
-
-            title = `<p><strong style=\"color: ${color};\">${title}</strong></p>`;
-            body = `<p><span style=\"color: rgb(187, 187, 187);\">${body}</span></p>`;
-
-            let fullContent = title + divide + body;
-
-            this.result.log = fullContent;
+            this.showExit = true;
         },
     }
 }

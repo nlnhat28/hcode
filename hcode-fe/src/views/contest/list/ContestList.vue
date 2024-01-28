@@ -114,6 +114,41 @@
                                     color="light"
                                 ></v-icon>
                             </v-td>
+                            <!-- Chức năng -->
+                            <v-td :style="{
+                                textAlign: 'center'
+                            }">
+                                <div class="flex-align-center col-gap-4">
+                                    <v-button
+                                        v-if="item.IsDraft == false"
+                                        icon="far fa-code"
+                                        severity="info"
+                                        text
+                                        raised
+                                        rounded
+                                        :title="$t('problem.practice')"
+                                        @click="clickJoin(item.ContestId)"
+                                    />
+                                    <v-button
+                                        icon="far fa-pen"
+                                        severity="warning"
+                                        text
+                                        raised
+                                        rounded
+                                        :title="$t('com.edit')"
+                                        @click="clickEdit(item.ContestId)"
+                                    />
+                                    <v-button
+                                        icon="far fa-trash"
+                                        severity="danger"
+                                        text
+                                        raised
+                                        rounded
+                                        :title="$t('com.delete')"
+                                        @click="clickDelete(item.ContestId, item.ContestName)"
+                                    />
+                                </div>
+                            </v-td>
                         </template>
                     </v-tr>
                 </template>
@@ -150,6 +185,10 @@ export default {
             documentTitle: this.$t("contest.contestList"),
             itemIdKey: "ContestId",
             contestEnum: contestEnum,
+            cfg: {
+                formPath: this.$path.contest,
+                subSysName: this.$t("contest.contest")
+            },
             /**
              * Các cột
              */
@@ -249,6 +288,11 @@ export default {
                         filterType: this.$enums.filterType.number,
                     }
                 },
+                {
+                    title: this.$t("com.function"),
+                    textAlign: 'center',
+                    widthCell: 60,
+                }
             ],
             contestStates: [],
             contestFilters: [],

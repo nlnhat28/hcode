@@ -28,7 +28,22 @@ class ProblemService extends BaseService {
      * @return
      */
     async getForContest() {
-        const response = await this.baseRequest.get(this.baseUrl + "/ForContest");
+        const response = await this.baseRequest.get(
+            this.baseUrl + "/ForContest"
+        );
+        return response;
+    }
+    /**
+     * Tạo quan hệ bài toán, người dùng
+     *
+     * Author: nlnhat (17/08/2023)
+     * @return
+     */
+    async auditProblemAccount(data) {
+        const response = await this.baseRequest.post(
+            this.baseUrl + "/ProblemAccount",
+            data
+        );
         return response;
     }
 }

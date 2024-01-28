@@ -82,7 +82,7 @@ export default {
         async forgotPassword(data) {
             try {
                 const response = await this.instanceService.forgotPassword(data);
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     this.instance.AccountId = response.Data.AccountId;
                     this.instance.Email = response.Data.Email;
                     this.isSuccessResponseFlag = true;
@@ -138,7 +138,7 @@ export default {
                 VerifyMode: this.authEnum.verifyMode.changePassword,
             };
             const response = await this.instanceService.sendVerifyCode(data);
-            if (this.$cf.isSuccess(response)) {
+            if (this.$res.isSuccess(response)) {
                 this.authStore.setAuth(data);
                 this.authStore.setVerifyMode(this.authEnum.verifyMode.changePassword);
                 this.$router.push(this.$path.verify);

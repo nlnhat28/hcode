@@ -19,7 +19,7 @@ const contest = {
         username: "Tên người dùng",
         fullName: "Họ và tên",
         score: "Điểm",
-        public: "Công khai"
+        public: "Công khai",
     },
     contestState: {
         pending: "Chưa mở",
@@ -34,6 +34,7 @@ const contest = {
     filter: {
         joined: "Đã tham gia",
         private: "Cá nhân",
+        mine: "Của tôi",
         public: "Công khai",
     },
     problems: "Danh sách câu hỏi",
@@ -43,10 +44,13 @@ const contest = {
     difficulty: "Độ khó",
     totalProblem: "Tổng số câu",
     totalScore: "Tổng số điểm",
-    endTimeMoreThanStartTime: "Thời gian kết thúc phải lớn hơn thời gian bắt đầu",
+    endTimeMoreThanStartTime:
+        "Thời gian kết thúc phải lớn hơn thời gian bắt đầu",
     timeToDoNotMoreLimit: "Thời gian làm bài không được quá {limit} phút",
     listAccount: "Người tham gia",
     listParticipants: "Danh sách tham gia",
+    addAtLeastProblem: "Vui lòng thêm ít nhất 1 bài toán",
+    invalidProblemInQuestion: "Bài thi ở câu hỏi {question} không hợp lệ",
 };
 
 export default contest;

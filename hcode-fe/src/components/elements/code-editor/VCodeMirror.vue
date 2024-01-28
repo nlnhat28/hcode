@@ -58,7 +58,7 @@ export default {
             // let extensions = [oneDark, javascript(), cpp(), java(), python(), php()]
 
             const enumLanguage = problemEnum.language;
-            switch (this.language.JudgeId) {
+            switch (this.language?.JudgeId) {
                 case enumLanguage.c:
                 case enumLanguage.cpp:
                     return [oneDark, cpp()];

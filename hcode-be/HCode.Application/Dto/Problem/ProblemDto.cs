@@ -51,7 +51,7 @@ namespace HCode.Application
         /// <summary>
         /// Giới hạn thời gian (giây)
         /// </summary>
-        public decimal? LimitTime { get; set; }
+        public double? LimitTime { get; set; }
         /// <summary>
         /// Đơn vị thời gian 
         /// </summary>
@@ -59,7 +59,7 @@ namespace HCode.Application
         /// <summary>
         /// Giới hạn bộ nhớ (Kb)
         /// </summary>
-        public decimal? LimitMemory { get; set; }
+        public double? LimitMemory { get; set; }
         /// <summary>
         /// Đơn vị bộ nhớ
         /// </summary>
@@ -121,9 +121,17 @@ namespace HCode.Application
         /// </summary>
         public DataType? OutputType { get; set; }
         /// <summary>
+        /// Nháp
+        /// </summary>
+        public bool? IsDraft { get; set; }
+        /// <summary>
         /// Trạng thái của người dùng
         /// </summary>
         public ProblemAccountState? ProblemAccountState { get; set; }
+        /// <summary>
+        /// Trạng thái của người dùng
+        /// </summary>
+        public Guid? ProblemAccountId { get; set; }
         /// <summary>
         /// Danh sách testcases
         /// </summary>

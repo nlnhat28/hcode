@@ -11,10 +11,6 @@ namespace HCode.Application
     {
         #region Properties
         /// <summary>
-        /// Mã lỗi nếu có
-        /// </summary>
-        public ErrorCode? ErrorCode { get; set; }
-        /// <summary>
         /// Nhắn cho người dùng
         /// </summary>
         public string? UserMsg { get; set; }
@@ -30,6 +26,10 @@ namespace HCode.Application
         /// Loại lỗi
         /// </summary>
         public ErrorKey? ErrorKey { get; set; }
+        /// <summary>
+        /// Data khác
+        /// </summary>
+        public List<object>? MoreData { get; set; }
         #endregion
 
         #region Methods
@@ -45,9 +45,10 @@ namespace HCode.Application
         /// <summary>
         /// Thành công
         /// </summary>
-        public void OnSuccess()
+        public void OnSuccess(SuccessCode? successCode = null)
         {
             Success = true;
+            SuccessCode = successCode;
         }
         /// <summary>
         /// Thành công
@@ -72,6 +73,7 @@ namespace HCode.Application
         public void OnError(Exception exception)
         {
             Success = false;
+            DevMsg = exception.Message;
             Data = ExceptionToData(exception);
         }
         /// <summary>
@@ -109,6 +111,7 @@ namespace HCode.Application
             Success = false;
             ErrorCode = errorCode;
             UserMsg = userMsg;
+            DevMsg = exception?.Message;
 
             if (exception != null)
             {
@@ -195,11 +198,44 @@ namespace HCode.Application
             Data = errorItems;
             ErrorKey = Domain.ErrorKey.FormItem;
         }
+        /// <summary>
+        /// Thêm data khác
+        /// </summary>
+        /// <param name="data"></param>
+        public void AddData(object data)
+        {
+            if (data != null)
+            {
+                MoreData ??= new List<object>();
 
-        private object ExceptionToData(Exception exception)
+                if (data is BaseResponse || data is ServerResponse)
+                {
+                    MoreData.Add(data);
+                }
+                else if (data is Exception exception)
+                {
+                    MoreData.Add(new BaseResponse(exception));
+                }
+                else if (data is string msg)
+                {
+                    MoreData.Add(new BaseResponse(devMsg: msg));
+                }
+                else
+                {
+                    MoreData.Add(new BaseResponse(data: data));
+                }
+            }
+        }
+        /// <summary>
+        /// Thanh lọc exception
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <returns></returns>
+        public static object ExceptionToData(Exception exception)
         {
             var data = new
             {
+                exception.Message,
                 exception.Source,
                 exception.Data,
                 exception.StackTrace,

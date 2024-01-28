@@ -14,8 +14,8 @@ namespace HCode.Application
         /// <param name="problemDto"></param>
         /// <param name="isClone"></param>
         /// <returns></returns>
-        (Problem problem, List<Parameter> parameters, List<Testcase> testcases) MapCreateProblemDtoToEntity(
-            ProblemDto problemDto, bool? isClone = false);
+        (Problem problem, List<Parameter> parameters, List<Testcase> testcases) MapProblemDtoToEntity(
+            ProblemDto problemDto, EditMode? editMode = EditMode.Create, bool? isClone = false);
         /// <summary>
         /// Submit problem
         /// </summary>
@@ -28,5 +28,10 @@ namespace HCode.Application
         /// </summary>
         /// <returns></returns>
         Task GetForContestAsync(ServerResponse res);
+        /// <summary>
+        /// Tạo quan hệ bài toán tài khoản
+        /// </summary>
+        /// <returns></returns>
+        Task AuditProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res);
     }
 }

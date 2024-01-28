@@ -1,4 +1,7 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HCode.Domain
 {
     /// <summary>
@@ -11,7 +14,10 @@ namespace HCode.Domain
         /// <summary>
         /// Khoá chính
         /// </summary>
+        [Key]
         public Guid ProblemId { get; set; }
+        [NotMapped]
+        [Script(isNotUpdate: true)]
         public Guid Id
         {
             get { return ProblemId; }
@@ -24,6 +30,7 @@ namespace HCode.Domain
         /// <summary>
         /// Mã bài toán
         /// </summary>
+        [Script(isNotUpdate: true)]
         public int ProblemCode { get; set; }
         /// <summary>
         /// Alias
@@ -40,15 +47,16 @@ namespace HCode.Domain
         /// <summary>
         /// Trạng thái
         /// </summary>
+        [Script(isNotUpdate: true)]
         public ProblemState? State { get; set; }
         /// <summary>
         /// Giới hạn thời gian (giây)
         /// </summary>
-        public decimal? LimitTime { get; set; }
+        public double? LimitTime { get; set; }
         /// <summary>
         /// Giới hạn bộ nhớ (kb)
         /// </summary>
-        public decimal? LimitMemory { get; set; }
+        public double? LimitMemory { get; set; }
         /// <summary>
         /// Gợi ý
         /// </summary>
@@ -74,6 +82,7 @@ namespace HCode.Domain
         /// <summary>
         /// Id tài khoản tạo
         /// </summary>
+        [Script(isNotUpdate: true)]
         public Guid? AccountId { get; set; }
         /// <summary>
         /// Chủ đề
@@ -83,6 +92,10 @@ namespace HCode.Domain
         /// Kiểu trả về
         /// </summary>
         public DataType? OutputType { get; set; }
+        /// <summary>
+        /// Nháp
+        /// </summary>
+        public bool? IsDraft { get; set; }
         /// <summary>
         /// Danh sách testcases
         /// </summary>
@@ -123,6 +136,11 @@ namespace HCode.Domain
         /// </summary>
         [NotMapped]
         public ProblemAccountState? ProblemAccountState { get; set; }
+        /// <summary>
+        /// Trạng thái của người dùng
+        /// </summary>
+        [NotMapped]
+        public Guid? ProblemAccountId { get; set; }
         #endregion
     }
 }

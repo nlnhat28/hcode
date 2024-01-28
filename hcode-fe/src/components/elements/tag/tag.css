@@ -1,9 +1,17 @@
 .p-tag {
-    padding: 0rem 0.2rem;
+    padding: 0rem 0.24rem;
 }
 
 .p-tag-value {
-    font-size: 16px;
+    font-size: 14px;
     vertical-align: middle;
     line-height: 1;
+}
+
+.p-tag.p-tag-draft {
+    background-color: var(--grey-700);
+}
+.p-tag.p-tag-draft .p-tag-value {
+    font-weight: 500;
+    font-size: 14px;
 }

@@ -172,14 +172,14 @@ export default {
             switch (innerDataType.key) {
                 case dataTypeEnum.string.value:
                 case dataTypeEnum.int.value:
-                case dataTypeEnum.decimal.value:
+                case dataTypeEnum.double.value:
                 case dataTypeEnum.bool.value:
                     baseName = innerDataType.name;
                     break;
 
                 case dataTypeEnum.strings.value:
                 case dataTypeEnum.ints.value:
-                case dataTypeEnum.decimals.value:
+                case dataTypeEnum.doubles.value:
                     baseName = `list${this.$cf.upperFirstChar(innerDataType.name).replace('[]', '')}`;
                     break;
             };

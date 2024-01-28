@@ -24,14 +24,6 @@ namespace HCode.Domain
         /// Id gửi đến judge0
         /// </summary>
         public int JudgeId { get; set; }
-        /// <summary>
-        /// Mô tả
-        /// </summary>
-        public string Description { get; set; }
-        /// <summary>
-        /// Kích hoạt hay không
-        /// </summary>
-        public bool IsActivated { get; set; }
         #endregion
 
         #region Constructor

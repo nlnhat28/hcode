@@ -22,108 +22,83 @@ export default {
     },
     data() {
         return {
-            /**
-             * Columns
-             */
+            /** config các thông tin */
+            cfg: {
+                /** path dẫn đến form */
+                formPath: '',
+                /** Tên phân hệ */
+                name: ''
+            },
+            /** Columns */
             columns: [],
-            /**
-             * Service chính
-             */
+            /** Service chính */
             itemService: {},
-            /**
-             * List of items to show on table
-             */
+            /** List of items to show on table */
             items: [],
-            /**
-             * List of selected items
-             */
+            /** List of selected items */
             selectedItems: [],
-            /**
-             * Item showed on form to update
-             */
+            /** Item showed on form to update */
             itemUpdate: {},
-            /**
-             * Tên key id
-             */
+            /** Tên key id */
             itemIdKey: 'id',
-            /**
-             * Id of item to focus
-             */
+            /** Id of item to focus */
             focusedId: null,
-            /**
-             * Ids of item to focus
-             */
+            /** Ids of item to focus */
             focusedIds: [],
-            /**
-             * Phân trang
-             */
+            /** Phân trang */
             pagingModel: {
                 pageNumber: 1,
                 pageSize: 10,
             },
-            /**
-             * Key search
-             */
+            /** Key search */
             keySearch: '',
-            /**
-             * Total record on table
-             */
+            /** Total record on table */
             totalRecord: 0,
-            /**
-             * All record in database
-             */
+            /** All record in database */
             allRecord: 0,
-            /**
-             * Loading flag
-             */
+            /** Loading flag */
             isLoading: true,
-            /**
-             * Key of item form
-             */
+            /** Key of item form */
             formKey: 0,
-            /**
-             * Danh sách các sort model mới từ các cột
-             */
+            /** Danh sách các sort model mới từ các cột */
             sortModels: [],
-            /**
-             * Danh sách cũ các sort model từ các cột 
-             */
+            /** Danh sách cũ các sort model từ các cột */
             oldSortModels: [],
-            /**
-             * Hàng đợi sort (Sắp xếp sort model theo thứ tự chọn)
-             */
+            /** Hàng đợi sort (Sắp xếp sort model theo thứ tự chọn) */
             queueSortModels: [],
-            /**
-             * Các filter model từ các cột
-             */
+            /** Các filter model từ các cột */
             filterModels: [],
-            /**
-             * Các filter model không rỗng từ các cột
-             */
+            /** Các filter model không rỗng từ các cột */
             filterModelsClean: [],
-            /**
-             * Flag
-             */
+            /** Flag */
             isFilterSuccess: true,
-            /**
-             * Date format
-             */
+            /** Date format */
             dateFormat: 'dd/MM/yyyy',
-            /**
-             * Title
-             */
+            /** Title */
             documentTitle: null,
-            /**
-             * Ref name muốn focus đầu tiên
-             */
+            /** build buildDocumentTitle hay k */
+            hasBuildDocumentTitle: true,
+            /** Ref name muốn focus đầu tiên */
             refFocusFirst: 'refSearchBox',
         };
     },
     async created() {
-        document.title = this.$cf.documentTitle(this.documentTitle);
-        await this.initOnCreated();
-        await this.loadDataOnCreated();
-        // this.isLoading = false
+        if (this.hasBuildDocumentTitle) {
+            document.title = this.$cf.documentTitle(this.documentTitle);
+        }
+        try {
+            await this.initOnCreated();
+            await Promise.all([
+                await this.loadDataOnCreated(),
+                await this.customLoadDataOnCreated(),
+            ]);
+            await this.afterLoadDataOnCreated();
+        } catch (error) {
+            console.error(error);
+        }
+        finally {
+            // this.isLoading = false
+        }
     },
     async mounted() {
         this.firstFocus();
@@ -316,6 +291,16 @@ export default {
             this.reloadItems();
         },
         /**
+         * @virtual
+         */
+        async customLoadDataOnCreated() {
+        },
+        /**
+         * @virtual
+         */
+        async afterLoadDataOnCreated() {
+        },
+        /**
          * Handle checkbox check all records on table in a page
          * 
          * Author: nlnhat (05/08/2023)
@@ -373,7 +358,7 @@ export default {
         async filterItems() {
             try {
                 const response = await this.itemService.filter(this.filterComputed);
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     this.items = response.Data.Data;
                     this.totalRecord = response.Data.TotalRecord;
                     this.allRecord = response.Data.AllRecord;
@@ -999,6 +984,63 @@ export default {
          * Click vào nút tạo mới
          */
         clickCreate() {
+            if (this.cfg.formPath) {
+                this.$router.push(this.$cf.combineRoute(this.cfg.formPath));
+            }
+            else {
+                console.error("DEV chưa cấu hình cfg.formPath")
+            }
+        },
+        /**
+         * Click sửa
+         * @param {*} id 
+         */
+        clickEdit(id) {
+            if (this.cfg.formPath && id != null) {
+                this.$router.push(this.$cf.combineRoute(this.cfg.formPath, id))
+            }
+            else {
+                console.error("DEV chưa cấu hình cfg.formPath")
+            }
+        },
+        /**
+         * Click sửa
+         * @param {*} id 
+         */
+        async clickDelete(id, itemName) {
+            const header = this.$t("com.delete");
+            let name = itemName ? `<${itemName}>` : ''; 
+            let msgs = [this.$t('com.deleteConfirm'), this.cfg.subSysName?.toLowerCase(), name];
+            msgs = this.$cf.removeNullOrEmpty(msgs);
+            const message = msgs.join(" ") + "?";
+            const buttons = [
+                {
+                    // Huỷ
+                    severity: "secondary",
+                    outlined: true,
+                    label: this.$t("com.cancel"),
+                    icon: "fa fa-xmark",
+                },
+                {
+                    // Xoá
+                    severity: "danger",
+                    label: this.$t("com.delete"),
+                    icon: "far fa-trash-can",
+                    autofocus: true,
+                    click: () => {this.delete(id)},
+                }
+            ];
+            this.$dl.confirm(message, buttons, header);
+        },
+        async delete(id) {
+            const response = await this.itemService.delete(id);
+            if (this.$res.isSuccess(response)) {
+                this.$ts.success();
+                this.reloadItems();
+            }
+            else {
+                this.handleError(response);
+            }
         }
     }
 }

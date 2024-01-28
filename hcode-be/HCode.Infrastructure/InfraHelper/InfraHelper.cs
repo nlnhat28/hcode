@@ -1,4 +1,8 @@
 ﻿using Dapper;
+using HCode.Infrastructure;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using System.Data.Common;
 using System.Drawing.Printing;
 using System.Reflection;
@@ -43,19 +47,21 @@ namespace HCode.Domain
         /// <param name="entity">Đối tượng</param>
         /// <returns>Param được add các tham số từ properties của class</returns>
         /// Created by: nlnhat (20/07/2023)
-        public static DynamicParameters GetParamFromEntity<TEntity>(TEntity? entity)
+        public static DynamicParameters GetParamFromEntity<TEntity>(TEntity? entity, int? index = null)
         {
             var param = new DynamicParameters();
 
             var entityType = typeof(TEntity);
             var properties = entityType.GetProperties();
 
+            var id = index != null ? $"_{index}" : string.Empty;
+
             foreach (var property in properties)
             {
                 var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
                 if (notMapped == null)
                 {
-                    var propertyName = "p_" + property.Name;
+                    var propertyName = $"p_{property.Name}{id}";
                     var propertyValue = entity != null ? property.GetValue(entity) : null;
                     param.Add(propertyName, propertyValue);
                 }
@@ -120,14 +126,14 @@ namespace HCode.Domain
                             items.Add(queryItem);
                         }
                     }
-                }    
+                }
 
                 if (items.Count > 0)
                 {
                     query = $" AND ({string.Join(" OR ", items)}) ";
                 }
             }
-            
+
             return query;
         }
         /// <summary>
@@ -253,7 +259,7 @@ namespace HCode.Domain
                             break;
                         default:
                             queryItem = $" AND {queryItem} ";
-                            query += queryItem; 
+                            query += queryItem;
                             break;
                     }
                 }
@@ -324,6 +330,244 @@ namespace HCode.Domain
 
                 return result;
             }
+        }
+        /// <summary>
+        /// Tạo script insert
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static (string script, DynamicParameters param) ScriptInsert<TEntity>(
+            TEntity entity, int? index = null, bool? getId = true)
+        {
+            var script = "INSERT INTO {0}(\n{1}) VALUES (\n{2});";
+            var param = new DynamicParameters();
+            var entityType = typeof(TEntity);
+            var columns = new List<string>();
+            var parameters = new List<string>();
+
+            var tableAttribute = entityType.GetCustomAttribute<TableAttribute>();
+            var table = tableAttribute != null ? tableAttribute.Name : typeof(TEntity).Name;
+            var tableId = $"{table}Id";
+
+            var id = index != null ? $"_{index}" : string.Empty;
+
+            var properties = entityType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
+                if (notMapped == null)
+                {
+                    columns.Add($"`{property.Name}`");
+
+                    var propertyName = $"p_{property.Name}{id}";
+                    var paramName = $"@{propertyName}";
+
+                    parameters.Add(paramName);
+
+                    var propertyValue = entity != null ? property.GetValue(entity) : null;
+                    param.Add(propertyName, propertyValue);
+                };
+
+                var keyAttribute = property.GetCustomAttribute<KeyAttribute>();
+                if (keyAttribute != null)
+                {
+                    tableId = property.Name;
+                }
+            }
+
+            script = string.Format(script, table, string.Join(",\n", columns), string.Join(",\n", parameters));
+
+            if (getId == true)
+            {
+                script += $"\nSELECT @p_{tableId} AS {tableId}";
+            }
+
+            return (script, param);
+        }
+        /// <summary>
+        /// Tạo script update
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static (string script, DynamicParameters param) ScriptUpdate<TEntity>(
+            TEntity entity, int? index = null, string? whereClause = null)
+        {
+            var script = "UPDATE {0} SET\n{1}\n{2};";
+            var param = new DynamicParameters();
+            var entityType = typeof(TEntity);
+            var expressions = new List<string>();  // Id = @p_Id
+            var whereClauses = new List<string>();
+
+            var tableAttribute = entityType.GetCustomAttribute<TableAttribute>();
+            var table = tableAttribute != null ? tableAttribute.Name : typeof(TEntity).Name;
+            var tableId = $"{table}Id";
+
+            var id = index != null ? $"_{index}" : string.Empty;
+
+            var paramId = $"@p_{tableId}{id}";
+
+            var properties = entityType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
+                if (notMapped == null)
+                {
+                    var propertyName = $"p_{property.Name}{id}";  //p_Id_1
+                    var paramName = $"@{propertyName}";   // @p_Id_1
+                    var propertyValue = entity != null ? property.GetValue(entity) : null;
+
+                    var scriptAttribute = property.GetCustomAttribute<ScriptAttribute>();
+                    if (scriptAttribute != null)
+                    {
+                        if (scriptAttribute.IsWhereUpdate)
+                        {
+                            var whereExpression = $"`{property.Name}` = {paramName}";
+                            whereClauses.Add(whereExpression);
+                            param.Add(propertyName, propertyValue);
+
+                            if (scriptAttribute.IsNotUpdate)
+                            {
+                                continue;
+                            }
+                        }
+                        else if (scriptAttribute.IsNotUpdate)
+                        {
+                            continue;
+                        }
+                    }
+
+                    param.Add(propertyName, propertyValue);
+
+                    var keyAttribute = property.GetCustomAttribute<KeyAttribute>();
+
+                    if (keyAttribute != null)
+                    {
+                        tableId = property.Name;
+                        paramId = paramName;
+                        continue;
+                    }
+
+                    var expression = $"`{property.Name}` = {paramName}";
+                    expressions.Add(expression);
+                };
+            }
+
+            var whereScript = whereClause;
+
+            if (whereScript == null && whereClauses.Count > 0)
+            {
+                whereScript = $"WHERE {string.Join(" AND ", whereClauses)}";
+            }
+
+            whereScript ??= $"WHERE {tableId} = {paramId}";
+
+            script = string.Format(script, table, string.Join(",\n", expressions), whereScript);
+
+            return (script, param);
+        }
+        /// <summary>
+        /// Tạo script update theo cột
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static (string script, DynamicParameters param) ScriptUpdateByColumn<TEntity>(
+            TEntity entity, List<string> columns, int? index = null, string? whereClause = null)
+        {
+            var script = "UPDATE {0} SET\n{1}\n{2};";
+            var param = new DynamicParameters();
+            var entityType = typeof(TEntity);
+            var expressions = new List<string>();  // Id = @p_Id
+            var whereClauses = new List<string>();
+
+            var tableAttribute = entityType.GetCustomAttribute<TableAttribute>();
+            var table = tableAttribute != null ? tableAttribute.Name : typeof(TEntity).Name;
+            var tableId = $"{table}Id";
+
+            var id = index != null ? $"_{index}" : string.Empty;
+
+            var paramId = $"@p_{tableId}{id}";
+
+            var properties = entityType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                if (!columns.Contains(property.Name))
+                {
+                    continue;
+                }
+
+                var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
+                if (notMapped == null)
+                {
+                    var propertyName = $"p_{property.Name}{id}";  //p_Id_1
+                    var paramName = $"@{propertyName}";   // @p_Id_1
+                    var propertyValue = entity != null ? property.GetValue(entity) : null;
+
+                    var scriptAttribute = property.GetCustomAttribute<ScriptAttribute>();
+                    if (scriptAttribute != null)
+                    {
+                        if (scriptAttribute.IsWhereUpdate)
+                        {
+                            var whereExpression = $"`{property.Name}` = {paramName}";
+                            whereClauses.Add(whereExpression);
+                            param.Add(propertyName, propertyValue);
+
+                            if (scriptAttribute.IsNotUpdate)
+                            {
+                                continue;
+                            }
+                        }
+                        else if (scriptAttribute.IsNotUpdate)
+                        {
+                            continue;
+                        }
+                    }
+
+                    param.Add(propertyName, propertyValue);
+
+                    var keyAttribute = property.GetCustomAttribute<KeyAttribute>();
+
+                    if (keyAttribute != null)
+                    {
+                        tableId = property.Name;
+                        paramId = paramName;
+                        continue;
+                    }
+
+                    var expression = $"`{property.Name}` = {paramName}";
+                    expressions.Add(expression);
+                };
+            }
+
+            var whereScript = whereClause;
+
+            if (whereScript == null && whereClauses.Count > 0)
+            {
+                whereScript = $"WHERE {string.Join(" AND ", whereClauses)}";
+            }
+
+            whereScript ??= $"WHERE {tableId} = {paramId}";
+
+
+            if (expressions.Count == 0)
+            {
+                var expression = $"{tableId} = {tableId}";
+                expressions.Add(expression);
+
+                whereScript += "AND FALSE";
+            }
+
+            script = string.Format(script, table, string.Join(",\n", expressions), whereScript);
+
+            return (script, param);
         }
     }
 }

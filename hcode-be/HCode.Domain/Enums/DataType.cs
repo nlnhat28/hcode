@@ -33,11 +33,11 @@ namespace HCode.Domain
         /// <summary>
         /// Số thực
         /// </summary>
-        Decimal = 7,
+        Double = 7,
         /// <summary>
         /// List số thực
         /// </summary>
-        Decimals = 8,
+        Doubles = 8,
         /// <summary>
         /// Boolean
         /// </summary>

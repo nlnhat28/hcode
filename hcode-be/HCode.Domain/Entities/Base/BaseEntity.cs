@@ -16,14 +16,17 @@ namespace HCode.Domain
         /// <summary>
         /// Số thứ tự
         /// </summary>
+        [NotMapped]
         public int? RowNumber { get; set; }
         /// <summary>
         /// Ngày tạo
         /// </summary>
+        [Script(isNotUpdate: true)]
         public DateTime? CreatedTime { get; set; }
         /// <summary>
         /// Người tạo
         /// </summary>
+        [Script(isNotUpdate: true)]
         public string? CreatedBy { get; set; }
         /// <summary>
         /// Ngày cập nhật

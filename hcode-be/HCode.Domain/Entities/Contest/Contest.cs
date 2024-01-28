@@ -1,4 +1,6 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+
 namespace HCode.Domain
 {
     /// <summary>
@@ -11,7 +13,9 @@ namespace HCode.Domain
         /// <summary>
         /// Khoá chính
         /// </summary>
+        [Key]
         public Guid ContestId { get; set; }
+        [NotMapped]
         public Guid Id
         {
             get { return ContestId; }
@@ -24,7 +28,7 @@ namespace HCode.Domain
         /// <summary>
         /// Mã bài thi
         /// </summary>
-        public string? ContestCode { get; set; }
+        public string ContestCode { get; set; }
         /// <summary>
         /// Alias
         /// </summary>
@@ -52,7 +56,13 @@ namespace HCode.Domain
         /// <summary>
         /// Id tài khoản tạo
         /// </summary>
+        [Script(isNotUpdate: true)]
         public Guid? AccountId { get; set; }
+        /// <summary>
+        /// Danh sách problem
+        /// </summary>
+        [NotMapped]
+        public List<ContestProblem>? ContestProblems { get; set; }
         /// <summary>
         /// Độ khó
         /// </summary>

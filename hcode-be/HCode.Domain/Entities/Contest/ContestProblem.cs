@@ -1,24 +1,25 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HCode.Domain
 {
     /// <summary>
     /// Lớp bài thi bài toán
     /// </summary>
-    public class ContestProblem : BaseEntity, IHasEntityId
+    [Table("contest_problem")]
+    public class ContestProblem
     {
         #region Properties
         /// <summary>
         /// Khoá chính
         /// </summary>
+        [Key]
         public Guid ContestProblemId { get; set; }
-        public Guid Id
-        {
-            get { return ContestProblemId; }
-            set { ContestProblemId = value; }
-        }
         /// <summary>
         /// Tên bài toán
         /// </summary>
+        [Script(isNotUpdate: true)]
         public Guid ContestId { get; set; }
         /// <summary>
         /// ID bài toán

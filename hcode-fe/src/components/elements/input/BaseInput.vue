@@ -197,6 +197,11 @@ export default {
         type: {
             type: String,
             default: 'text'
+        },
+        /** Giá trị */
+        value: {
+            type: [String, Number],
+            default: null
         }
     },
     data() {
@@ -204,7 +209,7 @@ export default {
             /**
              * Giá trị text fields
              */
-            innerValue: this.modelValue ?? null,
+            innerValue: this.modelValue ?? this.value,
             /**
              * Thông báo lỗi nếu có
              */
@@ -264,6 +269,9 @@ export default {
     watch: {
         modelValue() {
             this.innerValue = this.modelValue
+        },
+        value() {
+            this.innerValue = this.value
         },
         innerValue() {
             this.onChangeValue();

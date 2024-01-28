@@ -96,7 +96,7 @@
         /// <summary>
         /// Tạo bài toán bị lỗi test case
         /// </summary>
-        ProblemTestcaseCreate = 201,
+        ProblemTestcase = 201,
         /// <summary>
         /// Lỗi source code
         /// </summary>
@@ -105,6 +105,33 @@
         /// Lỗi chạy quá thời gian
         /// </summary>
         ProblemTimeLimitExceeded = 203,
+        /// <summary>
+        /// Lỗi thực thi khác
+        /// </summary>
+        ProblemExecute = 204,
+        /// <summary>
+        /// Cập nhật bài toán bị lỗi
+        /// </summary>
+        ProblemUpdate = 205,
+        #endregion
+
+        #region Contest
+        /// <summary>
+        /// Tạo bài thi bị lỗi
+        /// </summary>
+        ContestCreate = 300,
+        /// <summary>
+        /// Cập nhật bài thi bị lỗi
+        /// </summary>
+        ContestUpdate = 301,
+        /// <summary>
+        /// Trùng mã bài thi
+        /// </summary>
+        ContestExistedCode = 302,
+        /// <summary>
+        /// Sai password
+        /// </summary>
+        ContestWrongPassword = 303,
         #endregion
     }
 }

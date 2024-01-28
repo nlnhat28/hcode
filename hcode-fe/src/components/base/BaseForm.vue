@@ -2,6 +2,7 @@
 import enums from "@/enums/enums";
 import { loadingEffect, handleResponse } from "@/mixins/mixins.js"
 import { mapStores, mapState } from 'pinia';
+const formMode = enums.formMode;
 
 export default {
     name: "BaseForm",
@@ -10,7 +11,7 @@ export default {
         /**
          * Id của instance
          */
-        instanceId: {
+        id: {
             type: [String, Number],
         },
         /**
@@ -32,63 +33,71 @@ export default {
     },
     data() {
         return {
-            subSystemCode: '',
-            /**
-             * Service
-             */
+            cfg: {
+                /** Path */
+                formPath: '',
+                /** Path gọi đến form này. Có gì còn callback */
+                callbackPath: '',
+                /** tên entity */
+                entity: '',
+                /** tên phân hệ */
+                subSysName: 'Form',
+            },
+            /** Service */
             instanceService: null,
-            /**
-             * Mode of form
-             */
+            /** Mode of form */
             mode: this.formMode,
-            /**
-             * Đối tượng show trên form
-             */
+            /*** Đối tượng show trên form */
             instance: {},
-            /**
-             * Đối tượng gốc
-             */
+            /** id của instance */
+            instanceId: this.id,
+            /** Đối tượng gốc */
             originalInstance: {},
-            /**
-             * Flag check success response
-             */
+            /** Flag check success response */
             isSuccessResponseFlag: true,
-            /**
-             * Message to show on dialog if invalid form
-             */
+            /** Message to show on dialog if invalid form */
             messageValidate: null,
-            /**
-             * Focused input
-             */
+            /** Focused input */
             refFocus: null,
-            /**
-             * Focused error ref
-             */
+            /** Focused error ref */
             refError: null,
-            /**
-             * Form item refs
-             */
+            /** Form item refs */
             refs: [],
-            /**
-             * Flag loading
-             */
+            /** Flag loading */
             isLoading: false,
-            /**
-             * Message hiện lên on toast
-             */
+            /** Message hiện lên on toast */
             messageOnToast: null,
+            /** Title */
+            documentTitle: null,
+            /** build buildDocumentTitle hay k */
+            hasBuildDocumentTitle: true,
         };
     },
     async created() {
-        document.title = this.$cf.documentTitle(this.documentTitle);
+        if (this.hasBuildDocumentTitle) {
+            document.title = this.$cf.documentTitle(this.documentTitle);
+        }
+        
+        let id = this.$route.params.id;
+
+        if (id == null) {
+            this.mode = formMode.create;
+            this.instance = {};
+        }
+        else {
+            this.mode = formMode.update;
+            this.instanceId = id;
+        }
+
         await this.initOnCreated();
         await this.loadingEffect(async () => {
             await Promise.all([
-                this.handleInstanceOnCreated(),
                 this.loadDataOnCreated(),
+                this.customLoadDataOnCreated(),
             ]);
             await this.customInstanceOnCreated();
         });
+        await this.afterLoadDataOnCreated();
     },
     mounted() {
         // Gán các refs để validate
@@ -105,32 +114,6 @@ export default {
     watch: {
     },
     computed: {
-        /**
-         * Change title when change mode
-         *
-         * Author: nlnhat (02/07/2023)
-         * @return {*} New title update or create
-         */
-        titleComputed() {
-            switch (this.mode) {
-                case this.$enums.formMode.create:
-                    return this.$resources["vn"].createInstance;
-                case this.$enums.formMode.update:
-                    return this.$resources["vn"].updateInstance;
-                case this.$enums.formMode.duplicate:
-                    return this.$resources["vn"].duplicateInstance;
-                default:
-                    return this.$resources["vn"].createInstance;
-            }
-        },
-        /**
-         * Reformat instance trước khi lưu
-         *
-         * Author: nlnhat (02/07/2023)
-         */
-        reformatInstance() {
-            return this.instance;
-        },
     },
     methods: {
         /**
@@ -140,21 +123,32 @@ export default {
         },
         /**
          * Load data
+         * @virtual
          */
-        async loadDataOnCreated() {
+        async customLoadDataOnCreated() {
         },
         /**
          * Custom lại instance
+         * @virtual
          */
-        customInstanceOnCreated() {
+        async afterLoadDataOnCreated() {
+        },
+        /**
+         * Custom lại instance
+         * @virtual
+         */
+        async customInstanceOnCreated() {
         },
         /**
          * Handle instance on created()
          *
          * Author: nlnhat (05/07/2023)
          */
-        async handleInstanceOnCreated() {
+        async loadDataOnCreated() {
             switch (this.mode) {
+                case this.$enums.formMode.view:
+                    await this.viewInstance(this.instanceId);
+                    break;
                 case this.$enums.formMode.create:
                     this.initCreateInstance();
                     this.storeOriginalInstance();
@@ -177,6 +171,31 @@ export default {
         initCreateInstance() {
         },
         /**
+         * Về màn callback path
+         */
+        goCallbackPath() {
+            if (this.cfg.callbackPath) {
+                this.$router.push(this.cfg.callbackPath);
+            }
+            else {
+                console.warning("DEV chưa cấu hình cfg.callbackPath")
+            }
+        },
+        /**
+         * Về màn form path
+         */
+        goFormPath() {
+            if (this.cfg.formPath) {
+                this.$router.push(this.$cf.combineRoute(this.cfg.formPath));
+            }
+            else if (this.cfg.callbackPath) {
+                this.$router.push(this.cfg.callbackPath);
+            }
+            else {
+                console.warning("DEV chưa cấu hình cfg.callbackPath")
+            }
+        },
+        /**
          * Lưu đối tượng gốc
          * 
          * Author: nlnhat (30/08/2023)
@@ -185,28 +204,64 @@ export default {
             this.originalInstance = this.$cf.cloneDeep(this.instance);
         },
         /**
+         * Load đối tượng theo id
+         *
+         * @param {enum} mode Xem hay get full
+         * Author: nlnhat (02/07/2023)
+         */
+         async loadInstance(id, mode) {
+            if (this.instanceService) {
+                const response = mode == formMode.view ? await this.instanceService.view(id) : await this.instanceService.get(id);
+                if (this.$res.isSuccess(response)) {
+                    if (!this.$cf.isEmptyObject(response.Data)) {
+                        this.instance = this.$cf.cloneDeep(response.Data);
+                        this.storeOriginalInstance();
+                        this.documentTitle = this.instance[`${this.cfg.entity}Name`] + " - " + this.cfg.subSysName;
+                        document.title = this.$cf.documentTitle(this.documentTitle);
+                    }
+                    else {
+                        this.$dl.error(this.$t('msg.cannotFindRecord'), this.goFormPath)
+                    }
+                }
+                else {
+                    this.handleError(response, this.goCallbackPath)
+                }
+                mode == formMode.view ? this.processResponseView(response) : this.processResponseGet(response);
+            }
+        },
+        /**
+         * Xem đối tượng theo id
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        async viewInstance(id) {
+            await this.loadInstance(id, formMode.view);
+        },
+        /**
+         * Xử lý dữ liệu trả về
+         */
+        processResponseView(response) {
+        },
+        /**
          * Lấy đối tượng theo id
          *
          * Author: nlnhat (02/07/2023)
          */
         async getInstance(id) {
-            if (this.instanceService) {
-                const response = await this.instanceService.get(id);
-                if (this.$cf.isSuccess(response)) {
-                    this.instance = this.$cf.cloneDeep(response.Data);
-                    this.processResponseGetData(response.Data);
-                    this.storeOriginalInstance();
-                }
-                else {
-                    this.handleError(response)
-                }
-            }
+            await this.loadInstance(id);
         },
         /**
          * Xử lý dữ liệu trả về
          */
-        processResponseGetData(data) {
-
+        processResponseGet(response) {
+        },
+        /**
+         * Reformat instance trước khi lưu
+         *
+         * Author: nlnhat (02/07/2023)
+         */
+        reformatInstance() {
+            return this.instance;
         },
         /**
          * Create new instance
@@ -215,9 +270,9 @@ export default {
          */
         async createInstance() {
             try {
-                const response = await this.instanceService.post(this.reformatInstance);
-                if (this.$cf.isSuccess(response)) {
-                    this.instance.InstanceId = response.Data;
+                const response = await this.instanceService.post(this.reformatInstance());
+                if (this.$res.isSuccess(response)) {
+                    this.instanceId = response.Data;
                     this.isSuccessResponseFlag = true;
                 } else {
                     this.isSuccessResponseFlag = false;
@@ -238,14 +293,14 @@ export default {
         async updateInstance() {
             try {
                 const response = await this.instanceService.put(
-                    this.instance.InstanceId,
-                    this.reformatInstance
+                    this.instanceId,
+                    this.reformatInstance()
                 );
-                if (this.$cf.isSuccess(response)) {
+                if (this.$res.isSuccess(response)) {
                     this.isSuccessResponseFlag = true;
                 } else {
-                    this.handleError(response);
                     this.isSuccessResponseFlag = false;
+                    this.handleError(response);
                 }
                 this.processResponseUpdate(response);
             } catch (error) {
@@ -357,9 +412,6 @@ export default {
                 this.isSuccessResponseFlag = false;
                 await this.onSave();
                 if (this.isSuccessResponseFlag == true) {
-                    this.$emit("emitUpdateFocusedId", this.instance.InstanceId);
-                    this.$emit("emitUpdateFocusedIds", [this.instance.InstanceId]);
-                    this.$emit("emitReloadData");
 
                     if (this.messageOnToast) {
                         this.$ts.success(this.messageOnToast);
@@ -492,7 +544,7 @@ export default {
          * Author: nlnhat (26/08/2023)
          */
         onClickCloseForm() {
-            if (!this.sameObject(this.originalInstance, this.reformatInstance))
+            if (!this.sameObject(this.originalInstance, this.reformatInstance()))
                 this.showSaveConfirmDialog(this.$resources["vn"].saveChangeConfirm);
             else
                 this.closeThis();

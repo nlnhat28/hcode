@@ -57,6 +57,7 @@
 import { validate } from "@/mixins/mixins";
 import problemEnum from "@/enums/problem-enum";
 import contestEnum from "@/enums/contest-enum";
+import { handleError } from "vue";
 
 export default {
     name: 'ContestProblemItem',
@@ -110,6 +111,15 @@ export default {
         index() {
             this.instance.Order = this.index + 1;
         },
+        problems: {
+            handler() {
+                if (this.problems) {
+                    const problem = this.problems.find(p => p.ProblemId == this.instance.ProblemId)
+                    this.selectedProblem = problem;
+                };
+            },
+            deep: false,
+        }
     },
     computed: {
     },
