@@ -40,7 +40,7 @@ namespace HCode.Infrastructure
         // Lấy id
         public async Task<ContestProblemAccount?> GetByConstraintAsync(Guid contestProblemId, Guid accoountId)
         {
-            var sql = $@"SELECT {TableId} FROM {Table} WHERE ContestProblemId = @p_ContestProblemId AND AccountId = @p_AccountId";
+            var sql = $@"SELECT * FROM {Table} WHERE ContestProblemId = @p_ContestProblemId AND AccountId = @p_AccountId";
 
             var param = new DynamicParameters();
             param.Add("p_ContestProblemId", contestProblemId);

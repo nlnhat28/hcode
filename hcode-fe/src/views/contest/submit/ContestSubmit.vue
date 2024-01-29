@@ -185,8 +185,8 @@
                                 <v-tab-panel :header="$t('problem.submissions')">
                                     <SubmissionsList
                                         ref="refSubmissionList"
-                                        :parentId="instance.ProblemAccountId"
-                                        v-if="instance.ProblemAccountId"
+                                        :parentId="contestProblemAccountId"
+                                        v-if="1"
                                         @selected="bindSubmission"
                                     />
                                 </v-tab-panel>
@@ -254,7 +254,10 @@
                             v-if="this.contestAccount && timeToDo"
                         >
                             <div class="pb-4">
-                                <v-icon icon="far fa-stopwatch" color="light"/>
+                                <v-icon
+                                    icon="far fa-stopwatch"
+                                    color="light"
+                                />
                             </div>
                             <div class=" font-18">
                                 {{ countdownText }}
@@ -315,6 +318,7 @@ export default {
             contestId: null,
             contestProblems: null,
             contestAccount: null,
+            contestProblemAccountId: null,
             countdownText: null,
             timeToDo: null,
         }
@@ -378,7 +382,9 @@ export default {
         customInstanceOnCreated() {
             this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
             this.selectedOutputType = this.$cv.enumKeyToSelected(this.instance.OutputType, this.dataTypes, 0);
-            this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
+            if (!this.$cf.isEmptyArray(this.languages)) {
+                this.instance.SolutionLanguage = this.languages[0];
+            };
         },
         /**
          * Click nộp
@@ -408,11 +414,24 @@ export default {
                 }
                 this.processSubmissionResponse(response);
 
+                let newCpa = this.$res.getDataSuccessCode(response, this.$res.successCode.ContestProblemAccountSaved)
+                if (newCpa) {
+                    this.reloadContestProblemState(newCpa);
+                    this.contestProblemAccountId = newCpa.ContestProblemAccountId;
+                }
                 if (this.$res.hasSuccessCode(response, this.$res.successCode.SubmissionSaved)) {
                     this.reloadSubmissionList();
                 }
             } catch (error) {
                 console.error(error);
+            }
+        },
+        /**
+         * Load lại contest
+         */
+        reloadContestProblemState(newCpa) {
+            if (this.$refs.refSidebar) {
+                this.$refs.refSidebar.reloadContestProblemState(newCpa);
             }
         },
         /**
@@ -447,6 +466,16 @@ export default {
             }
         },
         /**
+         * Gán contestProblemAccountId
+         */
+        assignContestProblemAccountId(item) {
+            this.contestProblemAccountId = this.contestProblems?.find(p => p.ProblemId == item.ProblemId)?.ContestProblemAccountId;
+
+            this.$nextTick(() => {
+                this.reloadSubmissionList();
+            });
+        },
+        /**
          * Chọn câu hỏi
          * @param {*} item 
          */
@@ -455,6 +484,7 @@ export default {
             this.$router.push(this.$cf.combineRoute(
                 this.$path.contest, this.contestId, this.$path.submit, this.instanceId));
             await this.reloadInstance();
+            this.assignContestProblemAccountId(item);
         },
         /**
          * Sau khi load xong contest thì bắn ra danh sách contest problem
@@ -483,6 +513,4 @@ export default {
     }
 }
 </script>
-<style scoped>
-@import './contest-submit.css';
-</style>
+<style scoped>@import './contest-submit.css';</style>

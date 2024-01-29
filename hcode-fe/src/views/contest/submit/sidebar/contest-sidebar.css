@@ -13,6 +13,7 @@
 .contest-sidebar__body {
     height: calc(100vh - 78px);
     padding: 20px;
+    padding-bottom: 10px;
 }
 .contest-sidebar__footer {
     height: 78px;

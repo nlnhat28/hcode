@@ -12,7 +12,7 @@
             <template #toolbarLeft>
                 <div
                     class="dark"
-                    style="width: 180px;"
+                    style="width: 360px;"
                 >
                     <!-- Lọc theo danh sách câu hỏi -->
                     <v-combobox
@@ -25,6 +25,7 @@
             </template>
             <template #toolbarRight>
                 <v-search-box
+                    style="width: 280px;"
                     v-model="keySearch"
                     ref="refSearchBox"
                 ></v-search-box>
@@ -53,28 +54,24 @@
                             :style="{ textAlign: 'center' }"
                         >
                         </v-td>
+                        <!-- Người nộp -->
+                        <v-td :content="item.FullName">
+                        </v-td>
                         <!-- Trạng thái -->
                         <v-td
                             :content="item.StatusName"
-                            :style="{ color: $cv.statusJudge0ToColor(item.StatusId)}"
+                            :style="{ color: $cv.statusJudge0ToColor(item.StatusId) }"
                         >
                         </v-td>
                         <!-- Thời gian -->
-                        <v-td
-                            :content="item.RunTime != null ? item.RunTime + ' s' : '_'"
-                        >
+                        <v-td :content="item.RunTime != null ? item.RunTime + ' s' : '_'">
                         </v-td>
                         <!-- Bộ nhớ -->
-                        <v-td
-                            :content="item.Memory != null ? item.Memory + ' kb' : '_'"
-                        >
+                        <v-td :content="item.Memory != null ? item.Memory + ' kb' : '_'">
                         </v-td>
                         <!-- Ngôn ngữ -->
-                        <v-td
-                            :content="item.LanguageName"
-                        >
+                        <v-td :content="item.LanguageName">
                         </v-td>
-                        
                     </template>
                 </v-tr>
             </template>
@@ -95,7 +92,7 @@
 <script>
 import problemEnum from "@/enums/problem-enum.js";
 import contestEnum from "@/enums/contest-enum.js";
-import BaseSubmissionList from "@/view/submission/BaseSubmissionList.vue";
+import BaseSubmissionList from "@/views/submission/BaseSubmissionList.vue";
 import { submissionService } from "@/services/services.js";
 
 export default {
@@ -124,7 +121,7 @@ export default {
                 {
                     title: this.$t("problem.field.createdTime"),
                     textAlign: 'center',
-                    widthCell: 140,
+                    widthCell: 120,
                     name: "CreatedTime",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -137,12 +134,25 @@ export default {
                     title: this.$t("problem.field.submitFullName"),
                     textAlign: 'left',
                     widthCell: 120,
-                    name: "AccountName",
+                    name: "FullName",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
                     },
                     filterConfig: {
                         filterType: this.$enums.filterType.text,
+                    }
+                },
+                {
+                    title: this.$t("problem.field.statusName"),
+                    textAlign: 'left',
+                    widthCell: 100,
+                    name: "StatusId",
+                    sortConfig: {
+                        sortType: this.$enums.sortType.blur,
+                    },
+                    filterConfig: {
+                        filterType: this.$enums.filterType.selectKey,
+                        selects: this.statusJudge0s = this.$cv.enumToSelects(problemEnum.statusJudge0),
                     }
                 },
                 {
@@ -187,12 +197,9 @@ export default {
         }
     },
     watch: {
-        // contestProblems: {
-        //     handler() {
-
-        //     },
-        //     deep: false,
-        // }
+        contestId() {
+            this.reloadItems();
+        },
     },
     computed: {
         /**
@@ -223,7 +230,7 @@ export default {
                 ];
                 filters.push(...filterContestProblem);
             }
-  
+
             return filters;
         },
         /**
@@ -234,7 +241,7 @@ export default {
 
             if (this.contestProblems) {
                 selects = this.contestProblems.filter(c => c.ProblemId != null);
-                selects.forEach(s => s.DisplayName = `${this.$t('contest.questionSimple')} ${s.Order}: ${this.ProblemName}`)
+                selects.forEach(s => s.DisplayName = `${this.$t('contest.questionSimple')} ${s.Order}: ${s.ProblemName}`)
             };
 
             let allItem = {
@@ -243,7 +250,8 @@ export default {
                 DisplayName: this.$t('com.all'),
             }
 
-            selects.push(allItem);
+            selects.unshift(allItem);
+
             return selects;
         }
     },
@@ -258,7 +266,7 @@ export default {
             this.itemService = submissionService;
 
             if (!this.$cf.isEmptyArray(this.contestProblemsSelects)) {
-                this.selectedContestFilter = this.contestProblemsSelects[0];
+                this.selectedContestProblem = this.contestProblemsSelects[0];
             }
         },
         /**

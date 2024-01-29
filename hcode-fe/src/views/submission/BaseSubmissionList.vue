@@ -22,7 +22,7 @@ export default {
         return {
             // documentTitle: this.$t("problem.problemList"),
             hasBuildDocumentTitle: false,
-            itemIdKey: "SubmissinonId",
+            itemIdKey: "SubmissionId",
             problemEnum: problemEnum,
             contestEnum: contestEnum,
             /**

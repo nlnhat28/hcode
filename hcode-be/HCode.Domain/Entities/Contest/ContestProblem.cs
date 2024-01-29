@@ -26,6 +26,11 @@ namespace HCode.Domain
         /// </summary>
         public Guid ProblemId { get; set; }
         /// <summary>
+        /// Tên bài toán
+        /// </summary>
+        [NotMapped]
+        public string? ProblemName { get; set; }
+        /// <summary>
         /// Điểm
         /// </summary>
         public int? Score { get; set; }
@@ -33,6 +38,16 @@ namespace HCode.Domain
         /// Thứ tự
         /// </summary>
         public int? Order { get; set; }
+        /// <summary>
+        /// Đúng hay sai
+        /// </summary>
+        [NotMapped]
+        public ProblemAccountState? ContestProblemAccountState { get; set; }
+        /// <summary>
+        /// ContestProblemAccountId
+        /// </summary>
+        [NotMapped]
+        public Guid ContestProblemAccountId { get; set; }
         #endregion
     }
 }

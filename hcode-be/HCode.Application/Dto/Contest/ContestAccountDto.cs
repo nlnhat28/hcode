@@ -27,6 +27,10 @@ namespace HCode.Application
         /// </summary>
         public Guid AccountId { get; set; }
         /// <summary>
+        /// Tên tài khoản
+        /// </summary>
+        public string? FullName { get; set; }
+        /// <summary>
         /// Trạng thái
         /// </summary>
         public ContestAccountState? State { get; set; }

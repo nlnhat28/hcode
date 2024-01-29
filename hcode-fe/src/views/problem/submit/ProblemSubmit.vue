@@ -304,10 +304,12 @@ export default {
          * @override
          */
         customInstanceOnCreated() {
-            this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
             this.selectedOutputType = this.$cv.enumKeyToSelected(this.instance.OutputType, this.dataTypes, 0);
             this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
 
+            if (!this.$cf.isEmptyArray(this.languages)) {
+                this.instance.SolutionLanguage = this.languages[0];
+            }
             this.instance.IsPrivateState = this.instance.State == problemEnum.problemState.private.value;
             this.instance.IsPublicState = this.instance.State == problemEnum.problemState.public.value;
 

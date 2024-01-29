@@ -73,7 +73,6 @@
                             :content="item.LanguageName"
                         >
                         </v-td>
-                        
                     </template>
                 </v-tr>
             </template>
@@ -94,7 +93,7 @@
 <script>
 import problemEnum from "@/enums/problem-enum.js";
 import contestEnum from "@/enums/contest-enum.js";
-import BaseSubmissionList from "@/view/submission/BaseSubmissionList.vue";
+import BaseSubmissionList from "@/views/submission/BaseSubmissionList.vue";
 
 export default {
     name: "SubmissionList",
@@ -108,7 +107,7 @@ export default {
                 {
                     title: this.$t("problem.field.createdTime"),
                     textAlign: 'center',
-                    widthCell: 140,
+                    widthCell: 120,
                     name: "CreatedTime",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -196,6 +195,21 @@ export default {
             return filters;
         },
     },
+    methods: {
+        /**
+         * @override
+         */
+        afterLoadDataOnCreated() {
+            if (!this.$cf.isEmptyArray(this.items)) {
+                let item = this.items.find(i => i.StatusId == problemEnum.statusJudge0.Accepted);
+                item = item || this.items[0];
+
+                if (item != null) {
+                    this.onSelect(item);
+                }
+            }
+        },
+    }
 }
 </script>
 <style scoped>

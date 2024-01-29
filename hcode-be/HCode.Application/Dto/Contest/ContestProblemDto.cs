@@ -27,6 +27,10 @@ namespace HCode.Application
         /// </summary>
         public Guid ProblemId { get; set; }
         /// <summary>
+        /// Tên bài toán
+        /// </summary>
+        public string? ProblemName { get; set; }
+        /// <summary>
         /// Điểm
         /// </summary>
         public int? Score { get; set; }
@@ -39,6 +43,11 @@ namespace HCode.Application
         /// </summary>
         [AutoMapper.Configuration.Annotations.Ignore]
         public ProblemAccountState? ContestProblemAccountState { get; set; }
+        /// <summary>
+        /// ContestProblemAccountId
+        /// </summary>
+        [AutoMapper.Configuration.Annotations.Ignore]
+        public Guid ContestProblemAccountId { get; set; }
         #endregion
     }
 }

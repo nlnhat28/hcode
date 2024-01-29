@@ -47,32 +47,55 @@
                     <!-- :isSelected="isSelected(item[itemId])" -->
                     <template #content>
                         <!-- Trạng thái thi -->
-                        <!-- <v-td
-                            :content="$cv.enumToResource(item.ContestAccountState, contestEnum.contestAccountState)"
+                        <v-td
+                            :content="$cv.enumToResource(item.State, contestEnum.contestAccountState)"
                             :style="{
-                                color: $cv.contestAccountStateToColor(item.ContestAccountState),
+                                color: $cv.contestAccountStateToColor(item.State),
                                 fontWeight: 700,
                             }"
                         >
-                        </v-td> -->
-                        <!-- Mã -->
-                        <!-- <v-td
-                            :style="{
-                                color: $enums.color.yellow,
-                                fontWeight: 700,
-                            }"
-                            :content="item.ContestCode"
-                        >
-                        </v-td> -->
+                        </v-td>
                         <!-- Tên -->
-                        <!-- <v-td
+                        <v-td
                             :style="{
                                 color: $enums.color.yellow,
                                 fontWeight: 700,
                             }"
-                            :content="item.ContestName"
+                            :content="item.FullName"
                         >
-                        </v-td> -->
+                        </v-td>
+                        <!-- Ngày tạo -->
+                        <v-td
+                            :content="$fm.formatDateTime(item.StartTime, dateTimePattern)"
+                            :style="{ textAlign: 'center' }"
+                        ></v-td>
+                        <!-- Điểm -->
+                        <v-td
+                            :style="{
+                                color: $enums.color.green,
+                                textAlign: 'center',
+                                fontWeight: 700,
+                            }"
+                            :content="item.State == contestEnum.contestAccountState.pending.value ? '_' : item.TotalScore"
+                        >
+                        </v-td>
+                        <!-- Chức năng -->
+                        <v-td :style="{
+                            textAlign: 'center'
+                        }">
+                            <div class="flex-align-center col-gap-4">
+                                <v-button
+                                    v-if="1"
+                                    icon="far fa-table"
+                                    severity="info"
+                                    text
+                                    raised
+                                    rounded
+                                    :title="$t('contest.viewResult')"
+                                    @click="clickJoin(item.ContestId)"
+                                />
+                            </div>
+                        </v-td>
                     </template>
                 </v-tr>
             </template>
@@ -126,8 +149,20 @@ export default {
                     // Tên người tham gia
                     title: this.$t("contest.field.fullName"),
                     textAlign: 'left',
-                    widthCell: 200,
+                    widthCell: 160,
                     name: "FullName",
+                    sortConfig: {
+                        sortType: this.$enums.sortType.blur,
+                    },
+                    filterConfig: {
+                        filterType: this.$enums.filterType.text,
+                    }
+                },
+                {
+                    title: this.$t("contest.field.startTime"),
+                    textAlign: 'center',
+                    widthCell: 120,
+                    name: "StartTime",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
                     },
@@ -138,7 +173,7 @@ export default {
                 {
                     // Tổng điểm
                     title: this.$t("contest.field.score"),
-                    textAlign: 'left',
+                    textAlign: 'center',
                     widthCell: 100,
                     name: "TotalScore",
                     sortConfig: {
@@ -148,6 +183,11 @@ export default {
                         filterType: this.$enums.filterType.number,
                     }
                 },
+                {
+                    title: this.$t("com.function"),
+                    textAlign: 'center',
+                    widthCell: 80,
+                }
             ],
         }
     },
@@ -156,7 +196,7 @@ export default {
          * Thêm lọc theo State
          */
         addFilterModelsComputed() {
-            
+
         },
     },
     mounted() {

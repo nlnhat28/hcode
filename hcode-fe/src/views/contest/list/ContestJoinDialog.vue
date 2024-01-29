@@ -102,7 +102,7 @@
                     <!-- Xem kết quả -->
                     <v-button
                         v-if="isShowResultButton"
-                        icon="fa fa-play"
+                        icon="fa fa-table"
                         autofocus
                         :label="$t('contest.viewResult')"
                         @click="loadingEffect(resultContest)"

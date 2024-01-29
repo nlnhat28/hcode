@@ -351,6 +351,10 @@ namespace HCode.Domain
             var table = tableAttribute != null ? tableAttribute.Name : typeof(TEntity).Name;
             var tableId = $"{table}Id";
 
+            var scriptAttr = entityType.GetCustomAttribute<ScriptAttribute>();
+            var auditFields = new List<string>() { "CreatedBy", "CreatedTime", "ModifiedBy", "ModifiedTime" };
+            var isIgnoreAudit = scriptAttr != null && scriptAttr.IsIgnoreAudit == true;
+
             var id = index != null ? $"_{index}" : string.Empty;
 
             var properties = entityType.GetProperties();
@@ -358,7 +362,9 @@ namespace HCode.Domain
             foreach (var property in properties)
             {
                 var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
-                if (notMapped == null)
+                var ignoreAuditField = isIgnoreAudit && auditFields.Contains(property.Name);
+
+                if (notMapped == null && !ignoreAuditField)
                 {
                     columns.Add($"`{property.Name}`");
 
@@ -407,6 +413,10 @@ namespace HCode.Domain
             var table = tableAttribute != null ? tableAttribute.Name : typeof(TEntity).Name;
             var tableId = $"{table}Id";
 
+            var scriptAttr = entityType.GetCustomAttribute<ScriptAttribute>();
+            var auditFields = new List<string>() { "CreatedBy", "CreatedTime", "ModifiedBy", "ModifiedTime" };
+            var isIgnoreAudit = scriptAttr != null && scriptAttr.IsIgnoreAudit == true;
+
             var id = index != null ? $"_{index}" : string.Empty;
 
             var paramId = $"@p_{tableId}{id}";
@@ -416,7 +426,9 @@ namespace HCode.Domain
             foreach (var property in properties)
             {
                 var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
-                if (notMapped == null)
+                var ignoreAuditField = isIgnoreAudit && auditFields.Contains(property.Name);
+
+                if (notMapped == null && !ignoreAuditField)
                 {
                     var propertyName = $"p_{property.Name}{id}";  //p_Id_1
                     var paramName = $"@{propertyName}";   // @p_Id_1
@@ -491,6 +503,10 @@ namespace HCode.Domain
             var table = tableAttribute != null ? tableAttribute.Name : typeof(TEntity).Name;
             var tableId = $"{table}Id";
 
+            var scriptAttr = entityType.GetCustomAttribute<ScriptAttribute>();
+            var auditFields = new List<string>() { "CreatedBy", "CreatedTime", "ModifiedBy", "ModifiedTime" };
+            var isIgnoreAudit = scriptAttr != null && scriptAttr.IsIgnoreAudit == true;
+
             var id = index != null ? $"_{index}" : string.Empty;
 
             var paramId = $"@p_{tableId}{id}";
@@ -505,8 +521,10 @@ namespace HCode.Domain
                 }
 
                 var notMapped = property.GetCustomAttribute<NotMappedAttribute>();
-                if (notMapped == null)
-                {
+                var ignoreAuditField = isIgnoreAudit && auditFields.Contains(property.Name);
+
+                if (notMapped == null && !ignoreAuditField)
+                { 
                     var propertyName = $"p_{property.Name}{id}";  //p_Id_1
                     var paramName = $"@{propertyName}";   // @p_Id_1
                     var propertyValue = entity != null ? property.GetValue(entity) : null;

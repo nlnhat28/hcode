@@ -50,6 +50,7 @@ const contest = {
     difficulty: "Độ khó",
     totalProblem: "Tổng số câu",
     totalScore: "Tổng số điểm",
+    yourScore: "Điểm số",
     endTimeMoreThanStartTime:
         "Thời gian kết thúc phải lớn hơn thời gian bắt đầu",
     timeToDoNotMoreLimit: "Thời gian làm bài không được quá {limit} phút",
@@ -74,7 +75,7 @@ const contest = {
     countdown: "Thời gian còn lại",
     viewResult: "Xem kết quả",
     questionSimple: "Câu",
-    usedProblemWarning: "Bài tóan này đã được sử dụng",
+    usedProblemWarning: "Bài toán này đã được sử dụng",
 };
 
 export default contest;

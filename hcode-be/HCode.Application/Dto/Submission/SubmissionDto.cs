@@ -76,6 +76,14 @@ namespace HCode.Application
         /// ContestProblemId 
         /// </summary>
         public Guid? ContestProblemId { get; set; }
+        /// <summary>
+        /// Id chủ nhân
+        /// </summary>
+        public Guid? AccountId { get; set; }
+        /// <summary>
+        /// Tên chủ nhân
+        /// </summary>
+        public string? FullName { get; set; }
         #endregion
     }
 }

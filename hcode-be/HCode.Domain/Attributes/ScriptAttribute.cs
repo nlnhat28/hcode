@@ -5,7 +5,7 @@ namespace HCode.Domain
     /// Attribute không cập nhật
     /// </summary>
     /// Created by: nlnhat (23/07/2023)
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
     public class ScriptAttribute : Attribute
     {
         #region Properties
@@ -13,6 +13,10 @@ namespace HCode.Domain
         /// Không update
         /// </summary>
         public bool IsNotUpdate { get; set; }
+        /// <summary>
+        /// Bỏ qua các trường audit
+        /// </summary>
+        public bool IsIgnoreAudit { get; set; }
         /// <summary>
         /// Where khi update
         /// </summary>
@@ -23,11 +27,11 @@ namespace HCode.Domain
         /// <summary>
         /// Hàm tạo
         /// </summary>
-        /// <param name="columns">Tên cột có thể tìm kiếm</param>
-        public ScriptAttribute(bool isNotUpdate = false, bool isWhereUpdate = false)
+        public ScriptAttribute(bool isNotUpdate = false, bool isWhereUpdate = false, bool isIgnoreAudit = false)
         {
             IsNotUpdate = isNotUpdate;
             IsWhereUpdate = isWhereUpdate;
+            IsIgnoreAudit = isIgnoreAudit;
         }
         #endregion
     }

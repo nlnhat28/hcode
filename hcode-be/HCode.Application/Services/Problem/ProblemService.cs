@@ -89,6 +89,7 @@ namespace HCode.Application
             if (result != null)
             {
                 result.Solution = string.Empty;
+                result.SolutionLanguage = null;
                 result.Testcases = _mapper.Map<List<TestcaseDto>>(entity?.Testcases);
                 result.Parameters = _mapper.Map<List<ParameterDto>>(entity?.Parameters);
             }

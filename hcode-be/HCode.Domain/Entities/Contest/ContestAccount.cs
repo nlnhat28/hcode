@@ -8,6 +8,7 @@ namespace HCode.Domain
     /// Lớp bài thi tài khoản
     /// </summary>
     [Table("contest_account")]
+    [Script(isIgnoreAudit: true)]
     public class ContestAccount : BaseEntity, IHasEntityId
     {
         #region Properties
@@ -33,6 +34,11 @@ namespace HCode.Domain
         [Script(isNotUpdate: true)]
         public Guid AccountId { get; set; }
         /// <summary>
+        /// Tên tài khoản
+        /// </summary>
+        [NotMapped]
+        public string? FullName { get; set; }
+        /// <summary>
         /// Trạng thái
         /// </summary>
         public ContestAccountState? State { get; set; }
@@ -49,26 +55,6 @@ namespace HCode.Domain
         /// </summary>
         [NotMapped]
         public int? TotalScore { get; set; }
-        /// <summary>
-        /// Thời gian tạo
-        /// </summary>
-        [NotMapped]
-        public DateTime? CreatedTime { get; set; }
-        /// <summary>
-        /// Người tạo
-        /// </summary>
-        [NotMapped]
-        public string? CreatedBy { get; set; }
-        /// <summary>
-        /// Ngày cập nhật
-        /// </summary>
-        [NotMapped]
-        public DateTime? ModifiedTime { get; set; }
-        /// <summary>
-        /// Người cập nhật
-        /// </summary>  
-        [NotMapped]
-        public string? ModifiedBy { get; set; }
         #endregion
 
         #region Constructors

@@ -5,14 +5,14 @@
                 {{ `${index + 1}. ${$t('problem.problem')} ${index + 1}` }}
             </div>
             <div class="contest-problem__score">
-                {{ `(${instance.Score} ${$t('contest.score')})` }}
+                {{ `(${instance.Score != null ? instance.Score : 0} ${$t('contest.score')})` }}
             </div>
         </div>
         <div class="contest-problem__function flex-center">
             <v-icon
                 :icon="$cv.problemAccountStateToIcon(instance.ContestProblemAccountState)"
                 :color="$cv.problemAccountStateToColor(instance.ContestProblemAccountState)"
-                :tooltip="$cv.enumToResource(instance.ContestProblemAccountState, problemEnum.problemAccountState)"
+                :title="$cv.enumToResource(instance.ContestProblemAccountState, problemEnum.problemAccountState)"
             />
         </div>
     </div>
@@ -108,10 +108,11 @@ export default {
 }
 .contest-problem-item.selected {
     color: var(--orange-400);
+    /* background-color: var(--dark-100); */
 }
 .contest-problem__name {
     font-weight: 700;
-    width: 124px;
+    width: 130px;
     padding-left: 20px;
 }
 .contest-problem__score {
@@ -120,7 +121,7 @@ export default {
 }
 
 .contest-problem__function {
-    width: 56px;
+    width: 60px;
     height: 100%;
 }
 </style>

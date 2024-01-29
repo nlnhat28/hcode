@@ -407,7 +407,11 @@ namespace HCode.Application
                             State = state
                         };
                         var cpaRes = await _cpaRepo.InsertAsync(cpa);
-                        res.AddData("Successfully created ContestProblemAccount");
+                        res.AddData(new BaseResponse()
+                        {
+                            SuccessCode = SuccessCode.ContestProblemAccountSaved,
+                            Data = cpa,
+                        });
                     }
                     else if (existed.State != ProblemAccountState.Accepted && existed.State != state)
                     {
@@ -420,7 +424,11 @@ namespace HCode.Application
                             State = state
                         };
                         var cpaRes = await _cpaRepo.UpdateAsync(cpa);
-                        res.AddData("Successfully updated ContestProblemAccount");
+                        res.AddData(new BaseResponse()
+                        {
+                            SuccessCode = SuccessCode.ContestProblemAccountSaved,
+                            Data = cpa,
+                        });
                     }
 
                     // submission

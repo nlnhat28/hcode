@@ -8,6 +8,7 @@ namespace HCode.Domain
     /// Lớp bài toán tài khoản
     /// </summary>
     [Table("problem_account")]
+    [Script(isIgnoreAudit: true)]
     public class ProblemAccount : BaseEntity, IHasEntityId
     {
         #region Properties

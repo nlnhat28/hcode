@@ -10,5 +10,9 @@
         /// Submission đã được lưu
         /// </summary>
         SubmissionSaved = 201,
+        /// <summary>
+        /// Quan hệ ContestProblemAccount đã được lưu
+        /// </summary>
+        ContestProblemAccountSaved = 301,
     }
 }

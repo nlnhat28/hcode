@@ -290,7 +290,7 @@ export default {
          * Load data
          */
         async loadDataOnCreated() {
-            this.reloadItems();
+            await this.reloadItems();
         },
         /**
          * @virtual

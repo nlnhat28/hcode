@@ -96,6 +96,16 @@ namespace HCode.Domain
         /// </summary>
         [NotMapped]
         public string? LanguageName { get; set; }
+        /// <summary>
+        /// Id chủ nhân
+        /// </summary>
+        [NotMapped]
+        public Guid? AccountId { get; set; }
+        /// <summary>
+        /// Tên chủ nhân
+        /// </summary>
+        [NotMapped]
+        public string? FullName { get; set; }
         #endregion
 
         #region Constructors

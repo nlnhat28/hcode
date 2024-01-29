@@ -55,25 +55,19 @@
                         <!-- Trạng thái -->
                         <v-td
                             :content="item.StatusName"
-                            :style="{ color: $cv.statusJudge0ToColor(item.StatusId)}"
+                            :style="{ color: $cv.statusJudge0ToColor(item.StatusId) }"
                         >
                         </v-td>
                         <!-- Thời gian -->
-                        <v-td
-                            :content="item.RunTime != null ? item.RunTime + ' s' : '_'"
-                        >
+                        <v-td :content="item.RunTime != null ? item.RunTime + ' s' : '_'">
                         </v-td>
                         <!-- Bộ nhớ -->
-                        <v-td
-                            :content="item.Memory != null ? item.Memory + ' kb' : '_'"
-                        >
+                        <v-td :content="item.Memory != null ? item.Memory + ' kb' : '_'">
                         </v-td>
                         <!-- Ngôn ngữ -->
-                        <v-td
-                            :content="item.LanguageName"
-                        >
+                        <v-td :content="item.LanguageName">
                         </v-td>
-                        
+
                     </template>
                 </v-tr>
             </template>
@@ -92,30 +86,15 @@
     </div>
 </template>
 <script>
-import BaseList from "@/components/base/BaseList.vue";
-import { submissionService } from "@/services/services.js";
 import problemEnum from "@/enums/problem-enum.js";
-import { useLanguageStore } from "@/stores/stores";
-import { mapStores, mapState } from 'pinia';
+import contestEnum from "@/enums/contest-enum.js";
+import BaseSubmissionList from "@/views/submission/BaseSubmissionList.vue";
 
 export default {
     name: "SubmissionList",
-    extends: BaseList,
-    emits: [
-        'selected',
-    ],
-    props: {
-        parentId: {
-            type: [String],
-            default: null,
-        }
-    },
+    extends: BaseSubmissionList,
     data() {
         return {
-            // documentTitle: this.$t("problem.problemList"),
-            hasBuildDocumentTitle: false,
-            itemIdKey: "ContestId",
-            problemEnum: problemEnum,
             /**
              * Các cột
              */
@@ -123,7 +102,7 @@ export default {
                 {
                     title: this.$t("problem.field.createdTime"),
                     textAlign: 'center',
-                    widthCell: 140,
+                    widthCell: 120,
                     name: "CreatedTime",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
@@ -183,18 +162,16 @@ export default {
                     }
                 },
             ],
-            languages: [],
         }
     },
     computed: {
-        ...mapStores(useLanguageStore),
         /**
          * Thêm lọc theo ParentId
          */
         addFilterModelsComputed() {
             let filters = [];
 
-             let filterPrivate = [
+            let filterPrivate = [
                 {
                     columnName: 'ProblemAccountId',
                     logicType: this.$enums.logicType.or,
@@ -213,59 +190,6 @@ export default {
             return filters;
         },
     },
-    mounted() {
-    },
-    methods: {
-        /**
-         * Override
-         * 
-         */
-        initOnCreated() {
-            this.itemService = submissionService;
-        },
-        /**
-         * Lấy dữ liệu
-         * @override
-         */
-        async customLoadDataOnCreated() {
-            try {
-                await this.getLanguages();
-                let selectsLanguage = this.languages.map(l => ({
-                    key: l.LanguageId,
-                    name: l.LanguageName,
-                }));
-                this.$cf.addSelectsToColumn(selectsLanguage, this.columns, 'LanguageId');
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        /**
-         * Lấy danh sách language
-         */
-        async getLanguages() {
-            if (this.$cf.isEmptyArray(this.languageStore.languages)) {
-                try {
-                    const res = await languageService.getAll();
-                    if (this.$res.isSuccess(res)) {
-                        this.languages = this.$cf.cloneDeep(res.Data);
-                        this.languageStore.setLanguages(res.Data);
-                    }
-                }
-                catch (error) {
-                    console.error(error);
-                }
-            }
-            else {
-                this.languages = this.$cf.cloneDeep(this.languageStore.languages);
-            }
-        },
-        /**
-         * Chọn item
-         */
-        onSelect(item) {
-            this.$emit('selected', item);
-        }
-    }
 }
 </script>
 <style scoped>
