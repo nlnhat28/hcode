@@ -9,19 +9,20 @@
             :sortModels="sortModels"
             :filterModels="filterModels"
         >
-            <!-- <template #toolbarLeft>
+            <template #toolbarLeft>
                 <div
                     class="dark"
                     style="width: 180px;"
                 >
+                    <!-- Lọc theo danh sách câu hỏi -->
                     <v-combobox
-                        v-model="selectedContestFilter"
-                        optionLabel="name"
-                        :options="problemFilters"
-                        @change="onSelectedContestFilter"
+                        v-model="selectedContestProblem"
+                        optionLabel="DisplayName"
+                        :options="contestProblemsSelects"
+                        @change="onSelectedContestProblem"
                     />
                 </div>
-            </template> -->
+            </template>
             <template #toolbarRight>
                 <v-search-box
                     v-model="keySearch"
@@ -95,10 +96,25 @@
 import problemEnum from "@/enums/problem-enum.js";
 import contestEnum from "@/enums/contest-enum.js";
 import BaseSubmissionList from "@/view/submission/BaseSubmissionList.vue";
+import { submissionService } from "@/services/services.js";
 
 export default {
     name: "SubmissionList",
     extends: BaseSubmissionList,
+    props: {
+        contestId: {
+            type: [String],
+            default: null,
+        },
+        contestProblemId: {
+            type: [String],
+            default: null,
+        },
+        contestProblems: {
+            type: [Array],
+            default: [],
+        }
+    },
     data() {
         return {
             /**
@@ -118,16 +134,15 @@ export default {
                     }
                 },
                 {
-                    title: this.$t("problem.field.statusName"),
+                    title: this.$t("problem.field.submitFullName"),
                     textAlign: 'left',
-                    widthCell: 100,
-                    name: "StatusId",
+                    widthCell: 120,
+                    name: "AccountName",
                     sortConfig: {
                         sortType: this.$enums.sortType.blur,
                     },
                     filterConfig: {
-                        filterType: this.$enums.filterType.selectKey,
-                        selects: this.statusJudge0s = this.$cv.enumToSelects(problemEnum.statusJudge0),
+                        filterType: this.$enums.filterType.text,
                     }
                 },
                 {
@@ -168,7 +183,16 @@ export default {
                     }
                 },
             ],
+            selectedContestProblem: {},
         }
+    },
+    watch: {
+        // contestProblems: {
+        //     handler() {
+
+        //     },
+        //     deep: false,
+        // }
     },
     computed: {
         /**
@@ -177,25 +201,73 @@ export default {
         addFilterModelsComputed() {
             let filters = [];
 
-             let filterPrivate = [
-                {
-                    columnName: 'ProblemAccountId',
-                    logicType: this.$enums.logicType.or,
-                    compareType: this.$enums.compareType.equal,
-                    filterValue: this.parentId,
-                },
-                {
-                    columnName: 'ContestProblemAccountId',
-                    logicType: this.$enums.logicType.or,
-                    compareType: this.$enums.compareType.equal,
-                    filterValue: this.parentId,
-                },
-            ];
-            filters.push(...filterPrivate);
-
+            if (this.selectedContestProblem.IsAll) {
+                let filterContest = [
+                    {
+                        columnName: 'ContestId',
+                        logicType: this.$enums.logicType.and,
+                        compareType: this.$enums.compareType.equal,
+                        filterValue: this.contestId,
+                    },
+                ];
+                filters.push(...filterContest);
+            }
+            else if (this.selectedContestProblem && this.selectedContestProblem.ContestProblemId) {
+                let filterContestProblem = [
+                    {
+                        columnName: 'ContestProblemId',
+                        logicType: this.$enums.logicType.and,
+                        compareType: this.$enums.compareType.equal,
+                        filterValue: this.selectedContestProblem.ContestProblemId,
+                    },
+                ];
+                filters.push(...filterContestProblem);
+            }
+  
             return filters;
         },
+        /**
+         * Danh sách câu hỏi
+         */
+        contestProblemsSelects() {
+            let selects = [];
+
+            if (this.contestProblems) {
+                selects = this.contestProblems.filter(c => c.ProblemId != null);
+                selects.forEach(s => s.DisplayName = `${this.$t('contest.questionSimple')} ${s.Order}: ${this.ProblemName}`)
+            };
+
+            let allItem = {
+                IsAll: true,
+                ContestProblemId: -1,
+                DisplayName: this.$t('com.all'),
+            }
+
+            selects.push(allItem);
+            return selects;
+        }
     },
+    mounted() {
+    },
+    methods: {
+        /**
+         * Override
+         * 
+         */
+        initOnCreated() {
+            this.itemService = submissionService;
+
+            if (!this.$cf.isEmptyArray(this.contestProblemsSelects)) {
+                this.selectedContestFilter = this.contestProblemsSelects[0];
+            }
+        },
+        /**
+         * Thay đổi contest problem
+         */
+        onSelectedContestProblem() {
+            this.reloadItems();
+        }
+    }
 }
 </script>
 <style scoped>

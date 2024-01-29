@@ -47,7 +47,7 @@ namespace HCode.Api
 
             await _service.CreateAsync(entityDto, result);
             
-            return StatusCode(StatusCodes.Status201Created, result);
+            return StatusCode(StatusCodes.Status200OK, result);
         }
         /// <summary>
         /// Sửa 1 đối tượng

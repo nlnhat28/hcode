@@ -220,7 +220,7 @@ namespace HCode.Application
 
             if (account != null)
             {
-                var accoutDto = _mapper.Map<AccountDto>(account);
+                var accountDto = _mapper.Map<AccountDto>(account);
                 var salt = account.Salt;
                 var password = account.Password;
                 var hashedPassword = BCrypt.Net.BCrypt.HashPassword(authDto.Password, salt);
@@ -228,8 +228,8 @@ namespace HCode.Application
                 if (password == hashedPassword)
                 {
                     var token = GenerateJwtToken(account);
-                    accoutDto.Token = token;
-                    res.Data = accoutDto;
+                    accountDto.Token = token;
+                    res.Data = accountDto;
                 }
                 else
                 {

@@ -24,6 +24,7 @@ const contest = {
         score: "Điểm",
         public: "Công khai",
         accountFullName: "Người tạo",
+        submitFullName: "Người nộp",
     },
     contestState: {
         pending: "Chưa mở",
@@ -71,6 +72,9 @@ const contest = {
     countToStartTime: "Thời điểm mở",
     finish: "Kết thúc",
     countdown: "Thời gian còn lại",
+    viewResult: "Xem kết quả",
+    questionSimple: "Câu",
+    usedProblemWarning: "Bài tóan này đã được sử dụng",
 };
 
 export default contest;

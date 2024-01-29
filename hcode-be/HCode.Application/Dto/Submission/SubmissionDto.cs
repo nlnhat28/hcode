@@ -68,6 +68,14 @@ namespace HCode.Application
         /// Thời gian tạo
         /// </summary>
         public DateTime? CreatedTime { get; set; }
+        /// <summary>
+        /// ContestId
+        /// </summary>
+        public Guid? ContestId { get; set; }
+        /// <summary>
+        /// ContestProblemId 
+        /// </summary>
+        public Guid? ContestProblemId { get; set; }
         #endregion
     }
 }

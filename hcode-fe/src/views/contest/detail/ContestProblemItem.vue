@@ -147,10 +147,20 @@ export default {
          */
         onChangeProblem() {
             if (this.selectedProblem != null && typeof(this.selectedProblem) == 'object') {
-                this.instance.ProblemId = this.selectedProblem.ProblemId;
+                // Kiểm tra bài toán được dùng chưa
+                if (this.contestProblems && this.contestProblems.some(p => p.ProblemId == this.selectedProblem.ProblemId)) {
+                    this.$dl.error(this.$t('contest.usedProblemWarning'));
+                    this.instance.ProblemId = null;
+                    this.instance.ProblemName = null;
+                }
+                else {
+                    this.instance.ProblemId = this.selectedProblem.ProblemId;
+                    this.instance.ProblemName = this.selectedProblem.ProblemName;
+                }
             }
             else {
                 this.instance.ProblemId = null;
+                this.instance.ProblemName = null;
             }
         }
     }

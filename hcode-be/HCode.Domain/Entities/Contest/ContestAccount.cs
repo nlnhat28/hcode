@@ -45,6 +45,11 @@ namespace HCode.Domain
         /// </summary>
         public int? UsedTime { get; set; }
         /// <summary>
+        /// Tổng số điểm
+        /// </summary>
+        [NotMapped]
+        public int? TotalScore { get; set; }
+        /// <summary>
         /// Thời gian tạo
         /// </summary>
         [NotMapped]

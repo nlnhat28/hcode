@@ -148,6 +148,16 @@
                             <v-tab-panel :header="$t('contest.listParticipants')">
                                 <ContestAccountList />
                             </v-tab-panel>
+                            <!-- Đã nộp -->
+                            <v-tab-panel :header="$t('problem.submissions')">
+                                <SubmissionsList
+                                    ref="refSubmissionList"
+                                    :contestId="instance.ContestId"
+                                    :contestProblems="instance.ContestProblems"
+                                    v-if="instance.ProblemAccountId"
+                                    @selected="bindSubmission"
+                                />
+                            </v-tab-panel>
                         </v-tab-view>
                     </div>
                 </v-splitter-panel>
@@ -236,6 +246,7 @@ import ContestProblemItem from "./ContestProblemItem.vue";
 import enums from "@/enums/enums";
 import { problemService } from "@/services/services.js";
 import ContestAccountList from "./contest-account/ContestAccountList.vue";
+import SubmissionsList from "./submission/SubmissionsList.vue";
 
 const formMode = enums.formMode;
 
@@ -244,7 +255,8 @@ export default {
     extends: BaseForm,
     components: {
         ContestProblemItem,
-        ContestAccountList
+        ContestAccountList,
+        SubmissionsList
     },
     data() {
         return {
@@ -298,7 +310,7 @@ export default {
          */
         totalScore() {
             return this.$cf.calcTotal(this.instance.ContestProblems, 'Score')
-        }
+        },
     },
     methods: {
         /**

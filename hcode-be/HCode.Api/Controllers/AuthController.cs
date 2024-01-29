@@ -51,7 +51,7 @@ namespace HCode.Api
         /// <param name="authDto"></param>
         /// Created by: nlnhat (17/08/2023)
         [HttpPost("Verify")]
-        public async Task<IActionResult> VerifyAsync([FromBody] AuthDto authDto)
+        public async Task<IActionResult> VerifyAsync(AuthDto authDto)
         {
             var res = new ServerResponse();
             await _service.VerifyAsync(authDto, res);
@@ -63,7 +63,7 @@ namespace HCode.Api
         /// <param name="authDto"></param>
         /// Created by: nlnhat (17/08/2023)
         [HttpPost("SendVerifyCode")]
-        public async Task<IActionResult> SendVerifyCodeAsync([FromBody] AuthDto authDto)
+        public async Task<IActionResult> SendVerifyCodeAsync(AuthDto authDto)
         {
             var res = new ServerResponse();
             await _service.SendVerifyCodeAsync(authDto, res);
@@ -75,7 +75,7 @@ namespace HCode.Api
         /// <param name="authDto"></param>
         /// Created by: nlnhat (17/08/2023)
         [HttpPost("Login")]
-        public async Task<IActionResult> LoginAsync([FromBody] AuthDto authDto)
+        public async Task<IActionResult> LoginAsync(AuthDto authDto)
         {
             var res = new ServerResponse();
             await _service.LoginAsync(authDto, res);
@@ -87,7 +87,7 @@ namespace HCode.Api
         /// <param name="authDto"></param>
         /// Created by: nlnhat (17/08/2023)
         [HttpPost("ForgotPassword")]
-        public async Task<IActionResult> ForgotPasswordAsync([FromBody] AuthDto authDto)
+        public async Task<IActionResult> ForgotPasswordAsync(AuthDto authDto)
         {
             var res = new ServerResponse();
             await _service.ForgotPasswordAsync(authDto, res);

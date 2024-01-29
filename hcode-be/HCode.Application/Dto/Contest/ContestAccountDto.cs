@@ -38,6 +38,10 @@ namespace HCode.Application
         /// Thời gian sử dụng
         /// </summary>
         public int? UsedTime { get; set; }
+        /// <summary>
+        /// Tổng số điểm
+        /// </summary>
+        public int? TotalScore { get; set; }
         #endregion
     }
 }

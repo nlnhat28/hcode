@@ -84,7 +84,7 @@ namespace HCode.Api
         /// <returns>Đối tượng có id được truy vấn</returns>
         /// Created by: nlnhat (17/08/2023)
         [HttpPost("Filter")]
-        public async Task<IActionResult> FilterAsync([FromBody]FilterRequestDto filterRequestDto)
+        public async Task<IActionResult> FilterAsync(FilterRequestDto filterRequestDto)
         {
             var result = new ServerResponse();
 

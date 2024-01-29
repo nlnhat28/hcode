@@ -99,6 +99,14 @@
                         :label="$t('contest.continue')"
                         @click="loadingEffect(continueContest)"
                     ></v-button>
+                    <!-- Xem kết quả -->
+                    <v-button
+                        v-if="isShowResultButton"
+                        icon="fa fa-play"
+                        autofocus
+                        :label="$t('contest.viewResult')"
+                        @click="loadingEffect(resultContest)"
+                    ></v-button>
                 </div>
             </v-button-container>
         </template>
@@ -210,6 +218,13 @@ export default {
             }
             return false;
         },
+        /** Show nút xem kết quả bài thi */
+        isShowResultButton() {
+            if (this.instance && this.instance.ContestAccountState) {
+                return this.instance.ContestAccountState == contestEnum.contestAccountState.finish.value;
+            }
+            return false;
+        },
     },
     mounted() {
         this.refs = [
@@ -282,6 +297,23 @@ export default {
          * Tiếp tục
          */
         async continueContest() {
+            if (this.instanceService && this.instance.ContestAccountState) {
+                const res = await this.instanceService.continue(this.instance.ContestAccount.ContestAccountId);
+                if (this.$res.isSuccess(res)) {
+                    this.$router.push(this.$cf.combineRoute(
+                        this.$path.contest, this.instance.ContestId, this.$path.submit, '0'));
+                }
+                else {
+                    this.reload();
+                    this.close();
+                    this.handleError(res);
+                }
+            }
+        },
+        /**
+         * Xem kết quả
+         */
+        async resultContest() {
             if (this.instanceService && this.instance.ContestAccountState) {
                 const res = await this.instanceService.continue(this.instance.ContestAccount.ContestAccountId);
                 if (this.$res.isSuccess(res)) {

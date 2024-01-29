@@ -65,6 +65,8 @@ const com = {
     function: "Chức năng",
     submit: "Nộp",
     collapse: "Thu gọn",
+    all: "Tất cả",
+    
 };
 
 export default com;

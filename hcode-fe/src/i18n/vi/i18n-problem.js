@@ -28,7 +28,8 @@ const problem = {
         usedMemory: "Bộ nhớ sử dụng",
         languageName: "Ngôn ngữ",
         seen: "Đã xem",
-        acceptedRate: "Tỉ lệ đúng"
+        acceptedRate: "Tỉ lệ đúng",
+        submitFullName: "Người nộp",
     },
     problemAccountState: {
         none: "Chưa xem",

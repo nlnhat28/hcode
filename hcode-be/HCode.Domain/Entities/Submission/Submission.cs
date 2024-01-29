@@ -66,6 +66,16 @@ namespace HCode.Domain
         /// </summary>
         public DateTime? CreatedTime { get; set; }
         /// <summary>
+        /// ContestId
+        /// </summary>
+        [NotMapped]
+        public Guid? ContestId { get; set; }
+        /// <summary>
+        /// Id ContestProblem
+        /// </summary>
+        [NotMapped]
+        public Guid? ContestProblemId { get; set; }
+        /// <summary>
         /// Người tạo
         /// </summary>
         [NotMapped]
