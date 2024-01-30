@@ -11,7 +11,7 @@ const useAccountStore = defineStore("account", {
         },
     },
     persist: {
-        storage: sessionStorage,
+        storage: localStorage,
     },
 });
 
