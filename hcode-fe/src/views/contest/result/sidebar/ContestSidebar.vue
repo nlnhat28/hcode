@@ -67,9 +67,12 @@
             >
                 <!-- Nộp -->
                 <v-button
+                    v-if="0"
                     :label="$t('contest.finish')"
                     @click="onClick(finishContest)"
                 />
+                <div></div>
+
                 <!-- Reload -->
                 <v-button
                     icon="far fa-arrows-rotate"
@@ -270,4 +273,6 @@ export default {
     }
 }
 </script>
-<style scoped>@import "./contest-sidebar.css";</style>
+<style scoped>
+@import "./contest-sidebar.css";
+</style>

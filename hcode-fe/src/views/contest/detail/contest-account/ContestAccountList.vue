@@ -121,6 +121,12 @@ import contestEnum from "@/enums/contest-enum.js";
 export default {
     name: "ContestsList",
     extends: BaseList,
+    props: {
+        contestId: {
+            type: String,
+            default: 0,
+        }
+    },
     data() {
         return {
             documentTitle: this.$t("contest.contestList"),
@@ -191,12 +197,31 @@ export default {
             ],
         }
     },
-    computed: {
-        /**
-         * Thêm lọc theo State
+    watch: {
+        contestId() {
+            this.reloadItems();
+        }
+    },
+    computed: {/**
+         * Thêm lọc theo ParentId
          */
         addFilterModelsComputed() {
+            let filters = [];
 
+            if (!this.contestId) {
+                this.contestId = this.$cf.uuid.new();
+            }
+            let filterContest = [
+                {
+                    columnName: 'ContestId',
+                    logicType: this.$enums.logicType.and,
+                    compareType: this.$enums.compareType.equal,
+                    filterValue: this.contestId,
+                },
+            ];
+            filters.push(...filterContest);
+
+            return filters;
         },
     },
     mounted() {

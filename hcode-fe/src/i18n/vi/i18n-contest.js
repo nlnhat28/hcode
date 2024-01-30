@@ -67,6 +67,7 @@ const contest = {
     startContest: "Bắt đầu bài thi",
     contestInfo: "Thông tin bài thi",
     contestFinished: "Bài thi đã kết thúc",
+    finishedContest: "Bạn đã hoàn thành bài thi",
     continueContest: "Tiếp tục bài thi",
     continue: "Tiếp tục",
     noLimit: "Không giới hạn",
@@ -76,6 +77,7 @@ const contest = {
     viewResult: "Xem kết quả",
     questionSimple: "Câu",
     usedProblemWarning: "Bài toán này đã được sử dụng",
+    allQuestion: "Tất cả câu hỏi",
 };
 
 export default contest;

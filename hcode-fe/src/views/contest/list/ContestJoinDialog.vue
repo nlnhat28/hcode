@@ -315,16 +315,9 @@ export default {
          */
         async resultContest() {
             if (this.instanceService && this.instance.ContestAccountState) {
-                const res = await this.instanceService.continue(this.instance.ContestAccount.ContestAccountId);
-                if (this.$res.isSuccess(res)) {
-                    this.$router.push(this.$cf.combineRoute(
-                        this.$path.contest, this.instance.ContestId, this.$path.submit, '0'));
-                }
-                else {
-                    this.reload();
-                    this.close();
-                    this.handleError(res);
-                }
+                this.$router.push(this.$cf.combineRoute(
+                    this.$path.contestResult, this.instance.ContestId, this.$path.submit, '0'));
+
             }
         },
         /**

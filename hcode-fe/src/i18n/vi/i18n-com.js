@@ -66,6 +66,8 @@ const com = {
     submit: "Nộp",
     collapse: "Thu gọn",
     all: "Tất cả",
+    copy: "Sao chép",
+    copied: "Đã sao chép"
     
 };
 

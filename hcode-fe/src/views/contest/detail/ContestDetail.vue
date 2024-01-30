@@ -146,7 +146,7 @@
                             </v-tab-panel>
                             <!-- Danh sách tham gia -->
                             <v-tab-panel :header="$t('contest.listParticipants')">
-                                <ContestAccountList />
+                                <ContestAccountList :contestId="instance.ContestId" />
                             </v-tab-panel>
                             <!-- Đã nộp -->
                             <v-tab-panel :header="$t('problem.submissions')">
@@ -161,9 +161,9 @@
                         </v-tab-view>
                     </div>
                 </v-splitter-panel>
-                <!-- Danh sách câu hỏi -->
                 <v-splitter-panel class="flex-center">
-                    <div class="contest-problem-container">
+                    <!-- Danh sách câu hỏi -->
+                    <div class="contest-problem-container" v-if="1">
                         <div class="font-bold color-text flex-center">
                             {{ $t('contest.problems') }}
                         </div>
@@ -212,6 +212,41 @@
                                 </span>
                                 <b class="color-highlight"> {{ totalScore }}</b>
                             </div>
+                        </div>
+                    </div>
+                    <div class="wh-full p-20 flex-column code-container" v-if="0">
+                        <div class="code__header flex justify-between">
+                            <div class="flex-align-center col-gap-12">
+                                <div class="font-bold color-text flex-center">
+                                    {{ $t('problem.field.solution') }}
+                                </div>
+                                <v-button
+                                    icon="far fa-arrows-rotate"
+                                    severity="danger"
+                                    text
+                                    raised
+                                    rounded
+                                    :title="'Reset'"
+                                    @click="clickResetSource"
+                                />
+                            </div>
+                            <div class="flex-align-center w-fit">
+                                <v-combobox
+                                    class="transparent no-border"
+                                    v-model="instance.SolutionLanguage"
+                                    optionLabel="LanguageName"
+                                    :options="languages"
+                                ></v-combobox>
+                            </div>
+                        </div>
+                        <div class="code__body">
+                            <v-code-mirror
+                                v-model="instance.Solution"
+                                :language="instance.SolutionLanguage"
+                            ></v-code-mirror>
+                        </div>
+                        <div class="code__footer">
+
                         </div>
                     </div>
                 </v-splitter-panel>

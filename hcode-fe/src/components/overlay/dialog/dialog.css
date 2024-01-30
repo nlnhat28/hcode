@@ -1,3 +1,17 @@
+
+.v-dialog.p-dialog.submission-dialog {
+    /* min-width: none; */
+    /* min-height: none; */
+    max-width: none;
+    max-height: none;
+    height: 800px !important;
+    width: 1000px !important;
+}
+
+.v-dialog.p-dialog.submission-dialog .cm-editor {
+    height: 600px;
+}
+
 .v-dialog.p-dialog {
     min-width: 400px;
     max-width: 480px;
