@@ -242,7 +242,7 @@ namespace HCode.Application
         // Submit
         public async Task SubmitAsync(ProblemDto problemDto, ServerResponse res)
         {
-            var (_, _, testcases) = MapProblemDtoToEntity(problemDto);
+            var (_, parameters, testcases) = MapProblemDtoToEntity(problemDto);
             await _ceService.ExecuteAsync(problemDto, testcases, res);
 
             // Lưu dư thừa
@@ -251,7 +251,18 @@ namespace HCode.Application
                 // Thêm mới submission
                 try
                 {
+                    var testcaseDtos = _mapper.Map<List<TestcaseDto>>(testcases);
+                    if (testcaseDtos != null) {
+                        testcaseDtos.ForEach(tc => tc.Status = data.FirstOrDefault(s => s.testcase_id == tc.TestcaseId))
+                    };
+
+                    var parameterJson = JsonSerializer.Serialize(parameters);
+                    var testcaseJson = JsonSerializer.Serialize(testcaseDtos);
+
                     var submission = data.InitSubmission(problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, problemDto.ProblemAccountId);
+                    submission.Parmeter = parameterJson;
+                    submission.Testcase = testcaseJson;
+                    
                     var subRes = await _submissionRepo.InsertAsync(submission);
                     res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));
                 }

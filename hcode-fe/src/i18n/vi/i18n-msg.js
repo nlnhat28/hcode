@@ -22,6 +22,8 @@ const msg = {
     duplicateSuccess: "Nhân bản thành công",
     updateSuccess: "Cập nhật thành công",
     cannotFindRecord: "Không tìm thấy bản ghi",
+    cannotDoFunction: "Bạn không có quyền thực hiện chức năng này",
+    loginPlease: "Vui lòng đăng nhập để thực hiện chức năng này",
 };
 
 export default msg;

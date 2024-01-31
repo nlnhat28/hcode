@@ -1,12 +1,12 @@
 <script>
 import enums from "@/enums/enums";
-import { loadingEffect, handleResponse } from "@/mixins/mixins.js"
+import { loadingEffect, handleResponse, checkPermission } from "@/mixins/mixins.js"
 import { mapStores, mapState } from 'pinia';
 const formMode = enums.formMode;
 
 export default {
     name: "BaseForm",
-    mixins: [loadingEffect, handleResponse],
+    mixins: [loadingEffect, handleResponse, checkPermission],
     props: {
         /**
          * Id của instance
@@ -429,12 +429,17 @@ export default {
          *
          * Author: nlnhat (02/07/2023)
          */
-        async onClick(func) {
+        async onClick(func, hasCheckAuthenticated) {
             try {
+                if (hasCheckAuthenticated) {
+                    if (!this.checkAuthenticated()) {
+                        return;
+                    }
+                }
                 if (await this.isValidForm()) {
                     await this.loadingEffect(func);
-                } else {
-                    this.$dl.error(this.messageValidate, this.focusRefError);
+                    } else {
+                        this.$dl.error(this.messageValidate, this.focusRefError);
                 }
             } catch (error) {
                 console.error(error);

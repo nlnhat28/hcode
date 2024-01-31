@@ -30,7 +30,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="instance.HasPassword && isShowJoinButton">
+                <div v-if="instance.HasPassword && isShowJoinButton && $auth.isAuthenticated()">
                     <!-- Mật khẩu -->
                     <v-form-item
                         style="width: 90%;"
@@ -81,7 +81,7 @@
                         icon="far fa-check"
                         autofocus
                         :label="$t('contest.join')"
-                        @click="onClick(joinContest)"
+                        @click="onClick(joinContest, true)"
                     ></v-button>
                     <!-- Bắt đầu -->
                     <v-button
@@ -189,8 +189,7 @@ export default {
         /** Show nút tham gia */
         isShowJoinButton() {
             if (this.instance) {
-                return this.instance.ContestAccountState == null
-                    && !this.finishedContest;
+                return (this.instance.ContestAccountState == null && !this.finishedContest) || !this.#$auth.isAuthenticated();
             }
             return false;
         },

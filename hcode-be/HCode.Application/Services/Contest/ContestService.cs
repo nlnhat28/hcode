@@ -432,8 +432,19 @@ namespace HCode.Application
                     }
 
                     // submission
+                    var testcaseDtos = _mapper.Map<List<TestcaseDto>>(testcases);
+                    if (testcaseDtos != null) {
+                        testcaseDtos.ForEach(tc => tc.Status = data.FirstOrDefault(s => s.testcase_id == tc.TestcaseId))
+                    };
+
+                    var parameterJson = JsonSerializer.Serialize(parameters);
+                    var testcaseJson = JsonSerializer.Serialize(testcaseDtos);
+
                     var submission = data.InitSubmission(
                         problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, contestProblemAccountId: cpaId);
+                    submission.Parmeter = parameterJson;
+                    submission.Testcase = testcaseJson;
+                    
                     var subRes = await _submissionRepo.InsertAsync(submission);
                     res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));
                 }

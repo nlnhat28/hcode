@@ -7,6 +7,14 @@ const authEnum = {
         signup: 1,
         changePassword: 2,
         changeEmail: 3,
+    },
+    /** 
+     * Vai trò 
+     */
+    role: {
+        admin: 1,
+        cencor: 2,
+        user: 3,
     }
 };
 

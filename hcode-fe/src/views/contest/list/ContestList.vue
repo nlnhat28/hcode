@@ -130,6 +130,7 @@
                                         @click="clickJoin(item.ContestId)"
                                     />
                                     <v-button
+                                        v-if="$auth.getAccountId() == item.AccountId"
                                         icon="far fa-pen"
                                         severity="warning"
                                         text
@@ -139,6 +140,7 @@
                                         @click="clickEdit(item.ContestId)"
                                     />
                                     <v-button
+                                        v-if="$auth.getAccountId() == item.AccountId"
                                         icon="far fa-trash"
                                         severity="danger"
                                         text

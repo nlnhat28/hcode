@@ -37,6 +37,11 @@ namespace HCode.Application
         /// Kích hoạt hay không
         /// </summary>
         public bool IsActivated { get; set; } = true;
+        /// <summary>
+        /// Submission của testcase
+        /// </summary>
+        [AutoMapper.Configuration.Annotations.Ignore]
+        public SubmissionResponse Status { get; set; };
         #endregion
 
         #region Methods

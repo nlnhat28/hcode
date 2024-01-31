@@ -1,23 +1,9 @@
 <script>
-// import ItemForm from './item-form/ItemForm.vue';
-// import ItemStat from './item-stat/ItemStat.vue';
-// import ItemImport from './item-import/ItemImport.vue';
-// import {
-//   formatDate,
-//   formatStringByDot,
-//   formatStringBySpace,
-//   formatDecimal
-// } from "@/js/utils/format.js";
-// import { sortByName } from '@/js/utils/array.js'
-// import { download } from '@/js/utils/file.js'
-// import { openUrl } from "@/js/utils/window.js";
-// import { useUnitStore, useWarehouseStore } from '@/stores/stores.js';
-// import { mapStores, mapState } from 'pinia';
-import { loadingEffect, handleResponse } from "@/mixins/mixins.js"
+import { loadingEffect, handleResponse, checkPermission } from "@/mixins/mixins.js"
 
 export default {
     name: "BaseList",
-    mixins: [loadingEffect, handleResponse],
+    mixins: [loadingEffect, handleResponse, checkPermission],
     components: {
     },
     data() {
@@ -986,11 +972,13 @@ export default {
          * Click vào nút tạo mới
          */
         clickCreate() {
-            if (this.cfg.formPath) {
-                this.$router.push(this.$cf.combineRoute(this.cfg.formPath));
-            }
-            else {
-                console.error("DEV chưa cấu hình cfg.formPath")
+            if (this.checkAuthenticated()) {
+                if (this.cfg.formPath) {
+                    this.$router.push(this.$cf.combineRoute(this.cfg.formPath));
+                }
+                else {
+                    console.error("DEV chưa cấu hình cfg.formPath")
+                }
             }
         },
         /**

@@ -40,6 +40,11 @@ namespace HCode.Application
         /// <returns></returns>
         Guid GetAccountId();
         /// <summary>
+        /// Lấy Role hiện tại
+        /// </summary>
+        /// <returns></returns>
+        RoleCode? GetRole()
+        /// <summary>
         /// Lấy AccountId.ToString() hiện tại
         /// </summary>
         /// <returns></returns>
@@ -48,7 +53,7 @@ namespace HCode.Application
         /// Lấy AccessToken
         /// </summary>
         /// <returns></returns>
-        string? GetAccessToken();
+        string? GetToken();
         /// <summary>
         /// Lấy Claim theo key
         /// </summary>

@@ -321,13 +321,25 @@ namespace HCode.Application
             return accountId;
         }
 
+        // Lấy RoleCode
+        public RoleCode? GetRole()
+        {
+            try {
+                var claim = GetClaim(Keys.ClaimRole);
+                return claim != null && claim.Value != null ? (RoleCode)claim.Value : null;
+            }
+            catch {
+                return null;
+            }
+        }
+
         public string GetAccountIdToString()
         {
             return GetAccountId().ToString();
         }
 
         // AccessToken
-        public string? GetAccessToken()
+        public string? GetToken()
         {
             var token = _httpContext.HttpContext.Request.Headers[Keys.Authorization].FirstOrDefault();
             return token;

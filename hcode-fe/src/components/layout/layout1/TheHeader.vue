@@ -79,7 +79,7 @@ export default {
             authMenu: [
                 {
                     label: this.$t('auth.signup'),
-                    icon: 'pi pi-refresh'
+                    icon: 'far fa-right-from-bracket'
                 },
             ],
             /**
@@ -106,6 +106,8 @@ export default {
     methods: {
         toggle(event) {
             this.$refs.menu.toggle(event);
+        },
+        logout() {
         }
     }
 }

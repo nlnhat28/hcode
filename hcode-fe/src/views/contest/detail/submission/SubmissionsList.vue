@@ -100,12 +100,35 @@
             <v-icon icon="far fa-circle-xmark" />
         </template>
         <div class="v-dialog__content">
-            <div class="w-full flex-column row-gap-20 p-20">
-                <v-code-mirror
-                    v-model="selectedSubmission.SourceCode"
-                    :language="languageIdSubmission"
-                ></v-code-mirror>
-            </div>
+            <v-tab-view>
+                <!-- Lời giải -->
+                <v-tab-panel :header="$t('problem.field.solution')">
+                    <div class="w-full flex-column row-gap-20 p-20">
+                        <v-code-mirror
+                            v-model="selectedSubmission.SourceCode"
+                            :language="languageIdSubmission"
+                        ></v-code-mirror>
+                    </div>
+                </v-tab-panel>
+                <!-- Testcase -->
+                <v-tab-panel :header="$t('problem.test')">
+                    <div class="testcase-container dark">
+                        <div
+                            class="testcase__list"
+                            v-if="!$cf.isEmptyArray(instance.Testcases)"
+                        >
+                            <TestcaseItem
+                                v-for="(testcase, index) in instance.Testcases"
+                                isReadOnly
+                                :key="testcase.TestcaseId"
+                                :index="index"
+                                :testcase="testcase"
+                                :parameters="instance.Parameters"
+                            ></TestcaseItem>
+                        </div>
+                    </div>
+                </v-tab-panel>
+            </v-tab-view>
         </div>
         <template #footer>
             <v-button-container justifyContent="space-between">
@@ -136,12 +159,16 @@ import contestEnum from "@/enums/contest-enum.js";
 import BaseSubmissionList from "@/views/submission/BaseSubmissionList.vue";
 import { submissionService } from "@/services/services.js";
 import SubmissionDialog from "@/views/submission/SubmissionDialog.vue";
+import ParameterItem from "@/views/submit/ParameterItem.vue";
+import TestcaseItem from "@/views/submit/TestcaseItem.vue";
 
 export default {
     name: "SubmissionList",
     extends: BaseSubmissionList,
     components: {
         SubmissionDialog
+        ParameterItem,
+        TestcaseItem,
     },
     props: {
         contestId: {

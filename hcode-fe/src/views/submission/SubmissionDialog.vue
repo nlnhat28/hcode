@@ -41,13 +41,18 @@
 </template>
 
 <script>
-import BaseFormDialog from '@/components/base/BaseFormDialog.vue';
 
 export default {
     name: "SubmissionDialog",
-    extends: BaseFormDialog,
+    props: {
+        submission: {
+            type: Object,
+            default: {}
+        }
+    },
     data() {
         return {
+            instance: {}
         }
     },
     computed: {

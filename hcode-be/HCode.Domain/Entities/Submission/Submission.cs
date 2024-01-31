@@ -62,6 +62,14 @@ namespace HCode.Domain
         /// </summary>
         public int? FailedCount { get; set; }
         /// <summary>
+        /// Chi tiết parameter
+        /// </summary>
+        public string? Parameters { get; set; }
+        /// <summary>
+        /// Chi tiết testcase
+        /// </summary>
+        public string? Testcases { get; set; }
+        /// <summary>
         /// Thời gian tạo
         /// </summary>
         public DateTime? CreatedTime { get; set; }

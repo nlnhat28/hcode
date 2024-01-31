@@ -120,6 +120,7 @@
                                 textAlign: 'center'
                             }">
                                 <div class="flex-align-center col-gap-4">
+                                    <!-- Submit -->
                                     <v-button
                                         v-if="item.IsDraft == false"
                                         icon="far fa-code"
@@ -130,7 +131,9 @@
                                         :title="$t('problem.practice')"
                                         @click="clickRun(item.ProblemId)"
                                     />
+                                    <!-- Sửa -->
                                     <v-button
+                                        v-if="$auth.getAccountId() == item.AccountId"
                                         icon="far fa-pen"
                                         severity="warning"
                                         text
@@ -139,7 +142,9 @@
                                         :title="$t('com.edit')"
                                         @click="clickEdit(item.ProblemId)"
                                     />
+                                    <!-- Xóa -->
                                     <v-button
+                                        v-if="$auth.getAccountId() == item.AccountId"
                                         icon="far fa-trash"
                                         severity="danger"
                                         text

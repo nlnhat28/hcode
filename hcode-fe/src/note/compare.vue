@@ -1,94 +1,82 @@
+
 <script>
 import BaseProblemDetail from "@/views/problem/base/BaseProblemDetail.vue";
-import { problemService } from "@/services/services";
+import { problemService, languageService, contestService } from "@/services/services";
+import { useLanguageStore, useProblemStore } from "@/stores/stores";
+import { mapStores, mapState } from 'pinia';
 import problemEnum from "@/enums/problem-enum";
+import contestEnum from "@/enums/contest-enum";
 import problemConst from "@/consts/problem-const.js";
 import ParameterItem from "./ParameterItem.vue";
 import TestcaseItem from "./TestcaseItem.vue";
+import SubmissionsList from "./submission/SubmissionsList.vue";
+import ContestSiderbar from "./sidebar/ContestSidebar.vue"
 import enums from "@/enums/enums";
+import BaseSubmissionList from "../views/submission/BaseSubmissionList.vue";
 
 const formMode = enums.formMode;
 
 export default {
-    name: "BaseSubmit",
-    extends: BaseProblemDetail,
+    name: "ContestSubmit",
+    extends: BaseProblemSubmit,
     components: {
-        ParameterItem,
-        TestcaseItem,
+        SubmissionsList,
+        ContestSiderbar
     },
     data() {
         return {
             cfg: {
-                formPath: this.$path.problem,
-                callbackPath: this.$path.problems,
-                entity: 'Problem',
-                subSysName: this.$t('problem.problem'),
+                // formPath: this.$path.contest,
+                callbackPath: this.$path.contests,
+                entity: 'Contest',
+                subSysName: this.$t('contest.contest'),
             },
-            instanceService: problemService,
-            problemConst: problemConst,
-            allowBuildSource: true,
+            hasBuildDocumentTitle: false,
+            collapseContestSidebar: false,
+            contestId: null,
+            contestProblems: null,
+            contestAccount: null,
+            contestProblemAccountId: null,
+            countdownText: null,
+            timeToDo: null,
         }
     },
-    watch: {
-        "instance.SolutionLanguage": {
-            handler() {
-                if (this.checkBuildSource) {
-                    this.buildSourceCode();
-                }
-                this.allowBuildSource = true;
-            },
-            deep: true
-        },
-    },
-    mounted() {
-
-    },
     computed: {
-        checkBuildSource() {
-            return this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
-        },
+        centerTitle() {
+            let title = this.instance?.ProblemName;
+            if (!this.$cf.isEmptyArray(this.contestProblems)) {
+                let order = this.contestProblems.find(p => p.ProblemId == this.instanceId)?.Order;
+                if (order) {
+                    title = `${order}. ${title}`;
+                }
+            };
+            return title;
+        }
     },
     methods: {
         /**
-         * Khởi tạo dữ liệu data
+         * 
          */
-        async initOnCreated() {
-            this.difficulties = this.$cv.enumToSelects(enums.difficulty);
-            this.dataTypes = this.$cv.enumToSelects(problemEnum.dataType);
-
-            this.mode = formMode.view;
-        },
-        /** 
-         * @override
-         */
-        customInstanceOnCreated() {
-            this.selectedOutputType = this.$cv.enumKeyToSelected(this.instance.OutputType, this.dataTypes, 0);
-            this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
-
-            if (!this.$cf.isEmptyArray(this.languages)) {
-                this.instance.SolutionLanguage = this.languages[0];
-            }
+        initMode() {
+            this.contestId = this.$route.params.contestId;
+            this.instanceId = this.$route.params.problemId;
         },
         /**
-         * Click nộp
+         * @override
          */
-        async clickSubmit() {
-            if (this.checkAuthenticated()) {
-                if (this.$cf.isEmptyString(this.instance.Solution)) {
-                    let msg = this.$t('msg.labelCannotNull', { label: this.$t('problem.field.solution') });
-                    this.$dl.error(msg);
-                }
-                else {
-                    this.resetTestcaseStatus();
-                    await this.loadingEffect(this.submit);
-                }
+        async loadDataOnCreated() {
+            if (this.instanceId && this.instanceId !== '0') {
+                await this.viewInstance(this.instanceId);
             }
         },
         async submit() {
             try {
-                const response = await this.instanceService.submit(
-                    this.reformatInstance()
-                );
+                let contestProblemId = this.contestProblems.find(p => p.ProblemId == this.instanceId)?.ContestProblemId;
+                let payload = {
+                    ContestProblemId: contestProblemId,
+                    ProblemDto: this.reformatInstance()
+                }
+                const response = await contestService.submit(payload);
                 if (this.$res.isSuccess(response)) {
                     this.$ts.success();
                 } else {
@@ -96,6 +84,11 @@ export default {
                 }
                 this.processSubmissionResponse(response);
 
+                let newCpa = this.$res.getDataSuccessCode(response, this.$res.successCode.ContestProblemAccountSaved)
+                if (newCpa) {
+                    this.reloadContestProblemState(newCpa);
+                    this.contestProblemAccountId = newCpa.ContestProblemAccountId;
+                }
                 if (this.$res.hasSuccessCode(response, this.$res.successCode.SubmissionSaved)) {
                     this.reloadSubmissionList();
                 }
@@ -104,28 +97,66 @@ export default {
             }
         },
         /**
-         * reload SubmissionList
+         * Load lại contest
          */
-        reloadSubmissionList() {
-            let ref = this.$refs.refSubmissionList;
-            if (ref && typeof (ref.reloadItems) == 'function') {
-                ref.reloadItems();
+        reloadContestProblemState(newCpa) {
+            if (this.$refs.refSidebar) {
+                this.$refs.refSidebar.reloadContestProblemState(newCpa);
             }
         },
         /**
-         * Bind submission
+         * Đóng mở contest sidebar
          */
-        bindSubmission(submit) {
-            let solutionLanguage = this.languages.find(l => l.LanguageId == submit.LanguageId)
-            if (solutionLanguage) {
-                this.instance.SolutionLanguage = solutionLanguage;
-                this.allowBuildSource = false;
+        toggleContestSidebar() {
+            if (this.$refs.refSidebar) {
+                this.$refs.refSidebar.toggle();
             }
-            if (!this.$cf.isEmptyString(submit.SourceCode)) {
-                this.instance.Solution = submit.SourceCode;
-                // this.allowBuildSource = true;
+        },
+        /**
+         * Gán contestProblemAccountId
+         */
+        assignContestProblemAccountId(item) {
+            this.contestProblemAccountId = this.contestProblems?.find(p => p.ProblemId == item.ProblemId)?.ContestProblemAccountId;
+
+            this.$nextTick(() => {
+                this.reloadSubmissionList();
+            });
+        },
+        /**
+         * Chọn câu hỏi
+         * @param {*} item 
+         */
+        async selectedItem(item) {
+            this.instanceId = item.ProblemId;
+            this.$router.push(this.$cf.combineRoute(
+                this.$path.contest, this.contestId, this.$path.submit, this.instanceId));
+            await this.reloadInstance();
+            this.assignContestProblemAccountId(item);
+        },
+        /**
+         * Sau khi load xong contest thì bắn ra danh sách contest problem
+         */
+        afterLoadContest(contest) {
+            this.contestProblems = this.$cf.cloneDeep(contest?.ContestProblems);
+            this.contestAccount = this.$cf.cloneDeep(contest?.ContestAccount);
+            this.timeToDo = contest?.TimeToDo;
+
+            if (this.contestAccount && contest.TimeToDo) {
+                setInterval(() => {
+                    let starTime = new Date(this.contestAccount.StartTime);
+                    let endTime = starTime.setMinutes(starTime.getMinutes() + contest.TimeToDo);
+                    this.countdownText = this.$cf.countdown(
+                        null,
+                        new Date(),
+                        endTime,
+                        null,
+                        ["m", "s"],
+                        "short",
+                        true
+                    ).text;
+                }, 1000)
             }
-        }
+        },
     }
 }
 </script>

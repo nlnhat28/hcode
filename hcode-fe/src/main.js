@@ -152,8 +152,10 @@ import validate from "@/helper/validate.js";
 import regex from "@/helper/regex.js";
 import lodash from "lodash";
 import auth from "@/auth/auth.js";
+import permission from "@/auth/permission.js";
 
 app.config.globalProperties.$auth = auth;
+app.config.globalProperties.$pms = permission;
 app.config.globalProperties.$emitter = emitter;
 app.config.globalProperties.$enums = enums;
 app.config.globalProperties.$errorCode = errorCode;

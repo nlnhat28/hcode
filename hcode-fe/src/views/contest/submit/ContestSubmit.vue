@@ -173,14 +173,6 @@
                                         </div>
                                     </div>
                                 </v-tab-panel>
-                                <!-- Thông báo kết quả chạy -->
-                                <!-- <v-tab-panel :header="$t('problem.result')">
-                                <v-editor
-                                    class='no-toolbar'
-                                    v-model="result"
-                                    readonly
-                                ></v-editor>
-                            </v-tab-panel> -->
                                 <!-- Đã nộp -->
                                 <v-tab-panel :header="$t('problem.submissions')">
                                     <SubmissionsList
@@ -278,27 +270,14 @@
     </div>
 </template>
 <script>
-import BaseProblemDetail from "@/views/problem/base/BaseProblemDetail.vue";
-import { problemService, languageService, contestService } from "@/services/services";
-import { useLanguageStore, useProblemStore } from "@/stores/stores";
-import { mapStores, mapState } from 'pinia';
-import problemEnum from "@/enums/problem-enum";
-import contestEnum from "@/enums/contest-enum";
-import problemConst from "@/consts/problem-const.js";
-import ParameterItem from "./ParameterItem.vue";
-import TestcaseItem from "./TestcaseItem.vue";
+import BaseProblemSubmit from "@/views/submit/BaseProblemSubmit.vue";
 import SubmissionsList from "./submission/SubmissionsList.vue";
 import ContestSiderbar from "./sidebar/ContestSidebar.vue"
-import enums from "@/enums/enums";
-
-const formMode = enums.formMode;
 
 export default {
     name: "ContestSubmit",
-    extends: BaseProblemDetail,
+    extends: BaseProblemSubmit,
     components: {
-        ParameterItem,
-        TestcaseItem,
         SubmissionsList,
         ContestSiderbar
     },
@@ -310,9 +289,6 @@ export default {
                 entity: 'Contest',
                 subSysName: this.$t('contest.contest'),
             },
-            instanceService: problemService,
-            problemConst: problemConst,
-            allowBuildSource: true,
             hasBuildDocumentTitle: false,
             collapseContestSidebar: false,
             contestId: null,
@@ -323,24 +299,7 @@ export default {
             timeToDo: null,
         }
     },
-    watch: {
-        "instance.SolutionLanguage": {
-            handler() {
-                if (this.checkBuildSource) {
-                    this.buildSourceCode();
-                }
-                this.allowBuildSource = true;
-            },
-            deep: true
-        },
-    },
-    mounted() {
-
-    },
     computed: {
-        checkBuildSource() {
-            return this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
-        },
         centerTitle() {
             let title = this.instance?.ProblemName;
             if (!this.$cf.isEmptyArray(this.contestProblems)) {
@@ -354,14 +313,6 @@ export default {
     },
     methods: {
         /**
-         * Khởi tạo dữ liệu data
-         */
-        async initOnCreated() {
-            this.difficulties = this.$cv.enumToSelects(enums.difficulty);
-            this.dataTypes = this.$cv.enumToSelects(problemEnum.dataType);
-            this.mode = formMode.view;
-        },
-        /**
          * 
          */
         initMode() {
@@ -374,29 +325,6 @@ export default {
         async loadDataOnCreated() {
             if (this.instanceId && this.instanceId !== '0') {
                 await this.viewInstance(this.instanceId);
-            }
-        },
-        /** 
-         * @override
-         */
-        customInstanceOnCreated() {
-            this.selectedDifficulty = this.$cv.enumKeyToSelected(this.instance.Difficulty, this.difficulties, 0);
-            this.selectedOutputType = this.$cv.enumKeyToSelected(this.instance.OutputType, this.dataTypes, 0);
-            if (!this.$cf.isEmptyArray(this.languages)) {
-                this.instance.SolutionLanguage = this.languages[0];
-            };
-        },
-        /**
-         * Click nộp
-         */
-        async clickSubmit() {
-            if (this.$cf.isEmptyString(this.instance.Solution)) {
-                let msg = this.$t('msg.labelCannotNull', { label: this.$t('problem.field.solution') });
-                this.$dl.error(msg);
-            }
-            else {
-                this.resetTestcaseStatus();
-                await this.loadingEffect(this.submit);
             }
         },
         async submit() {
@@ -435,34 +363,19 @@ export default {
             }
         },
         /**
-         * reload SubmissionList
-         */
-        reloadSubmissionList() {
-            let ref = this.$refs.refSubmissionList;
-            if (ref && typeof (ref.reloadItems) == 'function') {
-                ref.reloadItems();
-            }
-        },
-        /**
-         * Bind submission
-         */
-        bindSubmission(submit) {
-            let solutionLanguage = this.languages.find(l => l.LanguageId == submit.LanguageId)
-            if (solutionLanguage) {
-                this.instance.SolutionLanguage = solutionLanguage;
-                this.allowBuildSource = false;
-            }
-            if (!this.$cf.isEmptyString(submit.SourceCode)) {
-                this.instance.Solution = submit.SourceCode;
-                // this.allowBuildSource = true;
-            }
-        },
-        /**
          * Đóng mở contest sidebar
          */
         toggleContestSidebar() {
             if (this.$refs.refSidebar) {
                 this.$refs.refSidebar.toggle();
+            }
+        },
+        /**
+         * Kết thúc contest
+         */
+        async finishContest() {
+            if (this.$refs.refSidebar) {
+                await this.$refs.refSidebar.finishContest();
             }
         },
         /**
@@ -498,7 +411,7 @@ export default {
                 setInterval(() => {
                     let starTime = new Date(this.contestAccount.StartTime);
                     let endTime = starTime.setMinutes(starTime.getMinutes() + contest.TimeToDo);
-                    this.countdownText = this.$cf.countdown(
+                    let countdownObj = this.$cf.countdown(
                         null,
                         new Date(),
                         endTime,
@@ -506,7 +419,11 @@ export default {
                         ["m", "s"],
                         "short",
                         true
-                    ).text;
+                    );
+                    this.countdownText = countdownObj.text;
+                    if (countdownObj.duration <= 0) {
+                        this.finishContest();
+                    }
                 }, 1000)
             }
         },
