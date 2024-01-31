@@ -1,13 +1,10 @@
 <script>
 import BaseProblemDetail from "@/views/problem/base/BaseProblemDetail.vue";
-import { problemService, languageService } from "@/services/services";
-import { useLanguageStore, useProblemStore } from "@/stores/stores";
-import { mapStores, mapState } from 'pinia';
+import { problemService } from "@/services/services";
 import problemEnum from "@/enums/problem-enum";
 import problemConst from "@/consts/problem-const.js";
 import ParameterItem from "./ParameterItem.vue";
 import TestcaseItem from "./TestcaseItem.vue";
-import SubmissionsList from "./submission/SubmissionsList.vue";
 import enums from "@/enums/enums";
 
 const formMode = enums.formMode;
@@ -18,7 +15,6 @@ export default {
     components: {
         ParameterItem,
         TestcaseItem,
-        SubmissionsList
     },
     data() {
         return {
@@ -71,20 +67,6 @@ export default {
 
             if (!this.$cf.isEmptyArray(this.languages)) {
                 this.instance.SolutionLanguage = this.languages[0];
-            }
-            this.auditProblemAccount();
-        },
-        /**
-         * Tạo quan hệ bài toán tài khoản
-         */
-        auditProblemAccount() {
-            if (!this.instance.ProblemAccountState && this.instance.ProblemId) {
-                let payload = {
-                    ProblemId: this.instance.ProblemId,
-                    State: problemEnum.problemAccountState.seen.value,
-                };
-
-                this.instanceService.auditProblemAccount(payload);
             }
         },
         /**
