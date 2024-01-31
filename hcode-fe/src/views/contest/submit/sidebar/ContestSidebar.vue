@@ -121,7 +121,7 @@ export default {
             instanceService: contestService,
             contestConst: contestConst,
             problems: [],
-            dateTimePattern: 'dd/mm/yyyy hh/mm',
+            dateTimePattern: 'dd/mm/yyyy hh:mm',
         }
     },
     watch: {

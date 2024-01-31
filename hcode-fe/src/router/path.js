@@ -14,6 +14,7 @@ const path = {
     contestResult: "/contest-result/",
     submit: "/submit/",
     contestSubmit: "/contest/submit/",
+    account: "/accountId/"
 };
 
 export default path;

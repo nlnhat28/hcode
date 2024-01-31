@@ -92,6 +92,7 @@ export default {
     background-color: var(--dark-400);
     border-radius: 8px;
     transition: background-color 0.2s;
+    padding-right: 12px
 }
 
 .parameter-item:focus-within {

@@ -311,7 +311,7 @@ export default {
                     widthCell: 80,
                 }
             ],
-            dateTimePattern: 'dd/mm/yyyy hh/mm',
+            dateTimePattern: 'dd/mm/yyyy hh:mm',
             contestStates: [],
             contestFilters: [],
             selectedContestFilter: null,

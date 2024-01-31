@@ -92,7 +92,7 @@
                                     raised
                                     rounded
                                     :title="$t('contest.viewResult')"
-                                    @click="clickJoin(item.ContestId)"
+                                    @click="clickViewResult(item)"
                                 />
                             </div>
                         </v-td>
@@ -231,6 +231,15 @@ export default {
         initOnCreated() {
             this.itemService = contestAccountService;
         },
+        /**
+         * Click xem kết quả
+         */
+        clickViewResult(item) {
+            this.$router.push(this.$cf.combineRoute(
+                this.$path.contestResult, item.ContestId,
+                this.$path.account, item.AccountId,
+                this.$path.submit, "0"));
+        }
     }
 }
 </script>

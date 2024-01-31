@@ -140,10 +140,10 @@ const format = {
                     case "dd/mm/yyyy":
                         result = `${date}/${month}/${year}`;
                         break;
-                    case "dd/mm/yyyy hh/mm/ss":
+                    case "dd/mm/yyyy hh:mm:ss":
                         result = `${date}/${month}/${year} ${hour}:${minute}:${second}`;
                         break;
-                    case "dd/mm/yyyy hh/mm":
+                    case "dd/mm/yyyy hh:mm":
                         result = `${date}/${month}/${year} ${hour}:${minute}`;
                         break;
                     default:

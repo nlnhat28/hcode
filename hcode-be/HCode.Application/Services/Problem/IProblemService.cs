@@ -33,5 +33,12 @@ namespace HCode.Application
         /// </summary>
         /// <returns></returns>
         Task AuditProblemAccountAsync(ProblemAccount problemAccount, ServerResponse res);
+        /// <summary>
+        /// Lấy problem cho màn kết quả
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        Task ViewResultAsync(Guid id, Guid accountId, ServerResponse res);
     }
 }

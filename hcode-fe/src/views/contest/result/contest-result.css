@@ -111,7 +111,7 @@
 /* Contest sidebar */
 .contest-sidebar {
     display: block;
-    min-width: 360px;
+    min-width: 520px;
     height: 100%;
     background-color: var(--dark-500);
     border-right: 1px solid var(--dark-200);

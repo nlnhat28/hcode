@@ -115,6 +115,23 @@ namespace HCode.Application
             res.Data = result;
         }
 
+        // View contest result by id
+        public async Task ViewResultAsync(Guid id, Guid accountId, ServerResponse res)
+        {
+            var entity = await _repository.GetAsync(id, accountId);
+
+            var result = _mapper.Map<ContestDto>(entity);
+
+            if (result != null)
+            {
+                result.ContestProblems = _mapper.Map<List<ContestProblemDto>>(entity?.ContestProblems);
+                result.ContestAccount = _mapper.Map<ContestAccountDto>(entity?.ContestAccount);
+                result.Password = string.Empty;
+            }
+
+            res.Data = result;
+        }
+
         // Get by id
         public override async Task GetAsync(Guid id, ServerResponse res)
         {

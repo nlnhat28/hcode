@@ -46,6 +46,18 @@ class ProblemService extends BaseService {
         );
         return response;
     }
+    /**
+     * Lấy thông tin bài thi cho màn kết quả
+     *
+     * Author: nlnhat (17/08/2023)
+     * @return
+     */
+    async viewResult(problemId, accountId) {
+        const response = await this.baseRequest.get(
+            `${this.baseUrl}/ViewResult/${problemId}/${accountId}`
+        );
+        return response;
+    }
 }
 const problemService = new ProblemService();
 export default problemService;

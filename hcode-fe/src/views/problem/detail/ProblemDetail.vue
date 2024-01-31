@@ -30,7 +30,7 @@
             <v-splitter>
                 <v-splitter-panel class="flex-center">
                     <div class="wh-full p-32">
-                        <v-tab-view :activeIndex="activeTab">
+                        <v-tab-view v-model:activeIndex="activeTab">
                             <!-- Thông tin chung -->
                             <v-tab-panel :header="$t('problem.generalInfo')">
                                 <v-form-body class="dark">

@@ -100,6 +100,17 @@ namespace HCode.Api
             return StatusCode(StatusCodes.Status200OK, res);
         }
         /// <summary>
+        /// Get For result
+        /// </summary>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpGet("ViewResult/{id}/{accountId}")]
+        public async Task<IActionResult> ViewResultAsync(Guid id, Guid accountId)
+        {
+            var res = new ServerResponse();
+            await _service.ViewResultAsync(id, accountId, res);
+            return StatusCode(StatusCodes.Status200OK, res);
+        }
+        /// <summary>
         /// Submit
         /// </summary>
         /// Created by: nlnhat (17/08/2023)

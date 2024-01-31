@@ -3,6 +3,7 @@
         <ContestSiderbar
             ref="refSidebar"
             :id="contestId"
+            :accountId="accountId"
             :problemId="instanceId"
             @selected="selectedItem"
             @afterLoad="afterLoadContest"
@@ -16,8 +17,8 @@
                         text
                         severity="secondary"
                         icon="far fa-angle-left"
-                        :label="$t('contest.contestList')"
-                        @click="$router.push($path.contests)"
+                        :label="$t('contest.goBackContest')"
+                        @click="$router.push($cf.combineRoute($path.contest, contestId))"
                     ></v-button>
                 </div>
                 <div class="contest-submit__header--center flex-center col-gap-12">
@@ -113,11 +114,11 @@
                                     </v-form-body>
                                 </v-tab-panel>
                                 <!-- Nội dung -->
-                                <v-tab-panel :header="$t('problem.content')" v-if="0">
+                                <v-tab-panel :header="$t('problem.content')" v-if="$auth.getAccountId() == createdId">
                                     <v-editor v-model="instance.Content"></v-editor>
                                 </v-tab-panel>
                                 <!-- Gợi ý -->
-                                <v-tab-panel :header="$t('problem.hint')" v-if="0">
+                                <v-tab-panel :header="$t('problem.hint')" v-if="$auth.getAccountId() == createdId">
                                     <v-editor v-model="instance.Hint"></v-editor>
                                 </v-tab-panel>
                                 <!-- Tham số-->
@@ -194,7 +195,7 @@
                         </div>
                     </v-splitter-panel>
                     <!-- Code Editor -->
-                    <v-splitter-panel class="flex-center">
+                    <v-splitter-panel class="flex-center" v-if="0">
                         <div class="wh-full p-20 flex-column code-container">
                             <div class="code__header flex justify-between">
                                 <div class="flex-align-center col-gap-12">
@@ -286,19 +287,18 @@ import problemEnum from "@/enums/problem-enum";
 import contestEnum from "@/enums/contest-enum";
 import problemConst from "@/consts/problem-const.js";
 import ParameterItem from "./ParameterItem.vue";
-import TestcaseItem from "./TestcaseItem.vue";
 import SubmissionsList from "./submission/SubmissionsList.vue";
 import ContestSiderbar from "./sidebar/ContestSidebar.vue"
 import enums from "@/enums/enums";
+import BaseProblemSubmit from "@/views/submit/BaseProblemSubmit.vue";
 
 const formMode = enums.formMode;
 
 export default {
     name: "ContestResult",
-    extends: BaseProblemDetail,
+    extends: BaseProblemSubmit,
     components: {
         ParameterItem,
-        TestcaseItem,
         SubmissionsList,
         ContestSiderbar
     },
@@ -310,38 +310,18 @@ export default {
                 entity: 'Contest',
                 subSysName: this.$t('contest.contest'),
             },
-            instanceService: problemService,
             problemConst: problemConst,
-            allowBuildSource: true,
-            hasBuildDocumentTitle: false,
             collapseContestSidebar: false,
+            hasBuildDocumentTitle: false,
             contestId: null,
+            accountId: null,
+            createdId: null,
             contestProblems: null,
             contestAccount: null,
             contestProblemAccountId: null,
-            countdownText: null,
-            timeToDo: null,
         }
     },
-    watch: {
-        "instance.SolutionLanguage": {
-            handler() {
-                if (this.checkBuildSource) {
-                    this.buildSourceCode();
-                }
-                this.allowBuildSource = true;
-            },
-            deep: true
-        },
-    },
-    mounted() {
-
-    },
     computed: {
-        checkBuildSource() {
-            return false;
-            return this.allowBuildSource || this.$cf.isEmptyString(this.instance.Solution)
-        },
         centerTitle() {
             let title = this.instance?.ProblemName;
             if (!this.$cf.isEmptyArray(this.contestProblems)) {
@@ -355,18 +335,11 @@ export default {
     },
     methods: {
         /**
-         * Khởi tạo dữ liệu data
-         */
-        async initOnCreated() {
-            this.difficulties = this.$cv.enumToSelects(enums.difficulty);
-            this.dataTypes = this.$cv.enumToSelects(problemEnum.dataType);
-            this.mode = formMode.view;
-        },
-        /**
          * 
          */
         initMode() {
             this.contestId = this.$route.params.contestId;
+            this.accountId = this.$route.params.accountId;
             this.instanceId = this.$route.params.problemId;
         },
         /**
@@ -374,7 +347,29 @@ export default {
          */
         async loadDataOnCreated() {
             if (this.instanceId && this.instanceId !== '0') {
-                await this.viewInstance(this.instanceId);
+                await this.viewResult(this.instanceId, this.accountId);
+            }
+        },
+        async viewResult(instanceId, accountId) {
+             if (this.instanceService) {
+                const response = await this.instanceService.viewResult(instanceId, accountId);
+                if (this.$res.isSuccess(response)) {
+                    if (!this.$cf.isEmptyObject(response.Data)) {
+                        this.instance = this.$cf.cloneDeep(response.Data);
+                        this.storeOriginalInstance();
+
+                        if (this.hasBuildDocumentTitle) {
+                            this.documentTitle = this.instance[`${this.cfg.entity}Name`] + " - " + this.cfg.subSysName;
+                            document.title = this.$cf.documentTitle(this.documentTitle);
+                        };
+                    }
+                    else {
+                        this.$dl.error(this.$t('msg.cannotFindRecord'), this.goCallbackPath)
+                    }
+                }
+                else {
+                    this.handleError(response, this.goCallbackPath)
+                }
             }
         },
         /** 
@@ -388,74 +383,11 @@ export default {
             };
         },
         /**
-         * Click nộp
-         */
-        async clickSubmit() {
-            if (this.$cf.isEmptyString(this.instance.Solution)) {
-                let msg = this.$t('msg.labelCannotNull', { label: this.$t('problem.field.solution') });
-                this.$dl.error(msg);
-            }
-            else {
-                this.resetTestcaseStatus();
-                await this.loadingEffect(this.submit);
-            }
-        },
-        async submit() {
-            try {
-                let contestProblemId = this.contestProblems.find(p => p.ProblemId == this.instanceId)?.ContestProblemId;
-                let payload = {
-                    ContestProblemId: contestProblemId,
-                    ProblemDto: this.reformatInstance()
-                }
-                const response = await contestService.submit(payload);
-                if (this.$res.isSuccess(response)) {
-                    this.$ts.success();
-                } else {
-                    this.handleError(response);
-                }
-                this.processSubmissionResponse(response);
-
-                let newCpa = this.$res.getDataSuccessCode(response, this.$res.successCode.ContestProblemAccountSaved)
-                if (newCpa) {
-                    this.reloadContestProblemState(newCpa);
-                    this.contestProblemAccountId = newCpa.ContestProblemAccountId;
-                }
-                if (this.$res.hasSuccessCode(response, this.$res.successCode.SubmissionSaved)) {
-                    this.reloadSubmissionList();
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        /**
          * Load lại contest
          */
         reloadContestProblemState(newCpa) {
             if (this.$refs.refSidebar) {
                 this.$refs.refSidebar.reloadContestProblemState(newCpa);
-            }
-        },
-        /**
-         * reload SubmissionList
-         */
-        reloadSubmissionList() {
-            let ref = this.$refs.refSubmissionList;
-            if (ref && typeof (ref.reloadItems) == 'function') {
-                ref.reloadItems();
-            }
-        },
-        /**
-         * Bind submission
-         */
-        bindSubmission(submit) {
-            let solutionLanguage = this.languages.find(l => l.LanguageId == submit.LanguageId)
-            if (solutionLanguage) {
-                this.instance.SolutionLanguage = solutionLanguage;
-                this.allowBuildSource = false;
-            }
-            if (!this.$cf.isEmptyString(submit.SourceCode)) {
-                this.instance.Solution = submit.SourceCode;
-                // this.allowBuildSource = true;
             }
         },
         /**
@@ -483,7 +415,9 @@ export default {
         async selectedItem(item) {
             this.instanceId = item.ProblemId;
             this.$router.push(this.$cf.combineRoute(
-                this.$path.contestResult, this.contestId, this.$path.submit, this.instanceId));
+                this.$path.contestResult, this.contestId,
+                this.$path.account, this.accountId,
+                this.$path.submit, this.instanceId));
             await this.reloadInstance();
             this.assignContestProblemAccountId(item);
         },
@@ -494,10 +428,11 @@ export default {
             this.contestProblems = this.$cf.cloneDeep(contest?.ContestProblems);
             this.contestAccount = this.$cf.cloneDeep(contest?.ContestAccount);
             this.timeToDo = contest?.TimeToDo;
+            this.createdId = contest?.AccountId;
         },
     }
 }
 </script>
 <style scoped>
-@import './contest-submit.css';
+@import './contest-result.css';
 </style>

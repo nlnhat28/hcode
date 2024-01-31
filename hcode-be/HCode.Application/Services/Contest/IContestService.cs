@@ -58,6 +58,13 @@ namespace HCode.Application
         /// <returns></returns>
         Task GetForSubmitAsync(Guid id, ServerResponse res);
         /// <summary>
+        /// Lấy contest cho màn kết quả
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        Task ViewResultAsync(Guid id, Guid accountId, ServerResponse res);
+        /// <summary>
         /// Submit bài toán trong bài thi
         /// </summary>
         /// <param name="contestProblemId"></param>

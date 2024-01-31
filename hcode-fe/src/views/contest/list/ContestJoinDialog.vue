@@ -130,7 +130,7 @@ export default {
              */
             disabledAllButton: false,
             password: null,
-            dateTimePattern: 'dd/mm/yyyy hh/mm',
+            dateTimePattern: 'dd/mm/yyyy hh:mm',
         }
     },
     computed: {
@@ -315,8 +315,9 @@ export default {
         async resultContest() {
             if (this.instanceService && this.instance.ContestAccountState) {
                 this.$router.push(this.$cf.combineRoute(
-                    this.$path.contestResult, this.instance.ContestId, this.$path.submit, '0'));
-
+                    this.$path.contestResult, this.instance.ContestId, 
+                    this.$path.account, this.instance.AccountId,
+                    this.$path.submit, '0'));
             }
         },
         /**

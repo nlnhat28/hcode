@@ -110,6 +110,10 @@ export default {
         problemId: {
             type: String,
             default: null
+        },
+        accountId: {
+            type: String,
+            default: null
         }
     },
     data() {
@@ -124,7 +128,7 @@ export default {
             instanceService: contestService,
             contestConst: contestConst,
             problems: [],
-            dateTimePattern: 'dd/mm/yyyy hh/mm',
+            dateTimePattern: 'dd/mm/yyyy hh:mm',
         }
     },
     watch: {
@@ -146,19 +150,19 @@ export default {
                             value: i.AccountFullName,
                         },
                         {
-                            field: this.$t('contest.field.start'),
-                            value: this.$fm.formatDateTime(i.StartTime, this.dateTimePattern),
+                            field: this.$t('contest.field.joiner'),
+                            value: i?.ContestAccount?.FullName,
                         },
                         {
-                            field: this.$t('contest.field.end'),
-                            value: this.$fm.formatDateTime(i.EndTime, this.dateTimePattern),
+                            field: this.$t('contest.field.startDate'),
+                            value: this.$fm.formatDateTime(i?.ContestAccount.StartTime, "dd/mm/yyyy hh:mm:ss"),
                         },
                         {
-                            field: this.$t('contest.field.time'),
-                            value: i.TimeToDo ? `${i.TimeToDo} ${this.$t('com.minute')}` : this.$t('contest.noLimit'),
+                            field: this.$t('contest.field.state'),
+                            value: this.$cv.enumToResource(i.State, contestEnum.contestAccountState),
                         },
                     ]
-
+                    
                     return infos;
                 }
             } catch (error) {
@@ -189,7 +193,30 @@ export default {
          * @override
          */
         async loadDataOnCreated() {
-            await this.getForSubmit(this.instanceId);
+            await this.viewResult(this.instanceId, this.accountId);
+        },
+        async viewResult(instanceId, accountId) {
+            if (this.instanceService) {
+                const response = await this.instanceService.viewResult(instanceId, accountId);
+                if (this.$res.isSuccess(response)) {
+                    if (!this.$cf.isEmptyObject(response.Data)) {
+                        this.instance = this.$cf.cloneDeep(response.Data);
+                        this.storeOriginalInstance();
+
+                        if (this.hasBuildDocumentTitle) {
+                            this.documentTitle = this.$t('contest.result') + " - "
+                                + this.instance[`${this.cfg.entity}Name`] + " - " + this.cfg.subSysName;
+                            document.title = this.$cf.documentTitle(this.documentTitle);
+                        };
+                    }
+                    else {
+                        this.$dl.error(this.$t('msg.cannotFindRecord'), this.goCallbackPath)
+                    }
+                }
+                else {
+                    this.handleError(response, this.goCallbackPath)
+                }
+            }
         },
         /**
          * @override

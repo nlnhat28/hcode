@@ -93,6 +93,18 @@ class ContestService extends BaseService {
         );
         return response;
     }
+    /**
+     * Lấy thông tin bài thi cho màn kết quả
+     *
+     * Author: nlnhat (17/08/2023)
+     * @return
+     */
+    async viewResult(contestId, accountId) {
+        const response = await this.baseRequest.get(
+            `${this.baseUrl}/ViewResult/${contestId}/${accountId}`
+        );
+        return response;
+    }
 }
 const contestService = new ContestService();
 export default contestService;

@@ -25,7 +25,10 @@
             <v-splitter>
                 <v-splitter-panel class="flex-center">
                     <div class="contest-detail__info">
-                        <v-tab-view>
+                        <v-tab-view
+                            v-model:activeIndex="activeTab"
+                            @tab-change="onTabChange"
+                        >
                             <!-- Thông tin chung -->
                             <v-tab-panel :header="$t('contest.generalInfo')">
                                 <v-form-body class="dark">
@@ -145,11 +148,17 @@
                                 </v-form-body>
                             </v-tab-panel>
                             <!-- Danh sách tham gia -->
-                            <v-tab-panel :header="$t('contest.listParticipants')">
+                            <v-tab-panel
+                                :header="$t('contest.listParticipants')"
+                                v-if="mode != $enums.formMode.create"
+                            >
                                 <ContestAccountList :contestId="instance.ContestId" />
                             </v-tab-panel>
                             <!-- Đã nộp -->
-                            <v-tab-panel :header="$t('problem.submissions')">
+                            <v-tab-panel
+                                :header="$t('problem.submissions')"
+                                v-if="mode != $enums.formMode.create"
+                            >
                                 <SubmissionsList
                                     ref="refSubmissionList"
                                     :contestId="instance.ContestId"
@@ -163,7 +172,10 @@
                 </v-splitter-panel>
                 <v-splitter-panel class="flex-center">
                     <!-- Danh sách câu hỏi -->
-                    <div class="contest-problem-container" v-if="1">
+                    <div
+                        class="contest-problem-container"
+                        v-if="1"
+                    >
                         <div class="font-bold color-text flex-center">
                             {{ $t('contest.problems') }}
                         </div>
@@ -214,7 +226,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="wh-full p-20 flex-column code-container" v-if="0">
+                    <div
+                        class="wh-full p-20 flex-column code-container"
+                        v-if="0"
+                    >
                         <div class="code__header flex justify-between">
                             <div class="flex-align-center col-gap-12">
                                 <div class="font-bold color-text flex-center">
@@ -306,6 +321,7 @@ export default {
             problems: [],
             dateTimeFormat: 'dd/mm/yy',
             showExit: false,
+            activeTab: 0,
         }
     },
     watch: {
@@ -360,6 +376,31 @@ export default {
                 this.instance = this.contestStore.contest;
             }
 
+            this.getConfig();
+
+        },
+        /**
+         * Lấy config
+         */
+        getConfig() {
+            let tab = 0;
+            try {
+                tab = JSON.parse(sessionStorage.getItem("ContestDetail"))?.activeTab;
+            }
+            catch {
+            }
+            if (tab != null) {
+                this.activeTab = tab;
+            }
+        },
+        /**
+         * Thay đổi tab
+         */
+        onTabChange() {
+            let config = {
+                activeTab: this.activeTab
+            };
+            sessionStorage.setItem("ContestDetail", JSON.stringify(config));
         },
         /**
          * Khởi tạo contest khi thêm mới
@@ -543,6 +584,4 @@ export default {
     }
 }
 </script>
-<style scoped>
-@import './contest-detail.css';
-</style>
+<style scoped>@import './contest-detail.css';</style>

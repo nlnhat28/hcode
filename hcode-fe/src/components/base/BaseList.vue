@@ -61,7 +61,7 @@ export default {
             /** Date format */
             dateFormat: 'dd/MM/yyyy',
             /** Datetime format */
-            dateTimePattern: 'dd/mm/yyyy hh/mm/ss',
+            dateTimePattern: 'dd/mm/yyyy hh:mm:ss',
             /** Title */
             documentTitle: null,
             /** build buildDocumentTitle hay k */

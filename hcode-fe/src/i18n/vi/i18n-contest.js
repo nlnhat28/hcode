@@ -25,6 +25,8 @@ const contest = {
         public: "Công khai",
         accountFullName: "Người tạo",
         submitFullName: "Người nộp",
+        joiner: "Người thi",
+        startDate: "Ngày thi",
     },
     contestState: {
         pending: "Chưa mở",
@@ -78,6 +80,8 @@ const contest = {
     questionSimple: "Câu",
     usedProblemWarning: "Bài toán này đã được sử dụng",
     allQuestion: "Tất cả câu hỏi",
+    result: "Kết quả",
+    goBackContest: "Quay lại bài thi"
 };
 
 export default contest;
