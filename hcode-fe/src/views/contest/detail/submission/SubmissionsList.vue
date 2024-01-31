@@ -45,7 +45,7 @@
                     :key="item[itemIdKey] ?? index"
                     :index="index"
                     :id="item[itemIdKey]"
-                    @click="showSubmissionDialog(item)"
+                    @doubleClick="showSubmissionDialog(item)"
                 >
                     <template #content>
                         <!-- Ngày tạo -->
@@ -88,70 +88,12 @@
             </template>
         </v-table>
     </div>
-    <v-dialog
-        class="v-dialog dark submission-dialog"
-        v-model:visible="isShowSubmissionDialog"
-        modal
-        :header="headerSubmission"
-        :draggable="false"
-        style="width: 1200px; height: 800px;"
-    >
-        <template #closeIcon>
-            <v-icon icon="far fa-circle-xmark" />
-        </template>
-        <div class="v-dialog__content">
-            <v-tab-view>
-                <!-- Lời giải -->
-                <v-tab-panel :header="$t('problem.field.solution')">
-                    <div class="w-full flex-column row-gap-20 p-20">
-                        <v-code-mirror
-                            v-model="selectedSubmission.SourceCode"
-                            :language="languageIdSubmission"
-                        ></v-code-mirror>
-                    </div>
-                </v-tab-panel>
-                <!-- Testcase -->
-                <v-tab-panel :header="$t('problem.test')">
-                    <div class="testcase-container dark">
-                        <div
-                            class="testcase__list"
-                            v-if="!$cf.isEmptyArray(instance.Testcases)"
-                        >
-                            <TestcaseItem
-                                v-for="(testcase, index) in instance.Testcases"
-                                isReadOnly
-                                :key="testcase.TestcaseId"
-                                :index="index"
-                                :testcase="testcase"
-                                :parameters="instance.Parameters"
-                            ></TestcaseItem>
-                        </div>
-                    </div>
-                </v-tab-panel>
-            </v-tab-view>
-        </div>
-        <template #footer>
-            <v-button-container justifyContent="space-between">
-                <!-- Các nút bên trái -->
-                <div>
-                    <v-button
-                        outlined
-                        :label="$t('com.close')"
-                        @click="closeSubmissionDialog"
-                    ></v-button>
-                </div>
-                <!-- Các nút bên phải -->
-                <div class="flex col-gap-8">
-                    <!-- Đóng -->
-                    <v-button
-                        v-if="selectedSubmission.SourceCode"
-                        :label="$t('com.copy')"
-                        @click="copySubmission"
-                    ></v-button>
-                </div>
-            </v-button-container>
-        </template>
-    </v-dialog>
+    <SubmissionDialog
+        v-if="isShowSubmissionDialog"
+        :submission="selectedSubmission"
+        :languageId="languageIdSubmission"
+        @close="closeSubmissionDialog"
+    />
 </template>
 <script>
 import problemEnum from "@/enums/problem-enum.js";
@@ -159,16 +101,12 @@ import contestEnum from "@/enums/contest-enum.js";
 import BaseSubmissionList from "@/views/submission/BaseSubmissionList.vue";
 import { submissionService } from "@/services/services.js";
 import SubmissionDialog from "@/views/submission/SubmissionDialog.vue";
-import ParameterItem from "@/views/submit/ParameterItem.vue";
-import TestcaseItem from "@/views/submit/TestcaseItem.vue";
 
 export default {
     name: "SubmissionList",
     extends: BaseSubmissionList,
     components: {
-        SubmissionDialog
-        ParameterItem,
-        TestcaseItem,
+        SubmissionDialog,
     },
     props: {
         contestId: {
@@ -270,9 +208,6 @@ export default {
                 isShow: false,
                 object: null,
             },
-            isShowSubmissionDialog: false,
-            selectedSubmission: {},
-            languageIdSubmission: {}
         }
     },
     watch: {
@@ -333,13 +268,6 @@ export default {
 
             return selects;
         },
-        headerSubmission() {
-            if (this.selectedSubmission) {
-                let s = this.selectedSubmission;
-                return `${this.$t('problem.field.solution')} - ${s.FullName} - ${s.LanguageName}`
-            }
-            return ''
-        }
     },
     mounted() {
     },
@@ -361,22 +289,6 @@ export default {
         onSelectedContestProblem() {
             this.reloadItems();
         },
-        /**
-         * Hiện submission dialog
-         * @param {*} item 
-         */
-        showSubmissionDialog(item) {
-            this.selectedSubmission = item;
-            this.isShowSubmissionDialog = true;
-            this.languageIdSubmission = this.languages.find(l => l.LanguageId == item.LanguageId)?.JudgeId ?? problemEnum.language.csharp
-        },
-        closeSubmissionDialog() {
-            this.isShowSubmissionDialog = false;
-        },
-        copySubmission() {
-            this.$cf.copyToClipboard(this.selectedSubmission.SourceCode);
-            this.$ts.success(this.$t("com.copied"));
-        }
     }
 }
 </script>

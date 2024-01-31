@@ -48,6 +48,7 @@ const problem = {
     content: "Nội dung",
     generalInfo: "Thông tin chung",
     testcase: "Test",
+    testcases: "Testcases",
     parameter: "Tham số",
     inputParameter: "Tham số đầu vào",
     outputType: "Kiểu dữ liệu trả về",

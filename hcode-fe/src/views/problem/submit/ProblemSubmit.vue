@@ -166,7 +166,7 @@
                                 </div>
                             </v-tab-panel>
                             <!-- Đã nộp -->
-                            <v-tab-panel :header="$t('problem.submissions')">
+                            <v-tab-panel :header="$t('problem.submissions')" v-if="this.$auth.isAuthenticated()">
                                 <SubmissionsList
                                     ref="refSubmissionList"
                                     :parentId="instance.ProblemAccountId"
@@ -266,7 +266,7 @@ export default {
          * Tạo quan hệ bài toán tài khoản
          */
         auditProblemAccount() {
-            if (!this.instance.ProblemAccountState && this.instance.ProblemId) {
+            if (!this.instance.ProblemAccountState && this.instance.ProblemId && this.$auth.isAuthenticated()) {
                 let payload = {
                     ProblemId: this.instance.ProblemId,
                     State: problemEnum.problemAccountState.seen.value,

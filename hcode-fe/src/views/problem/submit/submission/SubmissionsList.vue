@@ -43,7 +43,7 @@
                     :key="item[itemIdKey] ?? index"
                     :index="index"
                     :id="item[itemIdKey]"
-                    @doubleClick="onSelect(item)"
+                    @doubleClick="showSubmissionDialog(item)"
                 >
                     <template #content>
                         <!-- Ngày tạo -->
@@ -55,23 +55,17 @@
                         <!-- Trạng thái -->
                         <v-td
                             :content="item.StatusName"
-                            :style="{ color: $cv.statusJudge0ToColor(item.StatusId)}"
+                            :style="{ color: $cv.statusJudge0ToColor(item.StatusId) }"
                         >
                         </v-td>
                         <!-- Thời gian -->
-                        <v-td
-                            :content="item.RunTime != null ? item.RunTime + ' s' : '_'"
-                        >
+                        <v-td :content="item.RunTime != null ? item.RunTime + ' s' : '_'">
                         </v-td>
                         <!-- Bộ nhớ -->
-                        <v-td
-                            :content="item.Memory != null ? item.Memory + ' kb' : '_'"
-                        >
+                        <v-td :content="item.Memory != null ? item.Memory + ' kb' : '_'">
                         </v-td>
                         <!-- Ngôn ngữ -->
-                        <v-td
-                            :content="item.LanguageName"
-                        >
+                        <v-td :content="item.LanguageName">
                         </v-td>
                     </template>
                 </v-tr>
@@ -89,15 +83,25 @@
             </template>
         </v-table>
     </div>
+    <SubmissionDialog
+        v-if="isShowSubmissionDialog"
+        :submission="selectedSubmission"
+        :languageId="languageIdSubmission"
+        @close="closeSubmissionDialog"
+    />
 </template>
 <script>
 import problemEnum from "@/enums/problem-enum.js";
 import contestEnum from "@/enums/contest-enum.js";
 import BaseSubmissionList from "@/views/submission/BaseSubmissionList.vue";
+import SubmissionDialog from "@/views/submission/SubmissionDialog.vue";
 
 export default {
     name: "SubmissionList",
     extends: BaseSubmissionList,
+    components: {
+        SubmissionDialog,
+    },
     data() {
         return {
             /**
@@ -176,7 +180,7 @@ export default {
         addFilterModelsComputed() {
             let filters = [];
 
-             let filterPrivate = [
+            let filterPrivate = [
                 {
                     columnName: 'ProblemAccountId',
                     logicType: this.$enums.logicType.or,

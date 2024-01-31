@@ -32,6 +32,7 @@
                             v-model:sortModel="sortModels[index]"
                             v-model:filterModel="filterModels[index]"
                             :key="index"
+                            :isHide="col.isHide"
                             :textAlign="col.textAlign"
                             :widthCell="col.widthCell"
                             :name="col.name"

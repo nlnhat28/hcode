@@ -252,16 +252,14 @@ namespace HCode.Application
                 try
                 {
                     var testcaseDtos = _mapper.Map<List<TestcaseDto>>(testcases);
-                    if (testcaseDtos != null) {
-                        testcaseDtos.ForEach(tc => tc.Status = data.FirstOrDefault(s => s.testcase_id == tc.TestcaseId))
-                    };
+                    testcaseDtos?.ForEach(tc => tc.Status = data.Submissions.FirstOrDefault(s => s.testcase_id == tc.TestcaseId));;
 
                     var parameterJson = JsonSerializer.Serialize(parameters);
                     var testcaseJson = JsonSerializer.Serialize(testcaseDtos);
 
                     var submission = data.InitSubmission(problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, problemDto.ProblemAccountId);
-                    submission.Parmeter = parameterJson;
-                    submission.Testcase = testcaseJson;
+                    submission.Parameters = parameterJson;
+                    submission.Testcases = testcaseJson;
                     
                     var subRes = await _submissionRepo.InsertAsync(submission);
                     res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));

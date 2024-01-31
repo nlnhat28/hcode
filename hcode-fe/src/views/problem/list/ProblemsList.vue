@@ -55,9 +55,12 @@
                         <!-- :isSelected="isSelected(item[itemId])" -->
                         <template #content>
                             <!-- Trạng thái -->
-                            <v-td :style="{
-                                textAlign: 'center'
-                            }">
+                            <v-td
+                                v-if="$auth.isAuthenticated()"
+                                :style="{
+                                    textAlign: 'center'
+                                }"
+                            >
                                 <v-icon
                                     :icon="$cv.problemAccountStateToIcon(item.ProblemAccountState)"
                                     :color="$cv.problemAccountStateToColor(item.ProblemAccountState)"
@@ -200,6 +203,7 @@ export default {
              */
             columns: [
                 {
+                    isHide: !this.$auth.isAuthenticated(),
                     title: this.$t("problem.field.status"),
                     textAlign: 'left',
                     widthCell: 60,
@@ -353,13 +357,42 @@ export default {
         initOnCreated() {
             this.itemService = problemService;
             this.problemStates = this.$cv.enumToSelects(problemEnum.problemState);
-            this.selectedProblemState = this.problemStates[1];
+            this.getConfig();
+            
+        },
+        /**
+         * Lấy config lọc
+         */
+        getConfig() {
+            let selectedState = 1;
+            try {
+                selectedState = JSON.parse(sessionStorage.getItem("ProblemList"))?.selectedProblemState;
+            }
+            catch {
+            }
+            if (selectedState != null) {
+                this.selectedProblemState = this.$cv.enumKeyToSelected(selectedState, this.problemStates, 1);
+            }
+            else {
+                this.selectedProblemState = this.problemStates[1];
+                this.storageProblemState();
+            }
+        },
+        /**
+         * Lưu lại trạng thái lọc
+         */
+        storageProblemState() {
+            let config = {
+                selectedProblemState: this.$cv.selectedToEnumKey(this.selectedProblemState)
+            };
+            sessionStorage.setItem("ProblemList", JSON.stringify(config));
         },
         /**
          * Chọn problem state
          */
         onSelectedProblemState() {
             this.reloadItems();
+            this.storageProblemState();
         },
         /**
          * Click submit

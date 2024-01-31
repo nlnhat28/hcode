@@ -31,6 +31,7 @@ const auth = {
     changePassword: "Thay đổi mật khẩu",
     changePasswordSubtitle: "Bạn đang tạo mật khẩu mới cho tài khoản",
     successfullyChangePassword: "Đã thay đổi mật khẩu",
+    logout: "Đăng xuất",
 };
 
 export default auth;

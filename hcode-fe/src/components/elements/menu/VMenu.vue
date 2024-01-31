@@ -11,6 +11,6 @@ export default {
     }
 }
 </script>
-<style scoped>
+<style>
 @import './menu.css';
 </style>

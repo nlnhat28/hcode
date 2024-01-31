@@ -2,6 +2,8 @@
 using HCode.Domain;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
+using System.Text.Json;
+
 namespace HCode.Application
 {
     /// <summary>
@@ -367,7 +369,7 @@ namespace HCode.Application
         // Submit 1 câu hỏi
         public async Task SubmitAsync(Guid contestProblemId, ProblemDto problemDto, ServerResponse res) 
         {
-            var (_, _, testcases) = _problemService.MapProblemDtoToEntity(problemDto);
+            var (_, parameters, testcases) = _problemService.MapProblemDtoToEntity(problemDto);
             await _ceService.ExecuteAsync(problemDto, testcases, res);
 
             // Lưu dư thừa
@@ -433,17 +435,16 @@ namespace HCode.Application
 
                     // submission
                     var testcaseDtos = _mapper.Map<List<TestcaseDto>>(testcases);
-                    if (testcaseDtos != null) {
-                        testcaseDtos.ForEach(tc => tc.Status = data.FirstOrDefault(s => s.testcase_id == tc.TestcaseId))
-                    };
+                    testcaseDtos?.ForEach(tc => tc.Status = data.Submissions.FirstOrDefault(s => s.testcase_id == tc.TestcaseId));;
 
                     var parameterJson = JsonSerializer.Serialize(parameters);
                     var testcaseJson = JsonSerializer.Serialize(testcaseDtos);
 
                     var submission = data.InitSubmission(
                         problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, contestProblemAccountId: cpaId);
-                    submission.Parmeter = parameterJson;
-                    submission.Testcase = testcaseJson;
+
+                    submission.Parameters = parameterJson;
+                    submission.Testcases = testcaseJson;
                     
                     var subRes = await _submissionRepo.InsertAsync(submission);
                     res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));

@@ -13,17 +13,29 @@ const auth = {
     /**
      * Lấy thông tin account
      */
+    logout() {
+        try {
+            return localStorage.removeItem("__persisted__account");;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    },
+    /**
+     * Lấy thông tin account
+     */
     getAccount() {
         try {
-            return JSON.parse(localStorage.getItem("__persisted__account"))?.account;
+            return JSON.parse(localStorage.getItem("__persisted__account"))
+                ?.account;
         } catch (error) {
-            console.error(error);   
-            return null;         
+            console.error(error);
+            return null;
         }
     },
     /**
      * Lấy id tài khoản
-     * @returns 
+     * @returns
      */
     getAccountId() {
         try {
@@ -35,11 +47,13 @@ const auth = {
     },
     /**
      * Kiểm tra đúng accountId không
-     * @returns 
+     * @returns
      */
     isAccountId(accountId) {
         try {
-            return this.getAccountId() != null && this.getAccountId() == accountId;
+            return (
+                this.getAccountId() != null && this.getAccountId() == accountId
+            );
         } catch (error) {
             console.error(error);
             return null;
@@ -47,7 +61,7 @@ const auth = {
     },
     /**
      * Đã đăng nhập
-     * @returns 
+     * @returns
      */
     isAuthenticated() {
         try {
@@ -81,7 +95,7 @@ const auth = {
     },
     /**
      * Là admin
-     * @returns 
+     * @returns
      */
     isAdmin() {
         try {
@@ -93,7 +107,7 @@ const auth = {
     },
     /**
      * Là censor
-     * @returns 
+     * @returns
      */
     isCensor() {
         try {
@@ -105,7 +119,7 @@ const auth = {
     },
     /**
      * Là user
-     * @returns 
+     * @returns
      */
     isUser() {
         try {
@@ -114,7 +128,7 @@ const auth = {
             console.error(error);
             return false;
         }
-    }
-}
+    },
+};
 
 export default auth;

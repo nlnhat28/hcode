@@ -1,0 +1,14 @@
+/* .p-menu.p-menu-overlay {
+    background: var(--grey-800);
+}
+.p-menu .p-menuitem > .p-menuitem-content .p-menuitem-link .p-menuitem-text {
+    color: var(--color-text) !important;
+}
+.p-menu .p-menuitem > .p-menuitem-content .p-menuitem-link .p-menuitem-icon {
+    color: var(--color-text);
+}
+.p-menu .p-menuitem:not(.p-highlight):not(.p-disabled) > .p-menuitem-content:hover {
+    background: var(--grey-800);
+    color: var(--color-text);
+
+} */

@@ -1,5 +1,5 @@
 <template>
-    <th
+    <th v-if="!isHide"
         :style="`text-align: ${textAlign}; width: ${width}px; min-width: ${width}px;`"
         ref="th"
     >
@@ -157,6 +157,13 @@ export default {
         resizable: {
             type: Boolean,
             default: true,
+        },
+        /**
+         * Ẩn
+         */
+        isHide: {
+            type: Boolean,
+            default: false,
         }
     },
     data() {

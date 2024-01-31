@@ -67,7 +67,8 @@ const com = {
     collapse: "Thu gọn",
     all: "Tất cả",
     copy: "Sao chép",
-    copied: "Đã sao chép"
+    copied: "Đã sao chép",
+    later: "Để sau"
     
 };
 

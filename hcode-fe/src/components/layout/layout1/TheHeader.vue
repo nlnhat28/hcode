@@ -18,28 +18,40 @@
 
             </div>
             <div class="header__auth">
-                <div class="header__avatar">
+                <!-- <div class="header__avatar">
                     <img
                         class="avatar--sm"
                         src="@/assets/img/default-avatar.png"
                         alt="Ảnh đại diện"
                     />
-                </div>
-                <div class="header__username">
+                </div> -->
+                <div
+                    class="header__username"
+                    v-if="$auth.isAuthenticated()"
+                >
                     {{ usernameComputed }}
                 </div>
-                <div class="header__dropdown">
+                <div class="mr-12">
                     <v-button
-                        icon="pi pi-ellipsis-v"
+                        v-if="!$auth.isAuthenticated()"
+                        outlined
+                        :label="$t('auth.login')"
+                        @click="clickLogin"
+                    />
+                </div>
+                <div
+                    class="header__dropdown"
+                    v-if="$auth.isAuthenticated()"
+                >
+                    <v-icon
+                        icon="far fa-angle-down"
+                        applyPointer
                         @click="toggle"
-                        aria-haspopup="true"
-                        aria-controls="overlay_menu"
                     />
                     <v-menu
                         ref="menu"
-                        id="overlay_menu"
+                        popup
                         :model="authMenu"
-                        :popup="true"
                     />
                 </div>
             </div>
@@ -78,8 +90,9 @@ export default {
             ],
             authMenu: [
                 {
-                    label: this.$t('auth.signup'),
-                    icon: 'far fa-right-from-bracket'
+                    label: this.$t('auth.logout'),
+                    icon: 'far fa-right-from-bracket',
+                    command: this.clickLogout
                 },
             ],
             /**
@@ -95,7 +108,7 @@ export default {
          * Hiển thị tên người dùng
          */
         usernameComputed() {
-            return this.accountStore.account.Username || this.accountStore.account.FullName;
+            return this.accountStore.account?.Username || this.accountStore.account?.FullName;
         },
         /**
          * Store
@@ -107,7 +120,14 @@ export default {
         toggle(event) {
             this.$refs.menu.toggle(event);
         },
-        logout() {
+        clickLogin() {
+            // this.$auth.logout();
+            this.$router.push(this.$path.login);
+        },
+        clickLogout() {
+            this.accountStore.account = null
+            this.$auth.logout();
+            this.$router.push(this.$path.login);
         }
     }
 }
@@ -152,8 +172,8 @@ export default {
 .header__auth {
     display: flex;
     align-items: center;
-    column-gap: 12px;
-    margin-right: 30px;
+    column-gap: 4px;
+    margin-right: 40px;
 }
 
 .header__username {

@@ -208,9 +208,6 @@ export default {
         addFilterModelsComputed() {
             let filters = [];
 
-            if (!this.contestId) {
-                this.contestId = this.$cf.uuid.new();
-            }
             let filterContest = [
                 {
                     columnName: 'ContestId',

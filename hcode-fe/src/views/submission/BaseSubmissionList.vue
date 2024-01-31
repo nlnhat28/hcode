@@ -30,6 +30,9 @@ export default {
              */
             columns: [],
             languages: [],
+            selectedSubmission: null,
+            isShowSubmissionDialog: false,
+            languageIdSubmission: 63
         }
     },
     computed: {
@@ -84,6 +87,21 @@ export default {
          */
         onSelect(item) {
             this.$emit('selected', item);
+        },
+        /**
+         * Mở submission dialog
+         */
+        showSubmissionDialog(submission) {
+            this.selectedSubmission = submission;
+            this.isShowSubmissionDialog = true;
+            this.languageIdSubmission = this.languages.find(l =>
+                l.LanguageId == submission.LanguageId)?.JudgeId ?? problemEnum.language.java
+        },
+        /**
+         * Close submission dialog
+         */
+        closeSubmissionDialog() {
+            this.isShowSubmissionDialog = false;
         }
     }
 }

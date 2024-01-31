@@ -24,7 +24,7 @@ export default {
          * @returns 
          */
         checkAuthenticated() {
-            if (this.$auth.isAuthenticated) {
+            if (this.$auth.isAuthenticated()) {
                 return true
             }
             else {
@@ -35,10 +35,10 @@ export default {
                         outlined: true
                     },
                     {
-                        label: this.$t("com.gotIt"),
+                        label: this.$t("com.later"),
                     }
                 ]
-                this.$dl.warn(this.$t('msg.loginPlease'), buttons);
+                this.$dl.warn(this.$t('msg.loginPlease'), buttons, this.$t('com.error'));
                 return false;
             }
         },

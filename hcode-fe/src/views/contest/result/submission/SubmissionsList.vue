@@ -43,7 +43,7 @@
                     :key="item[itemIdKey] ?? index"
                     :index="index"
                     :id="item[itemIdKey]"
-                    @click="onSelect(item)"
+                    @doubleClick="showSubmissionDialog(item)"
                 >
                     <template #content>
                         <!-- Ngày tạo -->
@@ -84,15 +84,25 @@
             </template>
         </v-table>
     </div>
+    <SubmissionDialog
+        v-if="isShowSubmissionDialog"
+        :submission="selectedSubmission"
+        :languageId="languageIdSubmission"
+        @close="closeSubmissionDialog"
+    />
 </template>
 <script>
 import problemEnum from "@/enums/problem-enum.js";
 import contestEnum from "@/enums/contest-enum.js";
 import BaseSubmissionList from "@/views/submission/BaseSubmissionList.vue";
+import SubmissionDialog from "@/views/submission/SubmissionDialog.vue";
 
 export default {
     name: "SubmissionList",
     extends: BaseSubmissionList,
+    components: {
+        SubmissionDialog
+    },
     data() {
         return {
             /**

@@ -43,7 +43,7 @@ namespace HCode.Application
         /// Lấy Role hiện tại
         /// </summary>
         /// <returns></returns>
-        RoleCode? GetRole()
+        RoleCode? GetRole();
         /// <summary>
         /// Lấy AccountId.ToString() hiện tại
         /// </summary>

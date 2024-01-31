@@ -55,6 +55,7 @@
                         <template #content>
                             <!-- Trạng thái thi -->
                             <v-td
+                                v-if="$auth.isAuthenticated()"
                                 :content="$cv.enumToResource(item.ContestAccountState, contestEnum.contestAccountState)"
                                 :style="{
                                     color: $cv.contestAccountStateToColor(item.ContestAccountState),
@@ -209,6 +210,7 @@ export default {
              */
             columns: [
                 {
+                    isHide: !this.$auth.isAuthenticated(),
                     title: this.$t("contest.field.contestAccountState"),
                     textAlign: 'left',
                     widthCell: 80,
@@ -377,19 +379,41 @@ export default {
         initOnCreated() {
             this.itemService = contestService;
             this.contestFilters = this.$cv.enumToSelects(contestEnum.contestFilter);
-            this.selectedContestFilter = this.contestFilters[0];
+            this.getConfig();
         },
         /**
-         * Click vào nút tạo mới
+         * Lấy config lọc
          */
-        clickCreate() {
-            this.$router.push(this.$path.contest)
+        getConfig() {
+            let selectedFilter = 0;
+            try {
+                selectedFilter = JSON.parse(sessionStorage.getItem("ContestList"))?.selectedContestFilter;
+            }
+            catch {
+            }
+            if (selectedFilter != null) {
+                this.selectedContestFilter = this.$cv.enumKeyToSelected(selectedFilter, this.contestFilters, 0);
+            }
+            else {
+                this.selectedContestFilter = this.contestFilters[0];
+                this.storageContestFilter();
+            }
+        },
+        /**
+         * Lưu lại trạng thái lọc
+         */
+        storageContestFilter() {
+            let config = {
+                selectedContestFilter: this.$cv.selectedToEnumKey(this.selectedContestFilter)
+            };
+            sessionStorage.setItem("ContestList", JSON.stringify(config));
         },
         /**
          * Chọn problem state
          */
         onSelectedContestFilter() {
             this.reloadItems();
+            this.storageContestFilter();
         },
         /**
          * Click join

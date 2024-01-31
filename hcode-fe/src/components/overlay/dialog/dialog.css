@@ -9,7 +9,7 @@
 }
 
 .v-dialog.p-dialog.submission-dialog .cm-editor {
-    height: 600px;
+    height: 468px;
 }
 
 .v-dialog.p-dialog {
@@ -53,12 +53,12 @@
 
 .v-dialog.dark .p-dialog-header {
     color: var(--color-text);
-    background-color: var(--bg-darker);
+    background-color: var(--dark-500);
 }
 .v-dialog.dark .p-dialog-content {
     color: var(--color-text);
-    background-color: var(--bg-dark);
+    background-color: var(--dark-400);
 }
 .v-dialog.dark .p-dialog-footer {
-    background-color: var(--bg-darker);
+    background-color: var(--dark-500);
 }

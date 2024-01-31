@@ -37,22 +37,6 @@
                                     <v-form-column :rowGap="32">
                                         <!-- Mã và tên -->
                                         <v-form-group :columnGap="12">
-                                            <!-- Mã -->
-                                            <!-- <v-form-item
-                                                style="width: 20%;"
-                                                isRequired
-                                                :label="$t('problem.field.problemCode')"
-                                            >
-                                                <v-input-text
-                                                    ref="refProblemCode"
-                                                    isRequired
-                                                    v-model="instance.ProblemCode"
-                                                    :maxLength="20"
-                                                    :label="$t('problem.field.code')"
-                                                    :applyPlaceholder="false"
-                                                >
-                                                </v-input-text>
-                                            </v-form-item> -->
                                             <!-- Tên -->
                                             <v-form-item
                                                 isRequired
@@ -130,7 +114,7 @@
                                                 </div>
                                             </v-form-item>
                                         </v-form-group>
-                                        <div class="flex col-gap-24">
+                                        <div class="flex col-gap-24" v-if="$auth.isAdmin()">
                                             <div class="checkbox-item">
                                                 <!-- Trạng thái lưu -->
                                                 <div class="label cursor-pointer">

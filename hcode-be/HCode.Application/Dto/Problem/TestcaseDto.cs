@@ -41,7 +41,7 @@ namespace HCode.Application
         /// Submission của testcase
         /// </summary>
         [AutoMapper.Configuration.Annotations.Ignore]
-        public SubmissionResponse Status { get; set; };
+        public SubmissionResponse? Status { get; set; }
         #endregion
 
         #region Methods

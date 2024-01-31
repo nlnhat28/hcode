@@ -189,7 +189,7 @@ export default {
         /** Show nút tham gia */
         isShowJoinButton() {
             if (this.instance) {
-                return (this.instance.ContestAccountState == null && !this.finishedContest) || !this.#$auth.isAuthenticated();
+                return (this.instance.ContestAccountState == null && !this.finishedContest) || !this.$auth.isAuthenticated();
             }
             return false;
         },

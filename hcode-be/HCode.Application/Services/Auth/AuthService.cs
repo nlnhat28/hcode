@@ -326,7 +326,7 @@ namespace HCode.Application
         {
             try {
                 var claim = GetClaim(Keys.ClaimRole);
-                return claim != null && claim.Value != null ? (RoleCode)claim.Value : null;
+                return claim != null && claim.Value != null ? (RoleCode)Convert.ToInt32(claim.Value) : null;
             }
             catch {
                 return null;
@@ -353,8 +353,7 @@ namespace HCode.Application
                 var header = _httpContext.HttpContext.Request.Headers[Keys.Authorization].FirstOrDefault();
                 header = header?[Keys.Bearer.Length..].Trim();
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var decodedToken = tokenHandler.ReadToken(header) as JwtSecurityToken;
-                if (decodedToken != null)
+                if (tokenHandler.ReadToken(header) is JwtSecurityToken decodedToken)
                 {
                     var claim = decodedToken.Claims.FirstOrDefault(c => c.Type == keyClaim);
                     return claim;
