@@ -1,4 +1,5 @@
 ﻿using HCode.Domain;
+using System.Security.Claims;
 
 namespace HCode.Application
 {
@@ -43,5 +44,15 @@ namespace HCode.Application
         /// </summary>
         /// <returns></returns>
         string GetAccountIdToString();
+        /// <summary>
+        /// Lấy AccessToken
+        /// </summary>
+        /// <returns></returns>
+        string? GetAccessToken();
+        /// <summary>
+        /// Lấy Claim theo key
+        /// </summary>
+        /// <returns></returns>
+        Claim? GetClaim(string keyClaim);
     }
 }

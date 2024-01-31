@@ -71,13 +71,8 @@ namespace HCode.Application
         /// </summary>
         public string? Token { get; set; }
         /// <summary>
-        /// Id vai trò
-        /// </summary>
-        public Guid RoleId { get; set; }
-        /// <summary>
         /// Mã vai trò
         /// </summary>
-        [MaxLength(255)]
-        public string? RoleCode { get; set; }
+        public RoleCode? Role { get; set; }
     }
 }

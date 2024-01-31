@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using HCode.Domain;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -24,7 +26,7 @@ namespace HCode.Application
         /// <summary>
         /// Repo auth
         /// </summary>
-        private new readonly IAccountRepository _repository;
+        private readonly IAccountRepository _repository;
         /// <summary>
         /// Repo vai trò
         /// </summary>
@@ -42,6 +44,10 @@ namespace HCode.Application
         /// Auth config
         /// </summary>
         private readonly AuthConfig _authConfig;
+        /// <summary>
+        /// HttpContext
+        /// </summary>
+        private readonly IHttpContextAccessor _httpContext;
         #endregion
 
         #region Constructors
@@ -55,7 +61,8 @@ namespace HCode.Application
         /// Created by: nlnhat (17/08/2023)
         public AuthService(IAccountRepository repository, IRoleRepository roleRepository,
                            IStringLocalizer<Resource> resource, IMapper mapper, IEmailService emailService, IMemoryCache cache,
-                           IOptions<JwtConfig> jwtConfig, IOptions<AuthConfig> authConfig)
+                           IOptions<JwtConfig> jwtConfig, IOptions<AuthConfig> authConfig,
+                           IHttpContextAccessor httpContext)
                          : base(resource, mapper)
         {
             _repository = repository;
@@ -64,6 +71,7 @@ namespace HCode.Application
             _cache = cache;
             _jwtConfig = jwtConfig.Value;
             _authConfig = authConfig.Value;
+            _httpContext = httpContext;
         }
         #endregion
 
@@ -96,8 +104,8 @@ namespace HCode.Application
 
             if (res.Success)
             {
-                var role = await _roleRepository.GetByCodeAsync(RoleConstant.RoleCode.Admin);
-                var roleId = (role != null) ? role.RoleId : Guid.Empty;
+                //var role = await _roleRepository.GetByCodeAsync(RoleConstant.RoleCode.Admin);
+                //var roleId = (role != null) ? role.RoleId : Guid.Empty;
 
                 var (password, salt) = AppHelper.HashPassword(authDto.Password);
 
@@ -110,7 +118,7 @@ namespace HCode.Application
                     Password = password,
                     Email = authDto.Email ?? string.Empty,
                     Salt = salt,
-                    RoleId = roleId,
+                    Role = RoleCode.User,
                     CreatedTime = DateTime.UtcNow,
                     CreatedBy = accountId.ToString(),
                 };
@@ -265,8 +273,9 @@ namespace HCode.Application
                 (
                     new Claim[]
                     {
-                        new Claim(ClaimTypes.Name, account.Username),
-                        new Claim(ClaimTypes.Role, account.RoleCode ?? string.Empty),
+                        new Claim(Keys.ClaimAccountId, account.AccountId.ToString()),
+                        new Claim(Keys.ClaimUsername, account.Username),
+                        new Claim(Keys.ClaimRole, account.Role.ToString() ?? string.Empty),
                     }
                 ),
                 Expires = DateTime.UtcNow.AddHours(_jwtConfig.ExpireToken),
@@ -306,14 +315,44 @@ namespace HCode.Application
         // Lấy AccountId
         public Guid GetAccountId()
         {
-            var accountId = "1bf8a43c-47fb-4d6c-1863-eeb1d8ed8cef";
-            return Guid.Parse(accountId);
+            //var accountId = "1bf8a43c-47fb-4d6c-1863-eeb1d8ed8cef";
+            var claim = GetClaim(Keys.ClaimAccountId);
+            var accountId = claim != null && claim.Value != null ? Guid.Parse(claim.Value) : Guid.Empty;
+            return accountId;
         }
 
         public string GetAccountIdToString()
         {
-            var accountId = "1bf8a43c-47fb-4d6c-1863-eeb1d8ed8cef";
-            return accountId.ToString();
+            return GetAccountId().ToString();
+        }
+
+        // AccessToken
+        public string? GetAccessToken()
+        {
+            var token = _httpContext.HttpContext.Request.Headers[Keys.Authorization].FirstOrDefault();
+            return token;
+        }
+
+        // Get claims
+        public Claim? GetClaim(string keyClaim)
+        {
+            try
+            {
+                var header = _httpContext.HttpContext.Request.Headers[Keys.Authorization].FirstOrDefault();
+                header = header?[Keys.Bearer.Length..].Trim();
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var decodedToken = tokenHandler.ReadToken(header) as JwtSecurityToken;
+                if (decodedToken != null)
+                {
+                    var claim = decodedToken.Claims.FirstOrDefault(c => c.Type == keyClaim);
+                    return claim;
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
         #endregion
     }

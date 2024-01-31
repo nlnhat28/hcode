@@ -29,7 +29,18 @@
                     {{ usernameComputed }}
                 </div>
                 <div class="header__dropdown">
-
+                    <v-button
+                        icon="pi pi-ellipsis-v"
+                        @click="toggle"
+                        aria-haspopup="true"
+                        aria-controls="overlay_menu"
+                    />
+                    <v-menu
+                        ref="menu"
+                        id="overlay_menu"
+                        :model="authMenu"
+                        :popup="true"
+                    />
                 </div>
             </div>
         </div>
@@ -65,6 +76,12 @@ export default {
                     to: this.$path.signup
                 }
             ],
+            authMenu: [
+                {
+                    label: this.$t('auth.signup'),
+                    icon: 'pi pi-refresh'
+                },
+            ],
             /**
              * Auth
              */
@@ -85,6 +102,11 @@ export default {
          */
         ...mapStores(useAuthStore),
         ...mapStores(useAccountStore),
+    },
+    methods: {
+        toggle(event) {
+            this.$refs.menu.toggle(event);
+        }
     }
 }
 </script>
@@ -124,6 +146,7 @@ export default {
     justify-content: flex-end;
     /* background-color: black; */
 }
+
 .header__auth {
     display: flex;
     align-items: center;
@@ -137,6 +160,7 @@ export default {
     font-weight: 700;
     font-size: 18px;
 }
+
 .header__avatar {
     width: 40px;
     height: 40px;
@@ -146,10 +170,12 @@ export default {
     align-items: center;
     justify-content: center;
 }
+
 .header__avatar img.avatar--sm {
     width: 94%;
     height: 94%;
 }
+
 .header__logo {
     display: flex;
     align-items: center;

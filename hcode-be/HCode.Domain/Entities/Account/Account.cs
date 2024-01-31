@@ -57,12 +57,8 @@ namespace HCode.Domain
         /// </summary>
         public string? Salt { get; set; }
         /// <summary>
-        /// Id vai trò
-        /// </summary>
-        public Guid RoleId { get; set; }
-        /// <summary>
         /// Mã vai trò
         /// </summary>
-        public string? RoleCode { get; set; }
+        public RoleCode? Role { get; set; }
     }
 }

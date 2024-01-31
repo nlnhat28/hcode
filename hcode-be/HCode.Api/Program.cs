@@ -19,6 +19,7 @@ namespace HCode.Api
             var builder = WebApplication.CreateBuilder(args);
 
             #region Services
+            builder.Services.AddHttpContextAccessor();
 
             // Add controller
             builder.Services.AddControllers().AddJsonOptions(options =>

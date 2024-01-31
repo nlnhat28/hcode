@@ -77,6 +77,7 @@ import VTag from "@/components/elements/tag/VTag.vue";
 import VTh from "@/components/elements/table/VTh.vue";
 import VTd from "@/components/elements/table/VTd.vue";
 import VTr from "@/components/elements/table/VTr.vue";
+import PMenu from "primevue/menu";
 /**
  * Others
  */
@@ -106,7 +107,7 @@ app.component("v-input-text", VInputText);
 app.component("v-logo-hcode", VLogoHCode);
 app.component("v-mask-loading", VMaskLoading);
 app.component("v-mask-dialog", VMaskDialog);
-app.component("v-menu", VMenu);
+app.component("v-menu", PMenu);
 app.component("v-no-content", VNoContent);
 app.component("v-nav", VNav);
 app.component("v-nav-item", VNavItem);
