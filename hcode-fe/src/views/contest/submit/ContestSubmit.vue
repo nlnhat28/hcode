@@ -273,6 +273,7 @@
 import BaseProblemSubmit from "@/views/submit/BaseProblemSubmit.vue";
 import SubmissionsList from "./submission/SubmissionsList.vue";
 import ContestSiderbar from "./sidebar/ContestSidebar.vue"
+import { contestService } from "@/services/services.js"
 
 export default {
     name: "ContestSubmit",

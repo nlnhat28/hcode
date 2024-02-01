@@ -373,7 +373,7 @@ export default {
 
             if (id == null) {
                 this.mode = formMode.create;
-                this.instance = this.contestStore.contest;
+                // this.instance = ;
             }
 
             this.getConfig();
@@ -385,7 +385,9 @@ export default {
         getConfig() {
             let tab = 0;
             try {
-                tab = JSON.parse(sessionStorage.getItem("ContestDetail"))?.activeTab;
+                if (this.mode != formMode.create) {
+                    tab = JSON.parse(sessionStorage.getItem("ContestDetail"))?.activeTab;
+                }
             }
             catch {
             }

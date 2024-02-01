@@ -14,11 +14,20 @@
             <div class="contest-submit__header">
                 <div class="contest-submit__header--left flex-align-center">
                     <v-button
+                        v-if="$auth.getAccountId() == createdId"
                         text
                         severity="secondary"
                         icon="far fa-angle-left"
                         :label="$t('contest.goBackContest')"
                         @click="$router.push($cf.combineRoute($path.contest, contestId))"
+                    ></v-button>
+                    <v-button
+                        v-else
+                        text
+                        severity="secondary"
+                        icon="far fa-angle-left"
+                        :label="$t('contest.contests')"
+                        @click="$router.push($path.contest)"
                     ></v-button>
                 </div>
                 <div class="contest-submit__header--center flex-center col-gap-12">
@@ -114,11 +123,17 @@
                                     </v-form-body>
                                 </v-tab-panel>
                                 <!-- Nội dung -->
-                                <v-tab-panel :header="$t('problem.content')" v-if="$auth.getAccountId() == createdId">
+                                <v-tab-panel
+                                    :header="$t('problem.content')"
+                                    v-if="$auth.getAccountId() == createdId"
+                                >
                                     <v-editor v-model="instance.Content"></v-editor>
                                 </v-tab-panel>
                                 <!-- Gợi ý -->
-                                <v-tab-panel :header="$t('problem.hint')" v-if="$auth.getAccountId() == createdId">
+                                <v-tab-panel
+                                    :header="$t('problem.hint')"
+                                    v-if="$auth.getAccountId() == createdId"
+                                >
                                     <v-editor v-model="instance.Hint"></v-editor>
                                 </v-tab-panel>
                                 <!-- Tham số-->
@@ -157,7 +172,10 @@
                                     </div>
                                 </v-tab-panel>
                                 <!-- Test -->
-                                <v-tab-panel :header="$t('problem.testcase')" v-if="0">
+                                <v-tab-panel
+                                    :header="$t('problem.testcase')"
+                                    v-if="0"
+                                >
                                     <div class="testcase-container dark">
                                         <div
                                             class="testcase__list"
@@ -195,7 +213,10 @@
                         </div>
                     </v-splitter-panel>
                     <!-- Code Editor -->
-                    <v-splitter-panel class="flex-center" v-if="0">
+                    <v-splitter-panel
+                        class="flex-center"
+                        v-if="0"
+                    >
                         <div class="wh-full p-20 flex-column code-container">
                             <div class="code__header flex justify-between">
                                 <div class="flex-align-center col-gap-12">
@@ -351,7 +372,7 @@ export default {
             }
         },
         async viewResult(instanceId, accountId) {
-             if (this.instanceService) {
+            if (this.instanceService) {
                 const response = await this.instanceService.viewResult(instanceId, accountId);
                 if (this.$res.isSuccess(response)) {
                     if (!this.$cf.isEmptyObject(response.Data)) {
@@ -433,6 +454,4 @@ export default {
     }
 }
 </script>
-<style scoped>
-@import './contest-result.css';
-</style>
+<style scoped>@import './contest-result.css';</style>

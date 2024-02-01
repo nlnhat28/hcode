@@ -260,36 +260,16 @@ namespace HCode.Application
         // Submit
         public async Task SubmitAsync(ProblemDto problemDto, ServerResponse res)
         {
-            var (_, parameters, testcases) = MapProblemDtoToEntity(problemDto);
+            var (_, parameters, testcases) = MapProblemDtoToEntity(problemDto, EditMode.Update);
             await _ceService.ExecuteAsync(problemDto, testcases, res);
 
             // Lưu dư thừa
             if (res.Data is SubmissionData data)
             {
-                // Thêm mới submission
-                try
-                {
-                    var testcaseDtos = _mapper.Map<List<TestcaseDto>>(testcases);
-                    testcaseDtos?.ForEach(tc => tc.Status = data.Submissions.FirstOrDefault(s => s.testcase_id == tc.TestcaseId));;
-
-                    var parameterJson = JsonSerializer.Serialize(parameters);
-                    var testcaseJson = JsonSerializer.Serialize(testcaseDtos);
-
-                    var submission = data.InitSubmission(problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, problemDto.ProblemAccountId);
-                    submission.Parameters = parameterJson;
-                    submission.Testcases = testcaseJson;
-                    
-                    var subRes = await _submissionRepo.InsertAsync(submission);
-                    res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));
-                }
-                catch (Exception ex)
-                {
-                    res.AddData(ex);
-                };
-
                 // Cập nhật ProblemAccount
                 try
                 {
+                    var id = problemDto.ProblemAccountId ?? Guid.NewGuid();
                     if (problemDto.ProblemAccountState != ProblemAccountState.Accepted)
                     {
                         var problemAccountState = problemDto.ProblemAccountState ?? ProblemAccountState.Seen;
@@ -311,7 +291,7 @@ namespace HCode.Application
                         {
                             var problemAccount = new ProblemAccount()
                             {
-                                ProblemAccountId = problemDto.ProblemAccountId ?? Guid.Empty,
+                                ProblemAccountId = id,
                                 ProblemId = problemDto.ProblemId,
                                 State = problemAccountState
                             };
@@ -321,6 +301,41 @@ namespace HCode.Application
                             res.AddData("AuditProblemAccountAsync");
                         }
                     }
+                    //else
+                    //{
+                    //    var problemAccount = new ProblemAccount()
+                    //    {
+                    //        ProblemAccountId = id,
+                    //        ProblemId = problemDto.ProblemId,
+                    //        State = ProblemAccountState.Accepted
+                    //    };
+
+                    //    var auditRes = new ServerResponse();
+                    //    await AuditProblemAccountAsync(problemAccount, auditRes);
+                    //    res.AddData("AuditProblemAccountAsync");
+                    //}
+
+                    // Thêm mới submission
+                    try
+                    {
+                        var testcaseDtos = _mapper.Map<List<TestcaseDto>>(testcases);
+                        testcaseDtos?.ForEach(tc => tc.Status = data.Submissions.FirstOrDefault(s => s.testcase_id == tc.TestcaseId)); ;
+
+                        var parameterJson = JsonSerializer.Serialize(parameters);
+                        var testcaseJson = JsonSerializer.Serialize(testcaseDtos);
+
+                        var submission = data.InitSubmission(problemDto.Solution, problemDto.SolutionLanguage?.LanguageId, id);
+                        submission.Parameters = parameterJson;
+                        submission.Testcases = testcaseJson;
+
+                        var subRes = await _submissionRepo.InsertAsync(submission);
+                        res.AddData(new BaseResponse(SuccessCode.SubmissionSaved));
+                    }
+                    catch (Exception ex)
+                    {
+                        res.AddData(ex);
+                    };
+
                 }
                 catch (Exception ex)
                 {

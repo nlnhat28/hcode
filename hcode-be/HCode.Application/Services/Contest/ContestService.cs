@@ -386,7 +386,7 @@ namespace HCode.Application
         // Submit 1 câu hỏi
         public async Task SubmitAsync(Guid contestProblemId, ProblemDto problemDto, ServerResponse res) 
         {
-            var (_, parameters, testcases) = _problemService.MapProblemDtoToEntity(problemDto);
+            var (_, parameters, testcases) = _problemService.MapProblemDtoToEntity(problemDto, EditMode.Update);
             await _ceService.ExecuteAsync(problemDto, testcases, res);
 
             // Lưu dư thừa

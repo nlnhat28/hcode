@@ -80,6 +80,7 @@
                         v-if="isShowJoinButton"
                         icon="far fa-check"
                         autofocus
+                        :disabled="instance.State == contestEnum.contestState.pending.value"
                         :label="$t('contest.join')"
                         @click="onClick(joinContest, true)"
                     ></v-button>

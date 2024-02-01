@@ -170,7 +170,7 @@
                                 <SubmissionsList
                                     ref="refSubmissionList"
                                     :parentId="instance.ProblemAccountId"
-                                    v-if="instance.ProblemAccountId"
+                                    v-if="1"
                                     @selected="bindSubmission"
                                 />
                             </v-tab-panel>
