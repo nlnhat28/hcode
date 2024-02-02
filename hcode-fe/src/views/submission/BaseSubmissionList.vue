@@ -35,6 +35,11 @@ export default {
             languageIdSubmission: 63
         }
     },
+    watch: {
+        // parentId() {
+        //     this.reloadItems();
+        // }
+    },
     computed: {
         ...mapStores(useLanguageStore),
     },

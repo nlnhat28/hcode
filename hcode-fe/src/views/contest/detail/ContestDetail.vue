@@ -163,7 +163,7 @@
                                     ref="refSubmissionList"
                                     :contestId="instance.ContestId"
                                     :contestProblems="instance.ContestProblems"
-                                    v-if="1"
+                                    v-if="instance.ContestId"
                                     @selected="bindSubmission"
                                 />
                             </v-tab-panel>

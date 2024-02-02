@@ -157,10 +157,6 @@ export default {
                             field: this.$t('contest.field.startDate'),
                             value: this.$fm.formatDateTime(i?.ContestAccount.StartTime, "dd/mm/yyyy hh:mm:ss"),
                         },
-                        {
-                            field: this.$t('contest.field.state'),
-                            value: this.$cv.enumToResource(i.State, contestEnum.contestAccountState),
-                        },
                     ]
                     
                     return infos;
