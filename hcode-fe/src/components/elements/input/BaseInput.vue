@@ -1,0 +1,621 @@
+<script>
+import { debounce } from 'lodash';
+import { t } from "@/i18n/i18n.js";
+import enums from "@/enums/enums";
+const dataInput = enums.dataInput;
+
+export default {
+    name: 'VBaseInput',
+    props: {
+        /**
+         * Focused or not
+         */
+        isFocused: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Readonly or not
+         */
+        isReadOnly: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Disabled or not
+         */
+        isDisabled: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Model binding
+         */
+        modelValue: {
+            type: [String, Number]
+        },
+        /**
+         * Tên nhãn
+         */
+        label: {
+            type: [String, Number],
+        },
+        /**
+         * Độ dài tối đa
+         */
+        maxLength: {
+            type: Number,
+        },
+        /**
+         * Không được để trống
+         */
+        isRequired: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Xoá khoảng trắng 2 đầu
+         */
+        applyTrim: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Xoá hết khoảng trắng
+         */
+        noSpace: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Dùng placeholder
+         */
+        applyPlaceholder: {
+            type: Boolean,
+            default: true,
+        },
+        /**
+         * Placeholder
+         */
+        placeholder: {
+            type: String,
+        },
+        /**
+         * Function to validate
+         */
+        validate: {
+            type: Function,
+        },
+        /**
+         * Function to format
+         */
+        format: {
+            type: Function,
+        },
+        /**
+         * Function warning
+         */
+        warn: {
+            type: Function,
+        },
+        /**
+         * Icon trái
+         */
+        icon: {
+            type: [String]
+        },
+        /**
+         * Hành động đi kèm 
+            {
+                icon,
+                method,
+                tooltip,
+                hasLoading,
+            }
+         */
+        action: {
+            type: Object,
+            default: null
+        },
+        /**
+         * Căn text
+         */
+        textAlign: {
+            type: String,
+            validator: (value) => {
+                return [
+                    'left',
+                    'center',
+                    'right',
+                ].includes(value)
+            },
+        },
+        /**
+         * Set lại con trỏ select về vị trí trước khi text thay đổi
+         */
+        canSetSelection: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Debounce khi update value
+         */
+        hasDebounce: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Tooltip input
+         */
+        tooltip: {
+            type: [String, Number],
+            default: null,
+        },
+        /**
+         * Show icon mà k cần hover
+         */
+        isShowActionIcon: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Apply tranparent
+         */
+        isTransparent: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Kiểu input
+         */
+        dataInput: {
+            type: Number,
+            validator: (value) => {
+                return [
+                    dataInput.text,
+                    dataInput.integer,
+                    dataInput.decimal
+                ].includes(value)
+            },
+            default: dataInput.text,
+        },
+        /**
+         * Giá trị số nhỏ nhất
+         */
+        minValue: {
+            type: Number,
+        },
+        /**
+         * Giá trị số lớn nhất
+         */
+        maxValue: {
+            type: Number,
+        },
+        /**
+         * Type input
+         */
+        type: {
+            type: String,
+            default: 'text'
+        },
+        /** Giá trị */
+        value: {
+            type: [String, Number],
+            default: null
+        }
+    },
+    data() {
+        return {
+            /**
+             * Giá trị text fields
+             */
+            innerValue: this.modelValue ?? this.value,
+            /**
+             * Thông báo lỗi nếu có
+             */
+            errorMessage: null,
+            /**
+             * Cảnh báo nếu có
+             */
+            warnMessage: null,
+            /**
+             * Trạng thái thực hiện hành động
+             */
+            isLoading: {
+                type: Boolean,
+                default: false
+            },
+            /**
+             * Show icon after success action
+             */
+            isSuccess: false,
+            /**
+             * Show icon after error action
+             */
+            isError: false,
+            /**
+             * Action 
+             */
+            innerAction: this.action,
+            /**
+             * Text align
+             */
+            innerTextAlign: this.textAlign
+        }
+    },
+    created() {
+        this.innerValue = this.formatComputed;
+        this.isLoading = false;
+        this.isSuccess = false;
+
+        if (this.innerAction) {
+            if (!this.innerAction.hasLoading) {
+                this.innerAction.hasLoading = false;
+            }
+        };
+
+        // Là số mà không chỉ định rõ textAlign thì căn phải
+        if ((this.dataInput == this.$enums.dataInput.integer || this.dataInput == this.$enums.dataInput.decimal)
+            && !this.textAlign) {
+            this.innerTextAlign = 'right';
+        }
+    },
+    mounted() {
+        if (this.isFocused) this.focus();
+    },
+    beforeUnmount() {
+        this.blur();
+    },
+    watch: {
+        modelValue() {
+            this.innerValue = this.modelValue
+        },
+        value() {
+            this.innerValue = this.value
+        },
+        innerValue() {
+            this.onChangeValue();
+        },
+    },
+    computed: {
+        /**
+         * Validate value
+         * 
+         * Author: nlnhat (01/07/2023)
+         * @return Error message if invalid, null if valid
+         */
+        validateComputed() {
+            try {
+                // Validate required
+                if (this.isRequired && this.$cf.isEmptyString(this.innerValue))
+                    return `${this.label} ${this.$t('msg.cannotNull')}`;
+
+                // Validate length
+                if (this.maxLength && this.innerValue?.length > this.maxLength)
+                    return `${this.label} ${this.$t('msg.mustLessEqualLength', { length: this.maxLength })}`;
+
+                // Validate số 
+                if (this.innerValue != null) {
+                    let integerValue = this.innerValue;
+                    if (this.dataInput == this.$enums.dataInput.integer) {
+                        integerValue = this.$rfm.cleanFormatInteger(this.innerValue); 
+                    }
+                    if (this.minValue != null && this.maxValue != null) {
+                        if (integerValue < this.minValue || integerValue > this.maxValue) {
+                            return `${this.label} ${this.$t('msg.mustBetween', { minValue: this.minValue, maxValue: this.maxValue })}`;
+                        }
+                    }
+                    else if (this.minValue != null) {
+                        if (integerValue < this.minValue) {
+                            return `${this.label} ${this.$t('msg.mustMoreEqual', { minValue: this.minValue })}`;
+                        }
+                    }
+                    else if (this.maxValue != null) {
+                        if (integerValue > this.maxValue) {
+                            return `${this.label} ${this.$t('msg.mustLessEqual', { maxValue: this.maxValue })}`;
+                        }
+                    }
+                }
+
+                // Custom validate
+                if (this.validate) {
+                    return this.validate(this.label, this.innerValue);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+            return null;
+        },
+        /**
+         * Format value
+         * 
+         * Author: nlnhat (01/07/2023)
+         * @return Formated value
+         */
+        formatComputed() {
+            try {
+                if (this.innerValue) {
+                    if (this.noSpace) {
+                        this.innerValue = this.$rfm.removeSpace(this.innerValue);
+                    }
+                    else if (this.applyTrim) {
+                        this.innerValue = this.innerValue.trim();
+                    }
+                };
+
+                // Format số nguyên
+                if (this.dataInput == this.$enums.dataInput.integer) {
+                    this.innerValue = this.$fm.formatInteger(this.innerValue)
+                }
+
+                if (this.format)
+                    return this.format(this.innerValue)
+            } catch (error) {
+                console.error(error);
+            }
+            return this.innerValue;
+        },
+        /**
+         * Warn value
+         * 
+         * Author: nlnhat (01/07/2023)
+         * @return Warn message if invalid, null if valid
+         */
+        warnComputed() {
+            try {
+                // Custom warn
+                if (this.warn) {
+                    return this.warn(this.label, this.innerValue);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+            return null;
+        },
+        /**
+         * Placeholder
+         */
+        placeholderComputed() {
+            if (this.applyPlaceholder) {
+                if (this.$cf.isEmptyString(this.placeholder)) {
+                    return this.label;
+                };
+                return this.placeholder;
+            };
+            return null;
+        },
+        /**
+         * Tooltip
+         */
+        tooltipComputed() {
+            if (this.errorMessage) {
+                return this.errorMessage
+            }
+            return this.warnMessage;
+        },
+        /**
+         * Tuỳ chỉnh cho tooltip
+         */
+        tooltipConfig() {
+            const me = this;
+            const errorConfig = {
+                value: me.errorMessage,
+                pt: {
+                    arrow: {
+                        style: {
+                            borderTopColor: 'var(--red-500)'
+                        }
+                    },
+                    text: {
+                        style: {
+                            backgroundColor: 'var(--red-500)'
+                        }
+                    },
+                }
+            };
+            const warnConfig = {
+                value: me.warnMessage,
+                pt: {
+                    arrow: {
+                        style: {
+                            borderTopColor: 'var(--orange-500)'
+                        }
+                    },
+                    text: {
+                        style: {
+                            backgroundColor: 'var(--orange-500)'
+                        }
+                    },
+                }
+            };
+            if (this.errorMessage) {
+                return errorConfig
+            }
+            if (this.warnMessage) {
+                return warnConfig;
+            }
+        }
+    },
+    methods: {
+        /**
+         * Focus on input
+         * 
+         * Author: nlnhat (01/07/2023)
+         */
+        focus() {
+            if (this.$refs['refEl']) {
+                this.$refs['refEl'].focus();
+            }
+        },
+        /**
+         * Blur input
+         * 
+         * Author: nlnhat (01/07/2023)
+         */
+        blur() {
+            if (this.$refs.input)
+                this.$refs.input.blur();
+        },
+        /**
+         * Select all text input
+         * 
+         * Author: nlnhat (30/07/2023)
+         */
+        select() {
+            if (this.$refs.input)
+                this.$refs.input.select();
+        },
+        /**
+         * Handle input value change
+         * 
+         * Author: nlnhat (01/07/2023)
+         */
+        onChangeValue() {
+            try {
+                // Set lại con trỏ select về vị trí trước khi text thay đổi
+                if (this.canSetSelection && this.$refs.input) {
+                    var position = this.$refs.input.selectionStart;
+                    this.innerValue = this.formatComputed;
+                    this.$nextTick(() => {
+                        this.$refs.input.setSelectionRange(position, position);
+                    });
+                }
+                else this.innerValue = this.formatComputed;
+
+                if (!this.isReadOnly) {
+                    if (this.hasDebounce)
+                        this.debounceUpdate();
+                    else
+                        this.$emit('update:modelValue', this.innerValue);
+                }
+
+                this.checkValidate();
+                this.checkWarn();
+                this.customOnChangeValue();
+
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        /**
+         * Check validate value
+         * 
+         * Author: nlnhat (02/07/2023)
+         */
+        checkValidate() {
+            try {
+                return this.errorMessage = this.validateComputed;
+            } catch (error) {
+                console.error(error);
+            }
+            return null
+        },
+        /**
+         * Check validate value
+         * 
+         * Author: nlnhat (02/07/2023)
+         */
+        checkWarn() {
+            try {
+                return this.warnMessage = this.warnComputed;
+            } catch (error) {
+                console.error(error);
+            }
+            return null
+        },
+        /**
+         * Make loading effect
+         * 
+         * Author: nlnhat (05/07/2023)
+         * @param {function} func Function executes in loading process
+         */
+        async makeLoadingEffect(func) {
+            try {
+                this.isLoading = true;
+                if (await func()) {
+                    this.isSuccess = true;
+                    await new Promise((resolve) => setTimeout(resolve, 1500));
+                    this.isSuccess = false;
+                }
+                else {
+                    this.isError = true;
+                    await new Promise((resolve) => setTimeout(resolve, 1500));
+                    this.isError = false;
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        /**
+         * Handle when click action
+         * 
+         * Author: nlnhat (23/07/2023)
+         */
+        onAction() {
+            if (this.innerAction) {
+                if (this.innerAction.hasLoading) {
+                    this.makeLoadingEffect(this.innerAction.method)
+                }
+                else {
+                    this.innerAction.method();
+                }
+            }
+        },
+        /**
+         * Set error message
+         * 
+         * Author: nlnhat (23/07/2023)
+         * @param {*} message Message to set for error message
+         */
+        setErrorMessage(message) {
+            this.errorMessage = message;
+        },
+        /**
+         * Clear error message
+         * 
+         * Author: nlnhat (23/07/2023)
+         */
+        clearErrorMessage() {
+            this.errorMessage = null;
+        },
+        /**
+         * Handle key down on input
+         * 
+         * Author: nlnhat (29/07/2023)
+         */
+        onKeyDown(event) {
+            switch (event.keyCode) {
+                case this.$enums.keyCode.enter:
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.$emit('emitEnter');
+                    break;
+                case this.$enums.keyCode.space:
+                    event.stopPropagation();
+                    this.$emit('emitSpace');
+                    break;
+                case this.$enums.keyCode.tab:
+                    this.$emit('emitTab');
+                    break;
+                default:
+                    break;
+            }
+        },
+        /**
+         * Debounce update
+         * 
+         * Author: nlnhat (12/07/2023)
+         */
+        debounceUpdate: debounce(function () {
+            this.$emit('update:modelValue', this.innerValue)
+        }, 1000),
+        /**
+         * Custom khi dữ liệu thay đổi
+         */
+        customOnChangeValue() {
+        }
+    }
+}
+</script>

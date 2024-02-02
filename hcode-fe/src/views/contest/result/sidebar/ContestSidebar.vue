@@ -1,0 +1,301 @@
+<template>
+    <div :class="[
+        'contest-sidebar p-relative',
+        { 'contest-sidebar--collapse': collapseContestSidebar }
+    ]">
+        <v-mask-loading v-if="isLoading"></v-mask-loading>
+        <div :class="['contest-sidebar__body flex-column justify-between']">
+            <div>
+                <div class="label-20-yellow-300 p-relative">
+                    {{ instance.ContestName }}
+                </div>
+                <div class="w-full flex-column row-gap-28 pt-20">
+                    <div class="flex-column row-gap-24">
+                        <div
+                            v-for="(info, index) in infoComputed"
+                            :key="index"
+                            :class="['contest-info flex w-full p-relative']"
+                        >
+                            <div
+                                class="contest-info__field"
+                                style="width: 100px"
+                            >
+                                {{ info.field }}:
+                            </div>
+                            <div class="flex-1 font-bold">
+                                {{ info.value }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex-column row-gap-16">
+                        <div class="color-text flex-center">
+                            {{ $t('contest.problems') }}
+                        </div>
+                        <div
+                            class="contest-problem__list"
+                            v-if="!$cf.isEmptyArray(instance.ContestProblems)"
+                        >
+                            <ContestProblemItem
+                                v-for="(item, index) in instance.ContestProblems"
+                                :key="item.ContestProblemId"
+                                :index="index"
+                                :contestProblem="item"
+                                :isSelected="item.ProblemId == problemId"
+                                @selected="selectedItem"
+                            ></ContestProblemItem>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="flex-align-center col-gap-8"
+                v-if="totalScoreComputed != null"
+            >
+                <div class="label color-text">
+                    {{ $t('contest.yourScore') }}:
+                </div>
+                <div class="font-bold font-20 color-success">
+                    {{ totalScoreComputed }}
+                </div>
+            </div>
+        </div>
+        <div class="contest-sidebar__footer">
+            <v-button-container
+                class="w-full"
+                direction="row-reverse"
+                justifyContent="space-between"
+            >
+                <!-- Nộp -->
+                <v-button
+                    v-if="0"
+                    :label="$t('contest.finish')"
+                    @click="onClick(finishContest)"
+                />
+                <div></div>
+
+                <!-- Reload -->
+                <v-button
+                    icon="far fa-arrows-rotate"
+                    severity="secondary"
+                    outlined
+                    :loading="isLoading"
+                    @click="reloadInstance()"
+                />
+            </v-button-container>
+        </div>
+    </div>
+</template>
+<script>
+import BaseForm from "@/components/base/BaseForm.vue";
+import { contestService, languageService } from "@/services/services";
+import { useLanguageStore, useContestStore } from "@/stores/stores";
+import { mapStores, mapState } from 'pinia';
+import contestEnum from "@/enums/contest-enum";
+import problemEnum from "@/enums/problem-enum";
+import contestConst from "@/consts/contest-const.js";
+import enums from "@/enums/enums";
+import { problemService } from "@/services/services.js";
+import ContestProblemItem from "./ContestProblemItem.vue";
+
+const formMode = enums.formMode;
+
+export default {
+    name: "ContestSidebar",
+    extends: BaseForm,
+    components: {
+        ContestProblemItem,
+    },
+    emits: ['selected', 'afterLoad'],
+    props: {
+        problemId: {
+            type: String,
+            default: null
+        },
+        accountId: {
+            type: String,
+            default: null
+        }
+    },
+    data() {
+        return {
+            collapseContestSidebar: false,
+            cfg: {
+                formPath: this.$path.contest,
+                callbackPath: this.$path.contests,
+                entity: 'Contest',
+                subSysName: this.$t('contest.contest'),
+            },
+            instanceService: contestService,
+            contestConst: contestConst,
+            problems: [],
+            dateTimePattern: 'dd/mm/yyyy hh:mm',
+        }
+    },
+    watch: {
+    },
+    mounted() {
+    },
+    computed: {
+        infoComputed() {
+            try {
+                if (this.instance) {
+                    const i = this.instance;
+                    let infos = [
+                        {
+                            field: this.$t('contest.field.contestCode'),
+                            value: i.ContestCode,
+                        },
+                        {
+                            field: this.$t('contest.field.accountFullName'),
+                            value: i.AccountFullName,
+                        },
+                        {
+                            field: this.$t('contest.field.joiner'),
+                            value: i?.ContestAccount?.FullName,
+                        },
+                        {
+                            field: this.$t('contest.field.startDate'),
+                            value: this.$fm.formatDateTime(i?.ContestAccount.StartTime, "dd/mm/yyyy hh:mm:ss"),
+                        },
+                    ]
+                    
+                    return infos;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+            return [];
+        },
+        totalScoreComputed() {
+            let totalScore = 0;
+
+            if (this.instance && this.instance.ContestProblems) {
+                this.instance.ContestProblems.forEach(item => {
+                    if (item.ContestProblemAccountState == problemEnum.problemAccountState.accepted.value) {
+                        totalScore += item.Score
+                    }
+                });
+
+                if (totalScore == 0 && this.instance.ContestProblems.every(i => i.Score == null)) {
+                    totalScore = null;
+                }
+            }
+
+            return totalScore
+        }
+    },
+    methods: {
+        /**
+         * @override
+         */
+        async loadDataOnCreated() {
+            await this.viewResult(this.instanceId, this.accountId);
+        },
+        async viewResult(instanceId, accountId) {
+            if (this.instanceService) {
+                const response = await this.instanceService.viewResult(instanceId, accountId);
+                if (this.$res.isSuccess(response)) {
+                    if (!this.$cf.isEmptyObject(response.Data)) {
+                        this.instance = this.$cf.cloneDeep(response.Data);
+                        this.storeOriginalInstance();
+
+                        if (this.hasBuildDocumentTitle) {
+                            this.documentTitle = this.$t('contest.result') + " - "
+                                + this.instance[`${this.cfg.entity}Name`] + " - " + this.cfg.subSysName;
+                            document.title = this.$cf.documentTitle(this.documentTitle);
+                        };
+                    }
+                    else {
+                        this.$dl.error(this.$t('msg.cannotFindRecord'), this.goCallbackPath)
+                    }
+                }
+                else {
+                    this.handleError(response, this.goCallbackPath)
+                }
+            }
+        },
+        /**
+         * @override
+         */
+        customInstanceOnCreated() {
+            if (!this.$cf.isEmptyArray(this.instance?.ContestProblems)
+                && (!this.problemId || this.problemId == 0)) {
+                this.selectedItem(this.instance.ContestProblems[0]);
+            };
+            this.$emit('afterLoad', this.instance);
+        },
+        /**
+         * Lấy thông tin contest
+         * @param {*} id 
+         */
+        async getForSubmit(id) {
+            if (this.instanceService) {
+                const response = await this.instanceService.getForSubmit(id);
+                if (this.$res.isSuccess(response)) {
+                    if (!this.$cf.isEmptyObject(response.Data)) {
+                        this.instance = this.$cf.cloneDeep(response.Data);
+                        this.storeOriginalInstance();
+
+                        if (this.hasBuildDocumentTitle) {
+                            this.documentTitle = this.instance[`${this.cfg.entity}Name`] + " - " + this.cfg.subSysName;
+                            document.title = this.$cf.documentTitle(this.documentTitle);
+                        };
+                    }
+                    else {
+                        this.$dl.error(this.$t('msg.cannotFindRecord'))
+                    }
+                }
+                else {
+                    // this.handleError(response, this.goCallbackPath)
+                    this.handleError(response)
+                }
+                this.processResponseGet(response);
+            }
+        },
+        /**
+         * Đóng mở contest sidebar
+         */
+        toggle() {
+            this.collapseContestSidebar = !this.collapseContestSidebar;
+        },
+        /**
+         * Chọn câu hỏi
+         */
+        selectedItem(item) {
+            this.$emit('selected', item);
+        },
+        /**
+         * Load trạng thái câu hỏi với tài khoản
+         */
+        reloadContestProblemState(newCpa) {
+            if (this.instance && this.instance.ContestProblems) {
+                for (let cp of this.instance.ContestProblems) {
+                    if (cp.ContestProblemId == newCpa.ContestProblemId) {
+                        cp.ContestProblemAccountState = newCpa.State;
+                        return;
+                    };
+                }
+            }
+        },
+        /**
+         * Finish
+         */
+        async finishContest() {
+            if (this.instanceService && this.instance.ContestAccount) {
+                const res = await this.instanceService.finish(this.instance.ContestAccount.ContestAccountId);
+                if (this.$res.isSuccess(res)) {
+                    this.$ts.success(this.$t('contest.finishedContest'));
+                    this.$router.push(this.$cf.combineRoute(
+                        this.$path.contests));
+                }
+                else {
+                    this.handleError(res);
+                }
+            }
+        },
+    }
+}
+</script>
+<style scoped>
+@import "./contest-sidebar.css";
+</style>

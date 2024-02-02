@@ -1,0 +1,38 @@
+/* Contest sidebar */
+.contest-sidebar {
+    display: block;
+    min-width: 360px;
+    height: 100%;
+    background-color: var(--dark-500);
+    border-right: 1px solid var(--dark-200);
+}
+
+.contest-sidebar.contest-sidebar--collapse {
+    display: none;
+}
+.contest-sidebar__body {
+    height: calc(100vh - 78px);
+    padding: 20px;
+    padding-bottom: 10px;
+}
+.contest-sidebar__footer {
+    height: 78px;
+    padding: 0 24px;
+    background-color: var(--footer-color);
+    width: 100%;
+    display: flex;
+    /* justify-content: flex-end; */
+}
+.contest-sidebar__footer {
+    padding: 0 20px;
+}
+.contest-info {
+    color: var(--color-text);
+}
+.contest-problem__list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    height: 100%;
+    overflow: auto;
+}

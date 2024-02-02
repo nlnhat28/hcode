@@ -1,0 +1,49 @@
+
+.p-calendar {
+    border-color: var(--border-color);
+    width: 100%;
+}
+.dark .p-calendar {
+    background-color: var(--editor-color);
+}
+.dark .p-calendar .p-inputtext {
+    background-color: var(--editor-color);
+    color: var(--color-text);
+}
+.dark .p-calendar .p-inputtext.p-placeholder {
+    color: var(--color-placeholder);
+}
+.p-calendar .p-inputtext {
+    font-size: 16px;
+    font-family: var(--font-primary);
+}
+
+.p-datepicker {
+    color: var(--color-text);
+}
+.p-datepicker:not(.p-datepicker-inline) {
+    background: var(--dark-500);
+}
+.p-datepicker:not(.p-datepicker-inline) .p-datepicker-header {
+    color: var(--color-text);
+    background: var(--dark-500);
+}
+.p-datepicker:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
+    background: var(--dark-400);
+}
+.p-datepicker:not(.p-datepicker-inline) .p-datepicker-header .p-link {
+    font-size: 16px;
+}
+.p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-year, 
+.p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-month {
+    color: var(--color-text-2);
+}
+
+.p-datepicker table td > span.p-highlight {
+    color: var(--color-text);
+    background: var(--primary-600);
+}
+.p-datepicker table td.p-datepicker-today > span {
+    color: var(--highlight);
+    background: var(--dark-400);
+}

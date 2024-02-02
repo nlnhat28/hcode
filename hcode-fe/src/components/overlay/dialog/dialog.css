@@ -1,0 +1,64 @@
+
+.v-dialog.p-dialog.submission-dialog {
+    /* min-width: none; */
+    /* min-height: none; */
+    max-width: none;
+    max-height: none;
+    height: 800px !important;
+    width: 1000px !important;
+}
+
+.v-dialog.p-dialog.submission-dialog .cm-editor {
+    height: 468px;
+}
+
+.v-dialog.p-dialog {
+    min-width: 400px;
+    max-width: 480px;
+}
+.v-dialog.p-dialog .p-dialog-header .p-dialog-title {
+    font-size: 24px;
+}
+
+.v-dialog__content {
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+}
+.v-dialog__icon .icon {
+    font-size: 32px;
+}
+.v-dialog.p-dialog .p-dialog-footer button {
+    margin: 0;
+}
+.v-dialog .p-button.p-button-sm {
+    /* padding: 0.3rem 0.7rem; */
+}
+
+.v-dialog.p-dialog .p-dialog-header {
+    padding: 1.5rem 1.2rem;
+}
+.v-dialog.p-dialog .p-dialog-footer {
+    padding: 1rem 1.2rem;
+}
+.v-dialog.p-dialog .p-dialog-footer {
+    background-color: var(--grey-200);
+}
+.v-dialog.p-dialog .p-dialog-content {
+    padding: 1.2rem;
+    padding-top: 0;
+}
+
+/* dark */
+
+.v-dialog.dark .p-dialog-header {
+    color: var(--color-text);
+    background-color: var(--dark-500);
+}
+.v-dialog.dark .p-dialog-content {
+    color: var(--color-text);
+    background-color: var(--dark-400);
+}
+.v-dialog.dark .p-dialog-footer {
+    background-color: var(--dark-500);
+}

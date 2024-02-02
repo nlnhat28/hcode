@@ -1,0 +1,37 @@
+/* mask use to show loading effect or no content */
+.mask {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    z-index: 3;
+}
+.mask * {
+    pointer-events: none;
+}
+.mask.mask--dark {
+    background-color: #0000003b;
+}
+.mask.mask--darker {
+    background-color: #00000052;
+}
+
+.mask--no-content__img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 12px;
+}
+.mask__message,
+.mask--no-content__message {
+    color: var(--grey-600);
+}
+.table-content:has(.table__head) .mask.mask--no-content {
+    top: 56px;
+    height: calc(100% - 56px);
+}

@@ -1,0 +1,73 @@
+@import "./root.css";
+@import "./class.css";
+@import "./vue.css";
+@import "./lib/fontawesome-pro-6.4.0/css/all.min.css";
+@import "@/components/elements/elements.css";
+
+* {
+    box-sizing: border-box;
+    font-family: var(--font-primary);
+    font-size: 16px;
+    caret-color: transparent;
+}
+
+html {
+    font-size: 14px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.mask-splash {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    min-height: 300px;    
+    overflow: hidden;
+    background: url(../../src/assets/img/bg-empty.png) no-repeat;
+    background-size: 100% 100%;
+}
+.mask-splash__logo {
+    width: 200px;
+}
+.mask-splash__text {
+    display: none;
+    position: absolute;
+    bottom: 5%;
+    color: #fff;
+    font-family: Consolas;
+}
+
+/* Scroll bar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar:hover {
+    width: 14px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-table); 
+}
+::-webkit-scrollbar-track {
+    background: var(--tpr-300);
+}
+
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  display: none;
+}
+
+
+.cm-editor * {
+    font-family: Consolas;
+}

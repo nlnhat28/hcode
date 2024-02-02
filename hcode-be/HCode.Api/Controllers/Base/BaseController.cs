@@ -1,0 +1,115 @@
+using HCode.Application;
+using HCode.Domain;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HCode.Api
+{
+    /// <summary>
+    /// Lớp controller nhân viên
+    /// </summary>
+    /// Created by: nlnhat (17/08/2023)
+    [ApiController]
+    [Route("api/v1/[controller]")]
+    public class BaseController<TEntityDto, TEntity> : ReadOnlyController<TEntityDto, TEntity> where TEntityDto : BaseDto where TEntity : BaseEntity
+    {
+        #region Fields
+        /// <summary>
+        /// Service cơ sở
+        /// </summary>
+        /// Created by: nlnhat (15/07/2023)
+        private readonly IBaseService<TEntityDto, TEntity> _service;
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Hàm tạo controller cơ sở
+        /// </summary>
+        /// <param name="service">Service cơ sở</param>
+        /// Created by: nlnhat (17/08/2023)
+        public BaseController(IBaseService<TEntityDto, TEntity> service, IWebHostEnvironment webHostEnvironment)
+             : base(service)
+        {
+            _service = service;
+        }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Tạo mới 1 đối tượng
+        /// </summary>
+        /// <param name="entityDto">Dto tạo đối tượng</param>
+        /// <returns>Id bản ghi mới</returns>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpPost]
+        public async Task<IActionResult> PostAsync([FromBody] TEntityDto entityDto)
+        {
+            var result = new ServerResponse();
+
+            await _service.CreateAsync(entityDto, result);
+            
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        /// <summary>
+        /// Sửa 1 đối tượng
+        /// </summary>
+        /// <param name="id">Id của đối tượng</param>
+        /// <param name="entityDto">Dto cập nhật đối tượng</param>
+        /// <returns>Số bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutAsync(Guid id, [FromBody] TEntityDto entityDto)
+        {
+            var result = new ServerResponse();
+
+            await _service.UpdateAsync(id, entityDto, result);
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        /// <summary>
+        /// Xoá 1 đối tượng theo id
+        /// </summary>
+        /// <param name="id">Id của đối tượng</param>
+        /// <returns>Số bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(Guid id)
+        {
+            var result = new ServerResponse();
+            
+            result.Data = await _service.DeleteAsync(id);
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        /// <summary>
+        /// Xoá nhiều đối tượng từ danh sách id
+        /// </summary>
+        /// <param name="ids">Danh sách id đối tượng</param>
+        /// <returns>Số bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteManyAsync([FromBody] List<Guid> ids)
+        {
+            var result = new ServerResponse();
+
+            result.Data = await _service.DeleteManyAsync(ids);
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        /// <summary>
+        /// Xoá hết đối tượng
+        /// </summary>
+        /// <returns>Số bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (17/08/2023)
+        [HttpDelete("All")]
+        public async Task<IActionResult> DeleteAllAsync()
+        {
+            var result = new ServerResponse();
+
+            result.Data = await _service.DeleteAllAsync();
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        #endregion
+    }
+}
+

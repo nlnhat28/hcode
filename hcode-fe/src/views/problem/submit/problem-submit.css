@@ -1,0 +1,91 @@
+
+.problem-submit-container {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg-color);
+}
+.problem-submit__header {
+    height: 56px;    
+    background-color: var(--header-color);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    position: relative;
+    z-index: 4;
+}
+
+.problem-submit__header--left {
+    padding: 0 24px;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.problem-submit__header--left .p-button {
+    padding: 4px;
+    height: 30px;
+}
+
+.problem-submit__header--center {
+    /* position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); */
+}
+.problem-submit__header--right {
+    padding: 0 16px;
+    width: 300px;
+}
+
+.problem-submit__body {
+    height: calc(100vh - 56px - 78px);
+}
+.problem-submit__footer {
+    height: 78px;
+    padding: 0 24px;
+    background-color: var(--footer-color);
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* parameter */
+.testcase-container,
+.parameter-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    height: fit-content;
+    max-height: 100%;
+    padding: 4px;
+}
+.testcase__list,
+.parameter__list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    height: 100%;
+    overflow: auto;
+}
+
+/* code editor */
+.code-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 16px;
+}
+.code__header {
+    width: 100%;
+    height: 40px;
+}
+.code__body {
+    width: 100%;
+    flex: 1;
+}
+.code__footer {
+    width: 100%;
+    /* height: 40px; */
+}

@@ -1,0 +1,185 @@
+/* tooltip */
+
+/* wrapper */
+.tooltip-wrapper {
+  position: absolute;
+  display: inline-block;
+  height: 38px;
+  pointer-events: none;
+}
+
+[tooltip] {
+  position: relative;
+}
+/* shape */
+[tooltip]::before,
+[tooltip]::after {
+  display: block;
+  position: absolute;
+  text-transform: none;
+  pointer-events: none;
+  opacity: 0;
+  font-size: 16px;
+  font-weight: 500 !important;
+  line-height: 1;
+}
+
+/* arrow */
+[tooltip]::before {
+  content: "";
+  border: 5px solid transparent;
+  z-index: 4;
+}
+
+/* content */
+[tooltip]::after {
+  content: attr(tooltip);
+  font-family: var(--font-primary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.35);
+  color: #fff;
+  background: var(--grey-800);
+  z-index: 3;
+}
+[tooltip].tooltip--error::after {
+  background: var(--red-500);
+}
+[tooltip].tooltip--warn::after {
+  background: var(--orange-500);
+}
+[tooltip=""]::before,
+[tooltip=""]::after {
+  display: none !important;
+}
+
+/* hover */
+[tooltip]:hover::before,
+[tooltip]:hover::after {
+  display: block;
+  opacity: 1;
+  transition: opacity 0.6s;
+}
+
+/* position */
+
+/* top */
+[tooltip]:not([position])::before,
+[tooltip][position^="top"]::before {
+  bottom: 100%;
+  border-bottom-width: 0px;
+  border-top-color: var(--grey-800);
+}
+[tooltip]:not([position]).tooltip--error::before,
+[tooltip][position^="top"].tooltip--error::before {
+  border-top-color: var(--red-500);
+}
+[tooltip]:not([position]).tooltip--warn::before,
+[tooltip][position^="top"].tooltip--warn::before {
+  border-top-color: var(--orange-500);
+}
+
+[tooltip]:not([position])::after,
+[tooltip][position^="top"]::after {
+  bottom: calc(100% + 5px);
+}
+[tooltip]:not([position])::before,
+[tooltip]:not([position])::after,
+[tooltip][position^="top"]::before,
+[tooltip][position^="top"]::after {
+  left: 50%;
+  transform: translate(-50%, -0.5em);
+}
+
+/* bottom */
+[tooltip][position^="bottom"]::before {
+  top: 105%;
+  border-top-width: 0px;
+  border-bottom-color: var(--grey-800);
+}
+[tooltip][position^="bottom"].tooltip--error::before {
+  border-bottom-color: var(--red-500);
+}
+[tooltip][position^="bottom"].tooltip--warn::before {
+  border-bottom-color: var(--orange-500);
+}
+[tooltip][position^="bottom"]::after {
+  top: calc(105% + 5px);
+}
+[tooltip][position^="bottom"]::before,
+[tooltip][position^="bottom"]::after {
+  left: 50%;
+  transform: translate(-50%, 0.5em);
+}
+
+/* left */
+[tooltip][position^="left"]::before {
+  top: 50%;
+  border-right-width: 0px;
+  border-left-color: var(--grey-800);
+  left: calc(0em - 5px);
+  transform: translate(-0.5em, -50%);
+}
+[tooltip][position^="left"].tooltip--error::before {
+  border-left-color: var(--red-500);
+}
+[tooltip][position^="left"].tooltip--warn::before {
+  border-left-color: var(--orange-500);
+}
+[tooltip][position^="left"]::after {
+  top: 50%;
+  right: calc(100% + 5px);
+  transform: translate(-0.5em, -50%);
+}
+
+/* right */
+[tooltip][position^="right"]::before {
+  top: 50%;
+  border-left-width: 0px;
+  border-right-color: var(--grey-800);
+  right: calc(0em - 5px);
+  transform: translate(0.5em, -50%);
+}
+[tooltip][position^="right"].tooltip--error::before {
+  border-right-color: var(--red-500);
+}
+[tooltip][position^="right"].tooltip--warn::before {
+  border-right-color: var(--orange-500);
+}
+[tooltip][position^="right"]::after {
+  top: 50%;
+  left: calc(100% + 5px);
+  transform: translate(0.5em, -50%);
+}
+
+/* animation */
+[tooltip]:not([position]):hover::before,
+[tooltip]:not([position]):hover::after,
+[tooltip][position^="top"]:hover::before,
+[tooltip][position^="top"]:hover::after,
+[tooltip][position^="bottom"]:hover::before,
+[tooltip][position^="bottom"]:hover::after {
+  animation: tooltips-vert 0.3s ease-out forwards;
+}
+
+[tooltip][position^="left"]:hover::before,
+[tooltip][position^="left"]:hover::after,
+[tooltip][position^="right"]:hover::before,
+[tooltip][position^="right"]:hover::after {
+  animation: tooltips-horz 0.3s ease-out forwards;
+}
+
+@keyframes tooltips-vert {
+  to {
+    transform: translate(-50%, 0);
+  }
+}
+@keyframes tooltips-horz {
+  to {
+    transform: translate(0, -50%);
+  }
+}

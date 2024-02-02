@@ -1,0 +1,68 @@
+.icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon.icon.cursor-pointer {
+    transition: color 0.2s;
+}
+
+/* dark */
+.dark > .icon {
+    color: var(--grey-700);
+}
+.dark:hover > .icon.cursor-pointer {
+    color: var(--grey-500);
+}
+
+/* light */
+.light .icon {
+    color: var(--grey-300);
+}
+.light:hover > .icon.cursor-pointer {
+    color: var(--highlight);
+}
+.light:active > .icon.cursor-pointer {
+    color: var(--highlight-dark);
+}
+
+/* success */
+.success .icon {
+    color: var(--green-500);
+}
+.primary .icon {
+    color: var(--color-primary);
+}
+
+/* error */
+.error .icon {
+    color: var(--red-500);
+}
+
+/* danger */
+.danger .icon {
+    color: var(--red-700);
+}
+.danger:hover > .icon.cursor-pointer {
+    color: var(--red-500);
+}
+.danger:active > .icon.cursor-pointer {
+    color: var(--red-600);
+}
+
+/* infor */
+.info .icon {
+    color: var(--blue-500);
+}
+
+/* warn */
+.warn .icon {
+    color: var(--orange-400);
+}
+.warn:hover > .icon.cursor-pointer {
+    color: var(--orange-300);
+}
+.warn:active > .icon.cursor-pointer {
+    color: var(--orange-500);
+}
